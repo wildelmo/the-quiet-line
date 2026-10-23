@@ -4,7 +4,14 @@ vec3 skyColor(vec3 d) {
   d = normalize(d);
   float u = atan(d.z, d.x) / (2.0 * PI) + 0.5;
   float v = 0.43 + asin(clamp(d.y, -1.0, 1.0)) / PI * 1.14;
-  vec3 col = texture2D(skyMap, vec2(u, clamp(v, 0.005, 0.995))).rgb;
+  vec2 uv = vec2(u, clamp(v, 0.005, 0.995));
+  // atan wraps longitude from 1 to 0. Implicit derivatives mistake that join
+  // for a huge texture footprint and select a pale mip, producing a dashed
+  // seam. Use the shortest periodic difference to keep filtering continuous.
+  vec2 dx = dFdx(uv), dy = dFdy(uv);
+  dx.x -= floor(dx.x + 0.5);
+  dy.x -= floor(dy.x + 0.5);
+  vec3 col = textureGrad(skyMap, uv, dx, dy).rgb;
   return col;
 }
 `;
