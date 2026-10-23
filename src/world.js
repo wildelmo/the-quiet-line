@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { skyVertex, skyFragment, waterVertex, waterFragment } from './shaders.js';
+import { createStation } from './station.js';
 
 function random(seed){let a=seed;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 function woodTexture(){
@@ -9,13 +10,6 @@ function woodTexture(){
   for(let i=0;i<600;i++){g.strokeStyle=`rgba(${r()>.5?'58,67,54':'222,212,171'},${.04+r()*.17})`;g.lineWidth=r()*1.5;let x=r()*128,y=r()*512;g.beginPath();g.moveTo(x,y);g.bezierCurveTo(x+3,y+30,x-4,y+90,x+2,y+160);g.stroke();}
   const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=texture.wrapT=THREE.RepeatWrapping;return texture;
 }
-function labelTexture(lines, width=1024, height=512){
-  const c=document.createElement('canvas');c.width=width;c.height=height;const g=c.getContext('2d');
-  g.fillStyle='#e9e7ce';g.fillRect(0,0,width,height);g.strokeStyle='#38606a';g.lineWidth=8;g.strokeRect(20,20,width-40,height-40);g.fillStyle='#244b54';g.textAlign='center';
-  lines.forEach((line,i)=>{g.font=`${i===0?80:36}px Georgia`;g.fillText(line,width/2,height*(i===0?.44:.7));});
-  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;
-}
-
 export async function createWorld(scene, renderer){
   const texture=await new THREE.TextureLoader().loadAsync(`${import.meta.env.BASE_URL}assets/summer-sky.png`);
   texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=THREE.RepeatWrapping;texture.minFilter=THREE.LinearMipmapLinearFilter;texture.anisotropy=Math.min(4,renderer.capabilities.getMaxAnisotropy());
@@ -36,20 +30,7 @@ export async function createWorld(scene, renderer){
   const batches=new Map();
   function box(x,y,z,w,h,d,mat,rz=0){const geo=new THREE.BoxGeometry(w,h,d);geo.rotateZ(rz);geo.translate(x,y,z);if(!batches.has(mat))batches.set(mat,[]);batches.get(mat).push(geo);}
   function pole(x,y,z,r,h,mat){const geo=new THREE.CylinderGeometry(r,r,h,8);geo.translate(x,y,z);if(!batches.has(mat))batches.set(mat,[]);batches.get(mat).push(geo);}
-  function sign(lines,x,y,z,w=1.5,h=.7){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:labelTexture(lines),side:THREE.DoubleSide}));m.position.set(x,y,z);scene.add(m);return m;}
-  // Every nearby object is true-scale geometry; the infinite sky is the only backdrop.
-  for(let i=0;i<21;i++)box(-2,.21,1.7+i*.26,7,.18,.24,wood);
-  for(const x of [-5.2,-2.0,1.2]){box(x,-.02,4.3,.18,.32,5.7,darkWood);for(const z of [2,4.5,7])pole(x,-.6,z,.11,1.8,darkWood);}
-  // Small open shelter to one side, leaving the view ahead completely open.
-  for(const x of [-5.1,-2.6])for(const z of [4.2,6.6])box(x,1.52,z,.12,2.55,.12,enamel);
-  box(-3.85,2.85,5.4,3.2,.15,3.2,roof,.04);
-  box(-3.85,2.69,4.0,2.9,.16,.11,darkWood);box(-3.85,2.69,6.8,2.9,.16,.11,darkWood);
-  for(let i=0;i<4;i++)box(-3.8,.66,5.7+i*.14,2,.1,.12,wood);
-  for(let i=0;i<3;i++)box(-3.8,1.0+i*.15,6.22,2,.12,.08,wood);
-  for(const x of [-4.5,-3.1]){box(x,.41,5.95,.12,.5,.6,enamel);box(x,.88,6.24,.07,1.02,.07,enamel);}
-  sign(['THE QUIET LINE','No last train. No hurry.'],-3.85,2.16,4.12,2.0,.8);
-  // Enamel station marker: a human-size scale cue against a kilometer-wide world.
-  pole(-4.8,1.25,1.9,.035,2.2,enamel);sign(['SUMMER SEA','Stay as long as you like'],-4.8,2.1,2.0,1.45,.54);
+  createStation(scene);
   for(const x of [-.72,.72]){
     box(x,-.015,-570,.07,.12,1160,metal);
     box(x,-.08,-570,.14,.035,1160,darkWood);

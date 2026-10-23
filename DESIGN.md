@@ -129,7 +129,7 @@ Bright sky and turquoise water own the image; warm paper and dark sea-blue give 
 - **Enamel Panel / Enamel Active** provide the translucent exploration toolbar and its hovered or pressed controls.
 
 ### Secondary
-- **Weathered Timber**, **Station Enamel**, **Station Brass**, and **Rail Metal** belong to physical station and railway materials. Their rendered appearance changes under the scene lighting.
+- **Weathered Timber**, **Station Enamel**, **Station Brass**, and **Rail Metal** remain the world-material palette for the traveling deck, railway, signal posts, and distant structures. The rebuilt station has a warmer local palette, described under Storybook station below. Their rendered appearance changes under the scene lighting.
 - **Amber Focus** marks keyboard focus and text selection. **Primary Hover** gently warms the paper action on hover.
 
 ### Neutral
@@ -162,7 +162,9 @@ Immersive WebXR hides the masthead, welcome, toolbar, and settings DOM overlays.
 
 ## Elevation & Depth
 
-Depth comes primarily from the world: converging submerged rails, real station geometry, shallow-water transparency, reflected clouds, low distant islands, and atmospheric fog. Water blends toward sky color at distance. Small props are rough and weathered; the brass and rails have modest metalness. The bell alone uses translucent glass-like material. The painted sky stays direction-based and does not introduce nearby parallax.
+Depth comes primarily from the world: converging submerged rails, real station geometry, shallow-water transparency, reflected clouds, low distant islands, and atmospheric fog. Water blends toward sky color at distance. Small props are rough and weathered; the railway and traveling-deck metals have modest metalness. The station uses matte, lightly emissive materials with per-piece color variation to soften the lighting. The bell alone uses translucent glass-like material. The painted sky stays direction-based and does not introduce nearby parallax.
+
+The station's shelter, bench, and selected plant pots sit over soft radial contact washes. These are transparent planes sharing one procedural texture, with depth writing disabled; they ground the objects without real-time shadow maps. They are fixed visual shading, not a dynamic lighting simulation or evidence of measured stereo performance.
 
 DOM surfaces use soft, blue-tinted ambient shadows: primary action (`0 7px 24px #06334b25`), exploration toolbar (`0 6px 24px #08354a22`), and settings panel (`0 16px 65px #163d5240`). Text shadows support legibility over the image. The welcome gradient supplies contrast without an opaque content card.
 
@@ -170,9 +172,17 @@ Motion is slow and environmental: water shimmer, birds, and a hanging wind bell.
 
 ## Shapes
 
-Physical forms are simple timber boards, rails, posts, a shelter, and a small traveling deck. The horizon remains unobstructed by oversized structures. The screen UI uses lightly eased rectangles for actions, toolbar, and settings, while the settings icon is circular. Thin line icons have rounded caps and joins. Use the small radii in frontmatter rather than introducing oversized capsules or decorative containers.
+Physical forms retain human scale, with softened edges and small signs of wear. The station platform uses staggered board ends, rounded edges, and old nail heads. Its open-sided gabled shelter pairs braced posts with a gently curved roof profile, lifted eaves, overlapping rounded terracotta tiles, and cylindrical ridge caps. A slatted bench, luggage, rounded clay pots, and a watering can make it feel inhabited. These details stay clustered at the station, leaving the horizon and the view along the rails open. The screen UI uses lightly eased rectangles for actions, toolbar, and settings, while the settings icon is circular. Thin line icons have rounded caps and joins. Use the small radii in frontmatter rather than introducing oversized capsules or decorative containers.
 
 ## Components
+
+### Storybook station
+
+The small platform is a warm, worn place to arrive in the immense blue world. `src/station.js` builds its geometry and is integrated through `createStation(scene)` in `src/world.js`. The shelter stays open on all sides; cream braces and trim surround faded teal posts with small exposed-timber patches. The bench faces into the platform and carries a leather suitcase with straps, handle, and brass latch, plus a knotted cloth parcel. Three clay plant pots, leafy stems, small yellow flowers, and a teal watering can suggest everyday care.
+
+The station's component-local material bases are warm timber (`#bc956c`), faded teal (`#527f77`), cream trim (`#e2d7b5`), terracotta tiles (`#ae634b`), dark worn details (`#574b3d`), brass accents (`#af8d4c`), clay pots (`#b66e51`), foliage (`#5d8050`), yellow flowers (`#e6bc68`), leather (`#9a6549`), and cloth (`#7b9993`). These extend the physical scene without changing the screen UI palette. A shared procedural grain texture provides long uneven strokes, pale washes, and knots; tinted pieces vary subtly in brightness. The main station materials use full roughness (1), vertex colors, and a small matching emissive contribution (.09), including the brass-colored accents.
+
+The two station signs use cream canvas textures with pigment variation, green framing, Georgia lettering, and small fixing marks. Separate outward-facing planes keep the text readable from either direction. Geometry for stationary boards, tiles, foliage, and props is merged by material; sign faces/backings and contact-wash planes remain separate. These choices limit per-detail draw calls, but actual Quest frame rate and comfort still require hardware testing.
 
 ### Arrival actions
 
