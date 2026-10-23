@@ -166,6 +166,8 @@ Depth comes primarily from the world: converging submerged rails, real station g
 
 The station's shelter, bench, and selected plant pots sit over soft radial contact washes. These are transparent planes sharing one procedural texture, with depth writing disabled; they ground the objects without real-time shadow maps. They are fixed visual shading, not a dynamic lighting simulation or evidence of measured stereo performance.
 
+The sky uses the clearer-painted `summer-sky-detailed.png` revision with restrained, local-range-clamped edge contrast during magnification. The original panorama remains the reflection source so the sea keeps its softer appearance. Both panoramas are 1774 × 887; this treatment improves apparent crispness without adding native pixel resolution. Preserve mip filtering and the wrap-safe sampling that prevents a dashed longitude seam. Fine angular detail and actual headset clarity remain limited by the asset and device.
+
 DOM surfaces use soft, blue-tinted ambient shadows: primary action (`0 7px 24px #06334b25`), exploration toolbar (`0 6px 24px #08354a22`), and settings panel (`0 16px 65px #163d5240`). Text shadows support legibility over the image. The welcome gradient supplies contrast without an opaque content card.
 
 Motion is slow and environmental: water shimmer, birds, and a hanging wind bell. The loading indicator breathes over (1.8s); loading fades over (.8s), notices over (.3s), and the DOM travel fade over (.15s). Reduced-motion preference disables CSS animation/transitions and initializes quiet water; birds and bell still animate in the current implementation. Do not describe this as a total world-motion pause.

@@ -13,7 +13,9 @@ function woodTexture(){
 export async function createWorld(scene, renderer){
   const texture=await new THREE.TextureLoader().loadAsync(`${import.meta.env.BASE_URL}assets/summer-sky.png`);
   texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=THREE.RepeatWrapping;texture.minFilter=THREE.LinearMipmapLinearFilter;texture.anisotropy=Math.min(4,renderer.capabilities.getMaxAnisotropy());
-  const sky=new THREE.Mesh(new THREE.SphereGeometry(1,48,24),new THREE.ShaderMaterial({uniforms:{skyMap:{value:texture}},vertexShader:skyVertex,fragmentShader:skyFragment,side:THREE.BackSide,depthWrite:false,depthTest:false}));
+  const detailedSky=await new THREE.TextureLoader().loadAsync(`${import.meta.env.BASE_URL}assets/summer-sky-detailed.png`);
+  detailedSky.colorSpace=THREE.SRGBColorSpace;detailedSky.wrapS=THREE.RepeatWrapping;detailedSky.minFilter=THREE.LinearMipmapLinearFilter;detailedSky.anisotropy=texture.anisotropy;
+  const sky=new THREE.Mesh(new THREE.SphereGeometry(1,48,24),new THREE.ShaderMaterial({defines:{SHARP_SKY:1},uniforms:{skyMap:{value:detailedSky},skyTexel:{value:new THREE.Vector2(1/detailedSky.image.width,1/detailedSky.image.height)}},vertexShader:skyVertex,fragmentShader:skyFragment,side:THREE.BackSide,depthWrite:false,depthTest:false}));
   sky.frustumCulled=false;sky.renderOrder=-10;scene.add(sky);
   const waterMaterial=new THREE.ShaderMaterial({uniforms:{skyMap:{value:texture},time:{value:0},calm:{value:1}},vertexShader:waterVertex,fragmentShader:waterFragment,transparent:true,depthWrite:false,side:THREE.FrontSide});
   const water=new THREE.Mesh(new THREE.PlaneGeometry(15000,15000),waterMaterial);water.rotation.x=-Math.PI/2;water.renderOrder=3;scene.add(water);

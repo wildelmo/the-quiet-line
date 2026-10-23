@@ -1,5 +1,8 @@
 export const skySampling = `
 const float PI = 3.14159265359;
+#ifdef SHARP_SKY
+uniform vec2 skyTexel;
+#endif
 vec3 skyColor(vec3 d) {
   d = normalize(d);
   float u = atan(d.z, d.x) / (2.0 * PI) + 0.5;
@@ -12,6 +15,20 @@ vec3 skyColor(vec3 d) {
   dx.x -= floor(dx.x + 0.5);
   dy.x -= floor(dy.x + 0.5);
   vec3 col = textureGrad(skyMap, uv, dx, dy).rgb;
+#ifdef SHARP_SKY
+  // Restore painted edge contrast lost when a panorama texel covers several
+  // screen pixels. Limit to the local color range to avoid bright/dark halos.
+  // Minified views retain normal mip filtering; water uses the original sample.
+  vec3 left = textureGrad(skyMap, uv - vec2(skyTexel.x, 0.0), dx, dy).rgb;
+  vec3 right = textureGrad(skyMap, uv + vec2(skyTexel.x, 0.0), dx, dy).rgb;
+  vec3 above = textureGrad(skyMap, uv + vec2(0.0, skyTexel.y), dx, dy).rgb;
+  vec3 below = textureGrad(skyMap, uv - vec2(0.0, skyTexel.y), dx, dy).rgb;
+  vec3 low = min(col, min(min(left, right), min(above, below)));
+  vec3 high = max(col, max(max(left, right), max(above, below)));
+  float footprint = max(length(dx / skyTexel), length(dy / skyTexel));
+  float detail = 0.65 * (1.0 - smoothstep(0.8, 1.5, footprint));
+  col = clamp(col + (col - (left + right + above + below) * 0.25) * detail, low, high);
+#endif
   return col;
 }
 `;
