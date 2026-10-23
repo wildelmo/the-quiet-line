@@ -1,0 +1,413 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-23T04:08:01.904Z",
+  "title": "Design System: The Quiet Line",
+  "extensions": {
+    "colorMeta": {
+      "sky": {
+        "role": "primary",
+        "displayName": "Summer Sky",
+        "tonalRamp": [
+          "oklch(15.00% 0.1204 230.76)",
+          "oklch(26.43% 0.1204 230.76)",
+          "oklch(37.86% 0.1204 230.76)",
+          "oklch(49.29% 0.1204 230.76)",
+          "oklch(60.71% 0.1204 230.76)",
+          "oklch(72.14% 0.1204 230.76)",
+          "oklch(83.57% 0.1204 230.76)",
+          "oklch(95.00% 0.1204 230.76)"
+        ]
+      },
+      "sea": {
+        "role": "primary",
+        "displayName": "Deep Sea",
+        "tonalRamp": [
+          "oklch(15.00% 0.0749 225.55)",
+          "oklch(26.43% 0.0749 225.55)",
+          "oklch(37.86% 0.0749 225.55)",
+          "oklch(49.29% 0.0749 225.55)",
+          "oklch(60.71% 0.0749 225.55)",
+          "oklch(72.14% 0.0749 225.55)",
+          "oklch(83.57% 0.0749 225.55)",
+          "oklch(95.00% 0.0749 225.55)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Sea Ink",
+        "tonalRamp": [
+          "oklch(15.00% 0.0490 223.03)",
+          "oklch(26.43% 0.0490 223.03)",
+          "oklch(37.86% 0.0490 223.03)",
+          "oklch(49.29% 0.0490 223.03)",
+          "oklch(60.71% 0.0490 223.03)",
+          "oklch(72.14% 0.0490 223.03)",
+          "oklch(83.57% 0.0490 223.03)",
+          "oklch(95.00% 0.0490 223.03)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Warm Paper",
+        "tonalRamp": [
+          "oklch(15.00% 0.0232 90.75)",
+          "oklch(26.43% 0.0232 90.75)",
+          "oklch(37.86% 0.0232 90.75)",
+          "oklch(49.29% 0.0232 90.75)",
+          "oklch(60.71% 0.0232 90.75)",
+          "oklch(72.14% 0.0232 90.75)",
+          "oklch(83.57% 0.0232 90.75)",
+          "oklch(95.00% 0.0232 90.75)"
+        ]
+      },
+      "focus": {
+        "role": "secondary",
+        "displayName": "Amber Focus",
+        "tonalRamp": [
+          "oklch(15.00% 0.1192 80.21)",
+          "oklch(26.43% 0.1192 80.21)",
+          "oklch(37.86% 0.1192 80.21)",
+          "oklch(49.29% 0.1192 80.21)",
+          "oklch(60.71% 0.1192 80.21)",
+          "oklch(72.14% 0.1192 80.21)",
+          "oklch(83.57% 0.1192 80.21)",
+          "oklch(95.00% 0.1192 80.21)"
+        ]
+      },
+      "primary-hover": {
+        "role": "secondary",
+        "displayName": "Primary Hover",
+        "tonalRamp": [
+          "oklch(15.00% 0.0699 85.27)",
+          "oklch(26.43% 0.0699 85.27)",
+          "oklch(37.86% 0.0699 85.27)",
+          "oklch(49.29% 0.0699 85.27)",
+          "oklch(60.71% 0.0699 85.27)",
+          "oklch(72.14% 0.0699 85.27)",
+          "oklch(83.57% 0.0699 85.27)",
+          "oklch(95.00% 0.0699 85.27)"
+        ]
+      },
+      "enamel-panel": {
+        "role": "primary",
+        "displayName": "Enamel Panel",
+        "tonalRamp": [
+          "oklch(15.00% 0.0561 227.16)",
+          "oklch(26.43% 0.0561 227.16)",
+          "oklch(37.86% 0.0561 227.16)",
+          "oklch(49.29% 0.0561 227.16)",
+          "oklch(60.71% 0.0561 227.16)",
+          "oklch(72.14% 0.0561 227.16)",
+          "oklch(83.57% 0.0561 227.16)",
+          "oklch(95.00% 0.0561 227.16)"
+        ]
+      },
+      "enamel-active": {
+        "role": "primary",
+        "displayName": "Enamel Active",
+        "tonalRamp": [
+          "oklch(15.00% 0.0651 220.24)",
+          "oklch(26.43% 0.0651 220.24)",
+          "oklch(37.86% 0.0651 220.24)",
+          "oklch(49.29% 0.0651 220.24)",
+          "oklch(60.71% 0.0651 220.24)",
+          "oklch(72.14% 0.0651 220.24)",
+          "oklch(83.57% 0.0651 220.24)",
+          "oklch(95.00% 0.0651 220.24)"
+        ]
+      },
+      "setting-divider": {
+        "role": "neutral",
+        "displayName": "Setting Divider",
+        "tonalRamp": [
+          "oklch(15.00% 0.0140 145.45)",
+          "oklch(26.43% 0.0140 145.45)",
+          "oklch(37.86% 0.0140 145.45)",
+          "oklch(49.29% 0.0140 145.45)",
+          "oklch(60.71% 0.0140 145.45)",
+          "oklch(72.14% 0.0140 145.45)",
+          "oklch(83.57% 0.0140 145.45)",
+          "oklch(95.00% 0.0140 145.45)"
+        ]
+      },
+      "field-border": {
+        "role": "neutral",
+        "displayName": "Field Border",
+        "tonalRamp": [
+          "oklch(15.00% 0.0306 204.73)",
+          "oklch(26.43% 0.0306 204.73)",
+          "oklch(37.86% 0.0306 204.73)",
+          "oklch(49.29% 0.0306 204.73)",
+          "oklch(60.71% 0.0306 204.73)",
+          "oklch(72.14% 0.0306 204.73)",
+          "oklch(83.57% 0.0306 204.73)",
+          "oklch(95.00% 0.0306 204.73)"
+        ]
+      },
+      "secondary-ink": {
+        "role": "neutral",
+        "displayName": "Secondary Ink",
+        "tonalRamp": [
+          "oklch(15.00% 0.0467 218.21)",
+          "oklch(26.43% 0.0467 218.21)",
+          "oklch(37.86% 0.0467 218.21)",
+          "oklch(49.29% 0.0467 218.21)",
+          "oklch(60.71% 0.0467 218.21)",
+          "oklch(72.14% 0.0467 218.21)",
+          "oklch(83.57% 0.0467 218.21)",
+          "oklch(95.00% 0.0467 218.21)"
+        ]
+      },
+      "loading-mist": {
+        "role": "neutral",
+        "displayName": "Loading Mist",
+        "tonalRamp": [
+          "oklch(15.00% 0.0174 219.66)",
+          "oklch(26.43% 0.0174 219.66)",
+          "oklch(37.86% 0.0174 219.66)",
+          "oklch(49.29% 0.0174 219.66)",
+          "oklch(60.71% 0.0174 219.66)",
+          "oklch(72.14% 0.0174 219.66)",
+          "oklch(83.57% 0.0174 219.66)",
+          "oklch(95.00% 0.0174 219.66)"
+        ]
+      },
+      "weathered-timber": {
+        "role": "secondary",
+        "displayName": "Weathered Timber",
+        "tonalRamp": [
+          "oklch(15.00% 0.0499 79.43)",
+          "oklch(26.43% 0.0499 79.43)",
+          "oklch(37.86% 0.0499 79.43)",
+          "oklch(49.29% 0.0499 79.43)",
+          "oklch(60.71% 0.0499 79.43)",
+          "oklch(72.14% 0.0499 79.43)",
+          "oklch(83.57% 0.0499 79.43)",
+          "oklch(95.00% 0.0499 79.43)"
+        ]
+      },
+      "station-enamel": {
+        "role": "secondary",
+        "displayName": "Station Enamel",
+        "tonalRamp": [
+          "oklch(15.00% 0.0507 192.13)",
+          "oklch(26.43% 0.0507 192.13)",
+          "oklch(37.86% 0.0507 192.13)",
+          "oklch(49.29% 0.0507 192.13)",
+          "oklch(60.71% 0.0507 192.13)",
+          "oklch(72.14% 0.0507 192.13)",
+          "oklch(83.57% 0.0507 192.13)",
+          "oklch(95.00% 0.0507 192.13)"
+        ]
+      },
+      "station-brass": {
+        "role": "secondary",
+        "displayName": "Station Brass",
+        "tonalRamp": [
+          "oklch(15.00% 0.0625 86.27)",
+          "oklch(26.43% 0.0625 86.27)",
+          "oklch(37.86% 0.0625 86.27)",
+          "oklch(49.29% 0.0625 86.27)",
+          "oklch(60.71% 0.0625 86.27)",
+          "oklch(72.14% 0.0625 86.27)",
+          "oklch(83.57% 0.0625 86.27)",
+          "oklch(95.00% 0.0625 86.27)"
+        ]
+      },
+      "rail-metal": {
+        "role": "secondary",
+        "displayName": "Rail Metal",
+        "tonalRamp": [
+          "oklch(15.00% 0.0242 175.59)",
+          "oklch(26.43% 0.0242 175.59)",
+          "oklch(37.86% 0.0242 175.59)",
+          "oklch(49.29% 0.0242 175.59)",
+          "oklch(60.71% 0.0242 175.59)",
+          "oklch(72.14% 0.0242 175.59)",
+          "oklch(83.57% 0.0242 175.59)",
+          "oklch(95.00% 0.0242 175.59)"
+        ]
+      },
+      "distance-mist": {
+        "role": "neutral",
+        "displayName": "Distance Mist",
+        "tonalRamp": [
+          "oklch(15.00% 0.0495 210.89)",
+          "oklch(26.43% 0.0495 210.89)",
+          "oklch(37.86% 0.0495 210.89)",
+          "oklch(49.29% 0.0495 210.89)",
+          "oklch(60.71% 0.0495 210.89)",
+          "oklch(72.14% 0.0495 210.89)",
+          "oklch(83.57% 0.0495 210.89)",
+          "oklch(95.00% 0.0495 210.89)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Story display",
+        "purpose": "Bundled Alegreya regular, aliased QuietStory; welcome invitation."
+      },
+      "title": {
+        "displayName": "Story title",
+        "purpose": "Settings panel heading."
+      },
+      "body": {
+        "displayName": "Invitation prose",
+        "purpose": "Segoe UI explanatory welcome copy."
+      },
+      "panel-body": {
+        "displayName": "Settings prose",
+        "purpose": "Instructions in the paper panel."
+      },
+      "label": {
+        "displayName": "Control labels",
+        "purpose": "Compact toolbar and utility labels."
+      },
+      "action": {
+        "displayName": "Action emphasis",
+        "purpose": "Semibold entry actions."
+      }
+    },
+    "shadows": [
+      {
+        "name": "primary-action",
+        "value": "0 7px 24px #06334b25",
+        "purpose": "Soft ambient depth beneath the paper action."
+      },
+      {
+        "name": "toolbar",
+        "value": "0 6px 24px #08354a22",
+        "purpose": "Separate the enamel toolbar from the ocean."
+      },
+      {
+        "name": "settings-panel",
+        "value": "0 16px 65px #163d5240",
+        "purpose": "Float the paper panel above the world."
+      }
+    ],
+    "motion": [
+      {
+        "name": "loading-breathe",
+        "value": "1.8s ease-in-out infinite",
+        "purpose": "Loading line scale/opacity pulse; removed under reduced motion."
+      },
+      {
+        "name": "loading-fade",
+        "value": "opacity .8s",
+        "purpose": "Reveal the rendered world."
+      },
+      {
+        "name": "notice-fade",
+        "value": "opacity .3s",
+        "purpose": "Temporary status message visibility."
+      },
+      {
+        "name": "travel-fade",
+        "value": "opacity .15s",
+        "purpose": "DOM travel transition; the XR fade is a camera-centered sphere."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation: none !important; transition: none !important",
+        "purpose": "CSS motion is removed and quiet water initializes on; birds and bell still animate."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "mobile",
+        "value": "(max-width: 650px)"
+      },
+      {
+        "name": "short-desktop",
+        "value": "(max-height: 590px) and (min-width: 651px)"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Arrival primary action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The warm-paper headset entry action; its disabled state signals unavailable VR.",
+      "html": "<button class=\"ds-primary\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 7h14l2 10h-6l-3-3-3 3H3L5 7Z M7 11h2m6 0h2\"/></svg>Step inside in VR</button>",
+      "css": ".ds-primary{font:600 16px \"Segoe UI\",sans-serif;width:100%;min-height:58px;border:0;border-radius:4px;color:var(--ink,#173e4b);background:var(--paper,#fff9e8);display:flex;gap:12px;justify-content:center;align-items:center;box-shadow:0 7px 24px #06334b25;cursor:pointer}.ds-primary svg{width:24px;stroke:currentColor;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round}.ds-primary:hover:not(:disabled){background:#f4dcaa}.ds-primary:disabled{opacity:.7;cursor:default}.ds-primary:focus-visible{outline:3px solid var(--focus,#edbc65);outline-offset:5px}@media(max-width:650px){.ds-primary{min-height:52px}}"
+    },
+    {
+      "name": "Screen exploration text action",
+      "kind": "button",
+      "refersTo": "button-text",
+      "description": "The unboxed screen-exploration action shown against the sea.",
+      "html": "<div class=\"ds-text-context\"><button class=\"ds-text\">Explore on this screen <span aria-hidden=\"true\">↗</span></button></div>",
+      "css": ".ds-text-context{background:#145970;color:#fff9e8;padding:4px 16px}.ds-text{font:600 16px \"Segoe UI\",sans-serif;color:inherit;background:none;border:0;padding:15px 0;text-underline-offset:6px;cursor:pointer}.ds-text span{margin-left:12px}.ds-text:hover{text-decoration:underline}.ds-text:focus-visible{outline:3px solid var(--focus,#edbc65);outline-offset:5px}"
+    },
+    {
+      "name": "Settings icon action",
+      "kind": "button",
+      "refersTo": "button-icon",
+      "description": "A circular enamel control with a thin line icon.",
+      "html": "<button class=\"ds-icon\" aria-label=\"Open controls and settings\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 7h16M4 17h16M9 4v6M15 14v6\"/></svg></button>",
+      "css": ".ds-icon{width:44px;height:44px;border:1px solid #ffffff66;color:var(--paper,#fff9e8);background:#174956b8;border-radius:50%;display:grid;place-items:center;cursor:pointer}.ds-icon svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round}.ds-icon:hover{background:var(--ink,#173e4b)}.ds-icon:focus-visible{outline:3px solid var(--focus,#edbc65);outline-offset:5px}"
+    },
+    {
+      "name": "Exploration toolbar",
+      "kind": "nav",
+      "refersTo": "toolbar",
+      "description": "A compact enamel group with explicit hover and pressed states.",
+      "html": "<div class=\"ds-tools\" role=\"group\" aria-label=\"Exploration controls\"><button aria-pressed=\"false\">Begin drifting</button><button>Next viewpoint</button><button aria-pressed=\"true\">Sound on</button><button>Return</button></div>",
+      "css": ".ds-tools{display:flex;width:max-content;max-width:100%;border-radius:6px;background:#123f50ed;box-shadow:0 6px 24px #08354a22;padding:5px}.ds-tools button{font:13px \"Segoe UI\",sans-serif;background:none;border:0;color:var(--paper,#fff9e8);padding:12px 18px;min-height:44px;border-radius:3px;cursor:pointer}.ds-tools button:hover,.ds-tools button[aria-pressed=true]{background:#2d6677}.ds-tools button:focus-visible{outline:3px solid var(--focus,#edbc65);outline-offset:5px}@media(max-width:650px){.ds-tools button{font-size:12px;padding:10px 11px}}"
+    },
+    {
+      "name": "Settings paper panel",
+      "kind": "card",
+      "refersTo": "settings-panel",
+      "description": "The compact settings surface with native range and checkbox controls.",
+      "html": "<section class=\"ds-settings\" aria-label=\"Settings\"><h2>Settle in.</h2><p>This is a place to be, with no destination to reach.</p><label class=\"ds-setting\">Sound <input aria-label=\"Sound volume\" type=\"range\" min=\"0\" max=\"100\" value=\"55\"></label><label class=\"ds-setting\">Quiet water <input type=\"checkbox\"></label></section>",
+      "css": ".ds-settings{font:14px \"Segoe UI\",sans-serif;background:var(--paper,#fff9e8);color:var(--ink,#173e4b);padding:26px 28px;border-radius:5px;box-shadow:0 16px 65px #163d5240;width:360px;max-width:100%}.ds-settings h2{font:400 34px QuietStory,Georgia,serif;margin:0}.ds-settings p{line-height:1.6;margin:6px 0 25px}.ds-setting{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #c9d1c9;padding:16px 0;gap:16px}.ds-setting input[type=range]{width:145px;accent-color:var(--sea,#145970)}.ds-setting input[type=checkbox]{accent-color:var(--sea,#145970);width:20px;height:20px}.ds-setting input:focus-visible{outline:3px solid var(--focus,#edbc65);outline-offset:5px}"
+    },
+    {
+      "name": "Detail select",
+      "kind": "input",
+      "refersTo": "select",
+      "description": "A native select with restrained framing on the paper surface.",
+      "html": "<label class=\"ds-select-row\">Detail <select class=\"ds-select\"><option>Balanced · Quest</option><option>High · desktop</option></select></label>",
+      "css": ".ds-select-row{font:14px \"Segoe UI\",sans-serif;display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--paper,#fff9e8);color:var(--ink,#173e4b);padding:16px}.ds-select{font:13px \"Segoe UI\",sans-serif;max-width:170px;padding:7px;border:1px solid #809b9e;border-radius:3px;background:transparent;color:var(--ink,#173e4b)}.ds-select:focus-visible{outline:3px solid var(--focus,#edbc65);outline-offset:5px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "A tiny station in a vast painted ocean",
+    "overview": "The supplied ocean storyboard is the visual authority. Brilliant summer blue, towering ivory clouds, reflected sky, and submerged rails make the world feel expansive. The little station supplies human scale without enclosing the view. The interface is sparse and welcoming, with illustrated-story lettering and small practical controls.\n\nThe environment fills the viewport. Nearby structures are real geometry; the painted sky is the distant backdrop. The welcome overlay recedes when exploration begins, and immersive sessions use a physical ticket-like menu inside the world. Movement begins only through an explicit action; the horizon remains stable during travel.",
+    "keyCharacteristics": [
+      "A huge bright-blue space with a clear, distant horizon.",
+      "Painted clouds reflected in translucent, gently animated water.",
+      "Warm paper, weathered timber, and subdued enamel at human scale.",
+      "Literary display type paired with quiet, legible controls.",
+      "Sparse screen overlays and native in-world controls for immersion."
+    ],
+    "rules": [
+      {
+        "name": "The Open Blue Rule",
+        "body": "Preserve the broad blue sky and water as the dominant visual field; interface surfaces stay compact.",
+        "section": "colors"
+      },
+      {
+        "name": "The Quiet Lettering Rule",
+        "body": "Use the bundled regular story face for invitations and titles; use the interface sans-serif for actions and instructions.",
+        "section": "typography"
+      }
+    ],
+    "dos": [
+      "**Do** preserve the large bright-blue field, reflected clouds, stable horizon, and human-scale station.",
+      "**Do** keep welcome typography literary and operating controls plain and legible.",
+      "**Do** retain clear keyboard focus and native form semantics.",
+      "**Do** keep movement opt-in and provide reachable controls inside immersive sessions.",
+      "**Do** ship the sky, font, and provenance with the application."
+    ],
+    "donts": [
+      "**Don't** cover the world with large opaque content panels or decorative card grids.",
+      "**Don't** substitute DOM-only controls for the in-world VR ticket.",
+      "**Don't** treat reduced motion as a promise that every animated world object stops.",
+      "**Don't** claim headset validation from desktop screenshots or implementation settings."
+    ]
+  }
+}

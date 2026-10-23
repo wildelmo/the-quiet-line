@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#116b91" />
+  <meta name="description" content="A small station. An endless summer sea. Step into a quiet, painted world in your browser or Meta Quest." />
+  <title>The Quiet Line — an ocean to get lost in</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23116b91'/%3E%3Cpath d='M23 12 13 53M41 12l10 41M20 25h24M16 39h32' fill='none' stroke='%23fff8e4' stroke-width='4'/%3E%3C/svg%3E" />
+</head>
+<body>
+  <main id="app">
+    <canvas id="world" aria-label="Interactive ocean world. Drag to look around; use the controls to travel." tabindex="0"></canvas>
+    <div id="loading" role="status"><span class="loading-line"></span><p>Somewhere, beyond the shore.</p><small>Painting the sky…</small></div>
+    <header class="masthead">
+      <a class="wordmark" href="./" aria-label="The Quiet Line home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="m12 5-7 23M20 5l7 23M9 13h14M7 21h18"/></svg><span>The Quiet Line</span></a>
+      <button id="help-toggle" class="icon-button" aria-label="Open controls and settings" aria-expanded="false" aria-controls="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16M9 4v6M15 14v6"/></svg></button>
+    </header>
+    <section id="intro" aria-labelledby="title">
+      <div class="invitation"><h1 id="title">An ocean.<br>A sky.<br>Nothing to hurry.</h1><p>Follow the tracks into an endless summer.<br>Stay a little longer than you meant to.</p></div>
+      <div class="arrival"><button id="enter-vr" class="primary" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l2 10h-6l-3-3-3 3H3L5 7Z"/><path d="M7 11h2m6 0h2"/></svg><span>Checking for a headset…</span></button><button id="explore" class="text-button">Explore on this screen <span aria-hidden="true">↗</span></button><p id="xr-note">Made for Meta Quest · Headphones welcome</p></div>
+    </section>
+    <div id="toolbar" hidden>
+      <div class="place"><span class="place-dot"></span><span id="place-name">The little station</span></div>
+      <div class="tools"><button id="journey" aria-pressed="false">Begin drifting</button><button id="viewpoint">Next viewpoint</button><button id="sound" aria-pressed="true" aria-label="Mute sound">Sound on</button><button id="home" aria-label="Return to the little station">Return</button></div>
+      <p class="hint">Drag to look · Space to drift · H for controls</p>
+    </div>
+    <aside id="settings" hidden aria-labelledby="settings-title">
+      <div class="panel-heading"><h2 id="settings-title">Settle in.</h2><button id="close-settings" class="icon-button" aria-label="Close controls"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+      <p>This is a place to be, with no destination to reach.</p>
+      <label class="setting" for="volume">Sound <input id="volume" type="range" min="0" max="100" value="55" /></label>
+      <label class="setting" for="quality">Detail <select id="quality"><option value="balanced">Balanced · Quest</option><option value="high">High · desktop</option></select></label>
+      <label class="setting" for="still-water">Quiet water <input id="still-water" type="checkbox" /></label>
+      <div class="instructions"><h3>In your headset</h3><p>Point a controller at the brass ticket below you, then press the trigger. Squeeze either grip to bring the ticket in front of you.</p><p>Right stick: snap turn. Left stick forward: point at the water and release to move there. Travel always starts with you.</p><h3>On this screen</h3><p>Drag to look. Arrow keys to turn. Space to start or stop drifting. V changes viewpoint. R returns home. M mutes. Escape closes these controls.</p></div>
+      <button id="return-intro" class="text-button">Back to the welcome screen</button>
+    </aside>
+    <p id="notice" role="status" aria-live="polite"></p>
+    <div id="fade" aria-hidden="true"></div>
+    <div id="fatal" hidden role="alert"><h2>The world couldn’t open.</h2><p id="fatal-message"></p><button onclick="location.reload()">Try again</button></div>
+    <noscript>This experience needs JavaScript and WebGL. Please enable JavaScript to visit The Quiet Line.</noscript>
+  </main>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
