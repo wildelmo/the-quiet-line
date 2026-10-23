@@ -14,7 +14,7 @@ The owner will explore on a Meta Quest headset later. Desktop preview supports d
 An immersive, contemplative world closely matching the supplied Dreamy Ocean Sky Storyboard.png: bright painted clouds, expansive reflective ocean, submerged railway.
 
 ## Capabilities and Constraints
-User explicitly delegated sounds, movement, feel, assets, and design decisions. Build locally now; publishing and GitHub are deferred. Preserve the reference. No account or backend required. Headset performance must be measured on hardware; do not claim verification without it.
+User explicitly delegated sounds, movement, feel, assets, and design decisions, then authorized a public GitHub repository and GitHub Actions/Pages deployment. Preserve the reference. No account or backend required. Headset performance must be measured on hardware; do not claim verification without it.
 
 ## Brand Commitments
 The supplied storyboard is the visual authority. Project name and narrative are creative decisions delegated to the builder.

@@ -2,6 +2,8 @@
 
 A tiny station in an immense painted summer sea. A local, static WebXR experience for Meta Quest, with an interactive desktop and mobile preview.
 
+**[Enter The Quiet Line](https://wildelmo.github.io/the-quiet-line/)** · [Build and deployment](https://github.com/wildelmo/the-quiet-line/actions/workflows/pages.yml)
+
 ![The Quiet Line: a painted sky above an immense summer sea](output/quiet-line-preview.png)
 
 ## Run
@@ -21,11 +23,15 @@ npm run build
 npm run preview
 ```
 
-`dist/` is the complete deployable site. Relative asset URLs support a future GitHub Pages project subdirectory. Source repository: [wildelmo/the-quiet-line](https://github.com/wildelmo/the-quiet-line). Hosting is not enabled yet. There is no backend, analytics, or account requirement.
+`dist/` is the complete deployable site. Relative asset URLs support the GitHub Pages project subdirectory. Public source repository: [wildelmo/the-quiet-line](https://github.com/wildelmo/the-quiet-line). There is no backend, analytics, or account requirement.
+
+## Automatic deployment
+
+The `pages.yml` GitHub Actions workflow runs all tests and builds the site on pushes and pull requests to `main`. Successful pushes to `main` deploy `dist/` to GitHub Pages over HTTPS. Pull requests only test and build; they cannot deploy. You can also run the workflow manually from the Actions tab. Official GitHub actions are pinned to release commits, and only the deploy job receives Pages write permission.
 
 ## Quest launch
 
-Open the eventual **HTTPS** site directly in Meta Quest Browser and select **Step inside in VR**. Allow the browser's immersive session prompt. All runtime assets and sounds are local; after the site is loaded it makes no third-party asset requests.
+Open **https://wildelmo.github.io/the-quiet-line/** directly in Meta Quest Browser and select **Step inside in VR**. Allow the browser's immersive session prompt. All runtime assets and sounds are local; after the site is loaded it makes no third-party asset requests.
 
 For local headset development before hosting, use Meta's USB/ADB port forwarding (`adb reverse tcp:5173 tcp:5173`) and visit `http://localhost:5173` in the headset. This requires an already configured developer headset and USB debugging authorization. A plain LAN URL such as `http://192.168.x.x:5173` supports the flat preview but is not a secure context for immersive WebXR. A trusted HTTPS development host is another option. Do not bypass certificate warnings.
 
