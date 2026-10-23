@@ -1,6 +1,7 @@
 export class Soundscape {
-  constructor(){this.context=null;this.volume=.55;this.muted=false;this.running=false;this.nextNote=0;this.nextBird=0;this.travel=0;}
+  constructor(){this.context=null;this.volume=.55;this.muted=false;this.running=false;this.closed=false;this.nextNote=0;this.nextBird=0;this.travel=0;}
   async start(){
+    if(this.closed)return;
     if(!this.context){
       const Audio=window.AudioContext||window.webkitAudioContext;
       if(!Audio)return;
@@ -15,9 +16,9 @@ export class Soundscape {
       const windFilter=c.createBiquadFilter();windFilter.type='bandpass';windFilter.frequency.value=1100;windFilter.Q.value=.4;
       const windGain=c.createGain();windGain.gain.value=.13;this.wind.connect(windFilter).connect(windGain).connect(this.master);this.wind.start();
     }
-    await this.context.resume();this.running=true;this.applyVolume();
+    await this.context.resume();if(this.closed)return;this.running=true;this.applyVolume();
   }
-  applyVolume(){if(this.context)this.master.gain.setTargetAtTime(this.muted?0:this.volume*.65,this.context.currentTime,.35);}
+  applyVolume(){if(this.context&&!this.closed)this.master.gain.setTargetAtTime(this.muted?0:this.volume*.65,this.context.currentTime,.35);}
   setVolume(v){this.volume=v;this.applyVolume();}
   toggle(){this.muted=!this.muted;this.applyVolume();return !this.muted;}
   chime(frequency=660,pan=0,level=.13){
@@ -44,5 +45,13 @@ export class Soundscape {
     if(time>this.nextBird){this.bird();this.nextBird=time+24+Math.random()*28;}
     if(speed>.2&&time>this.travel){this.chime(70,0,.025);this.travel=time+1.4/speed;}
   }
-  async suspend(){if(this.context)await this.context.suspend();}
+  async suspend(){if(this.context&&!this.closed)await this.context.suspend();}
+  async dispose(){
+    if(this.closed)return;this.closed=true;this.running=false;
+    if(!this.context)return;
+    this.master.gain.cancelScheduledValues(this.context.currentTime);
+    this.master.gain.setValueAtTime(0,this.context.currentTime);
+    this.master.disconnect();
+    if(this.context.state!=='closed')await this.context.close();
+  }
 }

@@ -192,7 +192,7 @@ The paper panel pairs a story-font title with native range, select, and checkbox
 
 ### In-world ticket
 
-The native WebXR menu is a brass-colored backing (0.94m × 0.66m × 0.018m) carrying dark panels with warm labels. Action panels are (0.84m × 0.085m); hovering by controller ray lightens their enamel. Its four actions are drift/pause, next viewpoint, sound, and return to station. Trigger selects; grip recalls it. These are Three.js geometry and canvas textures, not a DOM overlay.
+The native WebXR menu is a brass-colored backing (0.94m × 0.78m × 0.018m) carrying dark panels with warm labels. Action panels are (0.84m × 0.085m); hovering by controller ray lightens their enamel. Its five actions are drift/pause, next viewpoint, sound, return to station, and Exit experience. The exit action sits below a wider gap to separate leaving from travel. Trigger selects; grip recalls it. These are Three.js geometry and canvas textures, not a DOM overlay. The flat-screen masthead also keeps a clearly labeled Exit experience control beside settings, with equivalent exits in loading and error states.
 
 WebXR entry requires a secure context, available XR API, and supported immersive session. The implementation requests `immersive-vr`, uses a local-floor reference space, snap turning, and limited water-plane teleportation. Movement is opt-in and pauses when visibility is lost. Screen rendering caps pixel ratio at (1.5) for balanced and (2) for high detail; XR uses framebuffer scale (1) and requested foveation (1). These are code settings, not proof of headset comfort, performance, compatibility, or hardware verification. Validate those on a real headset before making such claims.
 

@@ -5,19 +5,32 @@ import { createVRMenu } from './vr-menu.js';
 import { Soundscape } from './audio.js';
 import { WAYPOINTS, ROUTE_END, smoothSpeed, advanceJourney, snapDirection, validTeleport } from './motion.js';
 import { readHeadPose, snapAroundHead, placeTicket } from './xr-pose.js';
+import { createExitAction } from './exit.js';
 
 const $=id=>document.getElementById(id);
 const canvas=$('world');
 const audio=new Soundscape();
 let renderer,scene,camera,rig,world,menu;
 let started=false,moving=false,speed=0,waypoint=0,yaw=0,pitch=-.055,transitioning=false,elapsed=0,lastTime=0;
-let noticeTimer,sessionStarting=false,needsMenuPlacement=false;
+let noticeTimer,sessionStarting=false,needsMenuPlacement=false,exiting=false;
 const keys=new Set(),controllers=[],snapLatches=new Map(),teleportLatches=new Map();
 const temp=new THREE.Vector3(),direction=new THREE.Vector3(),head=new THREE.Vector3();
 const trackingHead=new THREE.Matrix4().makeTranslation(0,1.65,0);
 const raycaster=new THREE.Raycaster(),rotation=new THREE.Matrix4(),waterPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
 const target=new THREE.Vector3();let teleportTarget=null;
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const exitExperience=createExitAction({
+  getSession:()=>renderer?.xr.getSession(),
+  stop:()=>{
+    exiting=true;started=false;moving=false;speed=0;keys.clear();clearTimeout(noticeTimer);
+    $('closing').hidden=false;
+    renderer?.setAnimationLoop(null);
+    void audio.dispose().catch(()=>{});
+  },
+  dispose:()=>renderer?.dispose(),
+  closePage:()=>window.close(),
+  leavePage:()=>window.location.replace('about:blank'),
+});
 
 function notice(text){$('notice').textContent=text;$('notice').classList.add('visible');clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$('notice').classList.remove('visible'),5500);}
 function failure(error){console.error(error);$('loading').hidden=true;$('fatal').hidden=false;$('fatal-message').textContent=error?.message||'Please try a browser with WebGL support.';}
@@ -26,7 +39,7 @@ function updateLabels(){
   $('sound').textContent=audio.muted?'Sound off':'Sound on';$('sound').setAttribute('aria-pressed',String(!audio.muted));$('sound').setAttribute('aria-label',audio.muted?'Enable sound':'Mute sound');
   menu?.update(moving,!audio.muted);
 }
-async function startAudio(){try{await audio.start();}catch{notice('Sound is unavailable. The world is still yours to explore.');}}
+async function startAudio(){if(exiting)return;try{await audio.start();}catch{if(!exiting)notice('Sound is unavailable. The world is still yours to explore.');}}
 function explore(){started=true;document.body.classList.add('exploring');$('intro').hidden=true;$('toolbar').hidden=false;startAudio();canvas.focus();}
 function toggleJourney(){
   if(transitioning)return;
@@ -41,6 +54,7 @@ function transitionTo(position,label,index){
   if(transitioning)return;transitioning=true;moving=false;speed=0;keys.clear();updateLabels();
   $('fade').style.opacity='1';fadeMaterial.opacity=1;
   setTimeout(()=>{
+    if(exiting)return;
     temp.set(position.x,position.y,position.z).sub(rig.position);
     menu.group.position.add(temp);
     rig.position.set(position.x,position.y,position.z);
@@ -68,11 +82,12 @@ function placeMenu(){
   placeTicket(menu.group,head,direction,rig.position.y);
 }
 async function enterVR(){
-  if(sessionStarting||renderer.xr.isPresenting)return;sessionStarting=true;$('enter-vr').disabled=true;
+  if(exiting||sessionStarting||renderer.xr.isPresenting)return;sessionStarting=true;$('enter-vr').disabled=true;
   let session;
   try{
     const pending=navigator.xr.requestSession('immersive-vr',{optionalFeatures:['local-floor','bounded-floor']});
     startAudio();session=await pending;
+    if(exiting){await session.end();return;}
     await renderer.xr.setSession(session);
   }catch(error){if(session)await session.end().catch(()=>{});notice(`VR could not start. ${error.name==='NotAllowedError'?'Allow immersive access in your headset and try again.':'Open this page directly in Quest Browser and try again.'}`);}
   finally{sessionStarting=false;$('enter-vr').disabled=false;}
@@ -87,8 +102,9 @@ async function init(){
   camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,.05,16000);camera.position.set(0,1.65,0);camera.rotation.order='YXZ';
   rig=new THREE.Group();rig.position.set(0,.32,4);rig.add(camera);scene.add(rig);
   world=await createWorld(scene,renderer);
+  if(exiting)return;
   world.waterMaterial.uniforms.calm.value=reducedMotion?0:1;$('still-water').checked=reducedMotion;
-  menu=createVRMenu({journey:toggleJourney,viewpoint:nextViewpoint,sound:toggleSound,home:returnHome});scene.add(menu.group);
+  menu=createVRMenu({journey:toggleJourney,viewpoint:nextViewpoint,sound:toggleSound,home:returnHome,exit:exitExperience});scene.add(menu.group);
   fadeMaterial=new THREE.MeshBasicMaterial({color:0x122c3d,transparent:true,opacity:0,side:THREE.BackSide,depthTest:false,depthWrite:false});
   const fadeSphere=new THREE.Mesh(new THREE.SphereGeometry(.15,16,12),fadeMaterial);fadeSphere.frustumCulled=false;fadeSphere.renderOrder=1000;scene.add(fadeSphere);
   const reticle=new THREE.Group();
@@ -100,7 +116,7 @@ async function init(){
     const controller=renderer.xr.getController(i);controller.userData.input=null;
     controller.addEventListener('connected',event=>{controller.userData.input=event.data;});
     controller.addEventListener('disconnected',()=>{controller.userData.input=null;teleportLatches.clear();teleportTarget=null;});
-    controller.addEventListener('selectstart',()=>{if(menu.group.visible){const hit=menu.hit(controller);if(hit){hit.object.userData.action();controller.userData.input?.gamepad?.hapticActuators?.[0]?.pulse(.2,35);}}});
+    controller.addEventListener('selectstart',()=>{if(!exiting&&menu.group.visible){const hit=menu.hit(controller);if(hit){hit.object.userData.action();controller.userData.input?.gamepad?.hapticActuators?.[0]?.pulse(.2,35);}}});
     controller.addEventListener('squeezestart',()=>{menu.group.visible=true;placeMenu();});
     const lineGeo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3(0,0,-1)]);
     const line=new THREE.Line(lineGeo,new THREE.LineBasicMaterial({color:0xfff3d6,transparent:true,opacity:.55}));line.scale.z=1.6;controller.add(line);controller.userData.line=line;
@@ -108,15 +124,19 @@ async function init(){
     const grip=renderer.xr.getControllerGrip(i);const body=new THREE.Mesh(controllerBodyGeometry,controllerBodyMaterial);body.rotation.x=-.3;grip.add(body);rig.add(grip);
   }
   renderer.xr.addEventListener('sessionstart',()=>{
+    if(exiting){void renderer.xr.getSession().end().catch(()=>{});return;}
     started=true;moving=false;speed=0;keys.clear();snapLatches.clear();teleportLatches.clear();document.body.classList.add('immersive','exploring');$('intro').hidden=true;$('toolbar').hidden=false;$('settings').hidden=true;
     menu.group.visible=true;needsMenuPlacement=true;updateLabels();
     renderer.xr.getSession().addEventListener('visibilitychange',()=>{if(renderer.xr.getSession()?.visibilityState!=='visible'){moving=false;speed=0;updateLabels();audio.suspend();}else startAudio();});
   });
   renderer.xr.addEventListener('sessionend',()=>{
+    if(exiting)return;
     document.body.classList.remove('immersive');menu.group.visible=false;moving=false;speed=0;reticle.visible=false;teleportTarget=null;keys.clear();camera.position.set(0,1.65,0);camera.rotation.set(pitch,yaw,0);camera.fov=72;camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();updateLabels();
   });
   await renderer.compileAsync(scene,camera);
+  if(exiting)return;
   renderer.setAnimationLoop((time,frame)=>{
+    if(exiting)return;
     const dt=Math.min((time-lastTime)/1000||.016,.05);lastTime=time;elapsed+=dt;
     if(!renderer.xr.isPresenting){
       if(started&&$('settings').hidden){if(keys.has('ArrowLeft'))yaw+=dt*.7;if(keys.has('ArrowRight'))yaw-=dt*.7;if(keys.has('ArrowUp'))pitch=Math.min(1.35,pitch+dt*.5);if(keys.has('ArrowDown'))pitch=Math.max(-1.35,pitch-dt*.5);}
@@ -167,6 +187,9 @@ async function init(){
 }
 
 $('explore').addEventListener('click',explore);$('enter-vr').addEventListener('click',enterVR);
+$('exit-experience').addEventListener('click',exitExperience);
+$('fatal-exit').addEventListener('click',exitExperience);
+$('loading-exit').addEventListener('click',exitExperience);
 $('journey').addEventListener('click',toggleJourney);$('viewpoint').addEventListener('click',nextViewpoint);$('sound').addEventListener('click',toggleSound);$('home').addEventListener('click',returnHome);
 $('help-toggle').addEventListener('click',()=>settings($('settings').hidden));$('close-settings').addEventListener('click',()=>settings(false));
 $('volume').addEventListener('input',e=>{audio.setVolume(Number(e.target.value)/100);});
@@ -178,6 +201,7 @@ canvas.addEventListener('pointerdown',e=>{if(!world)return;dragging=true;previou
 canvas.addEventListener('pointermove',e=>{if(!dragging||renderer.xr.isPresenting)return;yaw-=(e.clientX-previousX)*.003;pitch=THREE.MathUtils.clamp(pitch-(e.clientY-previousY)*.003,-1.35,1.35);previousX=e.clientX;previousY=e.clientY;});
 for(const event of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(event,()=>dragging=false);
 window.addEventListener('keydown',e=>{
+  if(exiting)return;
   const focusedTag=document.activeElement?.tagName;
   if(['INPUT','SELECT','TEXTAREA'].includes(focusedTag)&&e.code!=='Escape')return;
   if(['BUTTON','A'].includes(focusedTag)&&['Space','Enter'].includes(e.code))return;
@@ -187,7 +211,7 @@ window.addEventListener('keydown',e=>{
   if(e.code==='Space')toggleJourney();if(e.code==='KeyV')nextViewpoint();if(e.code==='KeyR')returnHome();if(e.code==='KeyM')toggleSound();if(e.code==='KeyH')settings($('settings').hidden);if(e.code==='Escape')settings(false);
 });
 window.addEventListener('keyup',e=>keys.delete(e.code));window.addEventListener('blur',()=>{keys.clear();dragging=false;});
-document.addEventListener('visibilitychange',()=>{if(document.hidden){keys.clear();moving=false;speed=0;updateLabels();audio.suspend();}else if(started)startAudio();});
+document.addEventListener('visibilitychange',()=>{if(exiting)return;if(document.hidden){keys.clear();moving=false;speed=0;updateLabels();audio.suspend();}else if(started)startAudio();});
 window.addEventListener('resize',()=>{if(!renderer)return;camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
 canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();renderer?.setAnimationLoop(null);audio.suspend();failure(new Error('The graphics connection was interrupted. Reload to return to the sea.'));});
 init().catch(failure);

@@ -41,6 +41,7 @@ Official references: [Meta WebXR overview](https://developers.meta.com/vr/docume
 
 - Start stationary at the little station, at real-world head height. Room-scale head tracking is preserved. No automatic bobbing, roll, or camera orbit.
 - Point either controller at the brass ticket panel and pull the trigger to drift, pause, change viewpoint, mute, or return. The ticket travels with you. Squeeze either grip to recall it into your current view.
+- **Exit experience** at the bottom of the VR ticket ends the immersive session, stops rendering, closes the audio context, and attempts to close the browser tab. The same control is available at the top of the flat-screen page, while loading, and if graphics fail. If the browser disallows closing a user-opened tab, the app replaces itself with `about:blank`, fully unloading the experience; only an empty browser tab remains. A stalled or rejected XR shutdown cannot block leaving. Browser restrictions are described in [MDN's window.close documentation](https://developer.mozilla.org/en-US/docs/Web/API/Window/close).
 - Right thumbstick left/right: 30-degree snap turn, once per stick deflection.
 - Hold the left thumbstick forward, point down at nearby water, and release to teleport to the ring. Teleports are limited to 35 meters and the railway corridor, with a brief blackout. A little observation deck appears beneath you.
 - The optional journey eases up to 1.35 m/s and stops immediately when paused. It ends at 1.1 km rather than wrapping or snapping the world.

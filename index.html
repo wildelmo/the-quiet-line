@@ -11,10 +11,10 @@
 <body>
   <main id="app">
     <canvas id="world" aria-label="Interactive ocean world. Drag to look around; use the controls to travel." tabindex="0"></canvas>
-    <div id="loading" role="status"><span class="loading-line"></span><p>Somewhere, beyond the shore.</p><small>Painting the sky…</small></div>
+    <div id="loading" role="status"><span class="loading-line"></span><p>Somewhere, beyond the shore.</p><small>Painting the sky…</small><button id="loading-exit" class="exit-button">Exit experience</button></div>
     <header class="masthead">
       <a class="wordmark" href="./" aria-label="The Quiet Line home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="m12 5-7 23M20 5l7 23M9 13h14M7 21h18"/></svg><span>The Quiet Line</span></a>
-      <button id="help-toggle" class="icon-button" aria-label="Open controls and settings" aria-expanded="false" aria-controls="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16M9 4v6M15 14v6"/></svg></button>
+      <div class="header-actions"><button id="exit-experience" class="exit-button" aria-label="Exit experience and close page">Exit experience</button><button id="help-toggle" class="icon-button" aria-label="Open controls and settings" aria-expanded="false" aria-controls="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16M9 4v6M15 14v6"/></svg></button></div>
     </header>
     <section id="intro" aria-labelledby="title">
       <div class="invitation"><h1 id="title">An ocean.<br>A sky.<br>Nothing to hurry.</h1><p>Follow the tracks into an endless summer.<br>Stay a little longer than you meant to.</p></div>
@@ -31,12 +31,13 @@
       <label class="setting" for="volume">Sound <input id="volume" type="range" min="0" max="100" value="55" /></label>
       <label class="setting" for="quality">Detail <select id="quality"><option value="balanced">Balanced · Quest</option><option value="high">High · desktop</option></select></label>
       <label class="setting" for="still-water">Quiet water <input id="still-water" type="checkbox" /></label>
-      <div class="instructions"><h3>In your headset</h3><p>Point a controller at the brass ticket below you, then press the trigger. Squeeze either grip to bring the ticket in front of you.</p><p>Right stick: snap turn. Left stick forward: point at the water and release to move there. Travel always starts with you.</p><h3>On this screen</h3><p>Drag to look. Arrow keys to turn. Space to start or stop drifting. V changes viewpoint. R returns home. M mutes. Escape closes these controls.</p></div>
+      <div class="instructions"><h3>In your headset</h3><p>Point a controller at the brass ticket below you, then press the trigger. Squeeze either grip to bring the ticket in front of you. Choose Exit experience at the bottom of the ticket to leave VR and close the page.</p><p>Right stick: snap turn. Left stick forward: point at the water and release to move there. Travel always starts with you.</p><h3>On this screen</h3><p>Drag to look. Arrow keys to turn. Space to start or stop drifting. V changes viewpoint. R returns home. M mutes. Escape closes these controls.</p><p>Exit experience stops everything and closes this page. If your browser keeps the tab open, it will become a blank page.</p></div>
       <button id="return-intro" class="text-button">Back to the welcome screen</button>
     </aside>
     <p id="notice" role="status" aria-live="polite"></p>
     <div id="fade" aria-hidden="true"></div>
-    <div id="fatal" hidden role="alert"><h2>The world couldn’t open.</h2><p id="fatal-message"></p><button onclick="location.reload()">Try again</button></div>
+    <div id="fatal" hidden role="alert"><h2>The world couldn’t open.</h2><p id="fatal-message"></p><button onclick="location.reload()">Try again</button> <button id="fatal-exit">Exit experience</button></div>
+    <div id="closing" hidden role="status">Leaving the sea…</div>
     <noscript>This experience needs JavaScript and WebGL. Please enable JavaScript to visit The Quiet Line.</noscript>
   </main>
   <script type="module" src="/src/main.js"></script>
