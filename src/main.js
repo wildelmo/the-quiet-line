@@ -6,13 +6,14 @@ import { Soundscape } from './audio.js';
 import { WAYPOINTS, ROUTE_END, smoothSpeed, advanceJourney, snapDirection, validTeleport } from './motion.js';
 import { readHeadPose, snapAroundHead, placeTicket } from './xr-pose.js';
 import { createExitAction } from './exit.js';
+import { boardTravelDeck, translateTraveller } from './travel.js';
 
 const $=id=>document.getElementById(id);
 const canvas=$('world');
 const audio=new Soundscape();
 let renderer,scene,camera,rig,world,menu;
 let started=false,moving=false,speed=0,waypoint=0,yaw=0,pitch=-.055,transitioning=false,elapsed=0,lastTime=0;
-let noticeTimer,sessionStarting=false,needsMenuPlacement=false,exiting=false;
+let noticeTimer,sessionStarting=false,needsMenuPlacement=false,needsDeckBoarding=false,exiting=false;
 const keys=new Set(),controllers=[],snapLatches=new Map(),teleportLatches=new Map();
 const temp=new THREE.Vector3(),direction=new THREE.Vector3(),head=new THREE.Vector3();
 const trackingHead=new THREE.Matrix4().makeTranslation(0,1.65,0);
@@ -41,11 +42,17 @@ function updateLabels(){
 }
 async function startAudio(){if(exiting)return;try{await audio.start();}catch{if(!exiting)notice('Sound is unavailable. The world is still yours to explore.');}}
 function explore(){started=true;document.body.classList.add('exploring');$('intro').hidden=true;$('toolbar').hidden=false;startAudio();canvas.focus();}
+function boardDeck(){
+  if(!renderer.xr.isPresenting){camera.updateMatrix();trackingHead.copy(camera.matrix);}
+  boardTravelDeck(rig,trackingHead,world.cart);
+}
 function toggleJourney(){
   if(transitioning)return;
   if(!started)explore();
   if(rig.position.z<=ROUTE_END+.01&&!moving){notice('You’ve reached the far end of the line. Return home for another journey.');return;}
-  moving=!moving;if(!moving)speed=0;world.cart.visible=true;updateLabels();
+  moving=!moving;if(!moving)speed=0;
+  if(!world.cart.visible)boardDeck();
+  world.cart.visible=true;updateLabels();
   if(moving){$('place-name').textContent='Somewhere out at sea';notice('A slow journey. Press Space or the ticket’s pause button to stop.');}
 }
 function toggleSound(){audio.toggle();if(!audio.muted)startAudio();updateLabels();}
@@ -56,10 +63,10 @@ function transitionTo(position,label,index){
   setTimeout(()=>{
     if(exiting)return;
     temp.set(position.x,position.y,position.z).sub(rig.position);
-    menu.group.position.add(temp);
-    rig.position.set(position.x,position.y,position.z);
+    translateTraveller(rig,world.cart,menu.group,temp);
     if(index!==undefined)waypoint=index;
     world.cart.visible=index!==0;
+    if(world.cart.visible)boardDeck();
     $('place-name').textContent=label;
     setTimeout(()=>{$('fade').style.opacity='0';fadeMaterial.opacity=0;transitioning=false;},100);
   },160);
@@ -126,12 +133,12 @@ async function init(){
   renderer.xr.addEventListener('sessionstart',()=>{
     if(exiting){void renderer.xr.getSession().end().catch(()=>{});return;}
     started=true;moving=false;speed=0;keys.clear();snapLatches.clear();teleportLatches.clear();document.body.classList.add('immersive','exploring');$('intro').hidden=true;$('toolbar').hidden=false;$('settings').hidden=true;
-    menu.group.visible=true;needsMenuPlacement=true;updateLabels();
+    menu.group.visible=true;needsMenuPlacement=true;needsDeckBoarding=world.cart.visible;updateLabels();
     renderer.xr.getSession().addEventListener('visibilitychange',()=>{if(renderer.xr.getSession()?.visibilityState!=='visible'){moving=false;speed=0;updateLabels();audio.suspend();}else startAudio();});
   });
   renderer.xr.addEventListener('sessionend',()=>{
     if(exiting)return;
-    document.body.classList.remove('immersive');menu.group.visible=false;moving=false;speed=0;reticle.visible=false;teleportTarget=null;keys.clear();camera.position.set(0,1.65,0);camera.rotation.set(pitch,yaw,0);camera.fov=72;camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();updateLabels();
+    document.body.classList.remove('immersive');menu.group.visible=false;moving=false;speed=0;needsDeckBoarding=false;reticle.visible=false;teleportTarget=null;keys.clear();camera.position.set(0,1.65,0);camera.rotation.set(pitch,yaw,0);camera.fov=72;camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();if(world.cart.visible)boardDeck();updateLabels();
   });
   await renderer.compileAsync(scene,camera);
   if(exiting)return;
@@ -145,6 +152,7 @@ async function init(){
       const viewerPose=frame?.getViewerPose(renderer.xr.getReferenceSpace());
       if(viewerPose)trackingHead.fromArray(viewerPose.transform.matrix);
       rig.updateWorldMatrix(true,true);
+      if(needsDeckBoarding&&viewerPose){boardDeck();needsDeckBoarding=false;}
       if(needsMenuPlacement){placeMenu();needsMenuPlacement=false;}
       let hovered=null,aiming=false;
       for(const controller of controllers){
@@ -172,8 +180,7 @@ async function init(){
       }
       if(!aiming)reticle.visible=false;menu.hover(hovered);
     }
-    if(!transitioning){speed=smoothSpeed(speed,moving,dt);const oldZ=rig.position.z;rig.position.z=advanceJourney(rig.position.z,speed,dt);menu.group.position.z+=rig.position.z-oldZ;if(rig.position.z<=ROUTE_END&&moving){moving=false;speed=0;updateLabels();notice('The far end of the line. A good place to stay awhile.');}}
-    world.cart.position.set(rig.position.x,rig.position.y,rig.position.z);world.cart.rotation.y=0;
+    if(!transitioning){speed=smoothSpeed(speed,moving,dt);const nextZ=advanceJourney(rig.position.z,speed,dt);temp.set(0,0,nextZ-rig.position.z);translateTraveller(rig,world.cart,menu.group,temp);if(rig.position.z<=ROUTE_END&&moving){moving=false;speed=0;updateLabels();notice('The far end of the line. A good place to stay awhile.');}}
     if(renderer.xr.isPresenting)readHeadPose(rig,trackingHead,head,direction);
     else camera.getWorldPosition(head);
     fadeSphere.position.copy(head);

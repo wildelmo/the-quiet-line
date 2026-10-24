@@ -44,7 +44,7 @@ Official references: [Meta WebXR overview](https://developers.meta.com/vr/docume
 - **Exit experience** at the bottom of the VR ticket ends the immersive session, stops rendering, closes the audio context, and attempts to close the browser tab. The same control is available at the top of the flat-screen page, while loading, and if graphics fail. If the browser disallows closing a user-opened tab, the app replaces itself with `about:blank`, fully unloading the experience; only an empty browser tab remains. A stalled or rejected XR shutdown cannot block leaving. Browser restrictions are described in [MDN's window.close documentation](https://developer.mozilla.org/en-US/docs/Web/API/Window/close).
 - Right thumbstick left/right: 30-degree snap turn, once per stick deflection.
 - Hold the left thumbstick forward, point down at nearby water, and release to teleport to the ring. Teleports are limited to 35 meters and the railway corridor, with a brief blackout. A little observation deck appears beneath you.
-- The optional journey eases up to 1.35 m/s and stops immediately when paused. It ends at 1.1 km rather than wrapping or snapping the world.
+- The optional journey boards a small travel deck at your current tracked position, then carries the deck, viewer, controllers, and ticket together. Room-scale walking and snap turns remain independent of the deck. The station stays behind. Travel eases up to 1.35 m/s and stops immediately when paused. It ends at 1.1 km rather than wrapping or snapping the world.
 - Sound is generated on-device: layered water and wind, sparse bell tones, distant bird calls, and subtle travel pulses. The controls provide mute and volume. Audio begins only with user interaction.
 
 ## What is built
@@ -55,7 +55,7 @@ Geometry is instanced or merged by material. There are no shadow maps, bloom pas
 
 ## Verification and remaining headset checks
 
-Movement unit tests and the production build pass. Browser checks cover shader rendering, entering the flat experience, start/pause, viewpoints, mute, quiet water, settings, desktop and 390-pixel mobile layouts. No actual Quest headset was connected during development. Stereo rendering, controller mapping, perceived scale, audio balance, comfort, and sustained headset frame rate require a hardware check.
+Movement tests and the production build pass. A synthetic WebXR session exercises Three.js's actual stereo camera update, checking that both eyes travel with the deck even when the tracked viewer is several meters from the play-space origin. Additional checks cover boarding after rotation, physical walking, snap turns, pausing, and repositioning. Browser checks cover shader rendering, entering the flat experience, start/pause, viewpoints, mute, quiet water, settings, desktop and 390-pixel mobile layouts. No actual Quest headset was connected during development. Stereo rendering, controller mapping, perceived scale, audio balance, comfort, and sustained headset frame rate require a hardware check.
 
 On the first Quest run: remain still, look all the way around and up, recall and use the ticket, test each controller, try a short teleport, then start and pause travel. Measure frame time using browser/Quest developer tools; the target is stable native headset refresh, not an unmeasured claim of performance. Use balanced detail first.
 
