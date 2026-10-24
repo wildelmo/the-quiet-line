@@ -6,7 +6,7 @@ import { Soundscape } from './audio.js';
 import { WAYPOINTS, ROUTE_END, smoothSpeed, advanceJourney, snapDirection, validTeleport } from './motion.js';
 import { readHeadPose, snapAroundHead, placeTicket } from './xr-pose.js';
 import { createExitAction } from './exit.js';
-import { boardTravelDeck, translateTraveller } from './travel.js';
+import { boardTravelDeck, boardStation, translateTraveller } from './travel.js';
 
 const $=id=>document.getElementById(id);
 const canvas=$('world');
@@ -51,9 +51,13 @@ function toggleJourney(){
   if(!started)explore();
   if(rig.position.z<=ROUTE_END+.01&&!moving){notice('You’ve reached the far end of the line. Return home for another journey.');return;}
   moving=!moving;if(!moving)speed=0;
-  if(!world.cart.visible)boardDeck();
-  world.cart.visible=true;updateLabels();
-  if(moving){$('place-name').textContent='Somewhere out at sea';notice('A slow journey. Press Space or the ticket’s pause button to stop.');}
+  if(world.cart.visible){
+    if(!renderer.xr.isPresenting){camera.updateMatrix();trackingHead.copy(camera.matrix);}
+    boardStation(rig,trackingHead,world.station);
+    world.cart.visible=false;needsDeckBoarding=false;
+  }
+  updateLabels();
+  if(moving){$('place-name').textContent='The drifting station';notice('The whole station travels with you. Pause whenever you like.');}
 }
 function toggleSound(){audio.toggle();if(!audio.muted)startAudio();updateLabels();}
 let fadeMaterial;
@@ -67,6 +71,7 @@ function transitionTo(position,label,index){
     if(index!==undefined)waypoint=index;
     world.cart.visible=index!==0;
     if(world.cart.visible)boardDeck();
+    else world.station.position.set(0,0,0);
     $('place-name').textContent=label;
     setTimeout(()=>{$('fade').style.opacity='0';fadeMaterial.opacity=0;transitioning=false;},100);
   },160);
@@ -180,7 +185,7 @@ async function init(){
       }
       if(!aiming)reticle.visible=false;menu.hover(hovered);
     }
-    if(!transitioning){speed=smoothSpeed(speed,moving,dt);const nextZ=advanceJourney(rig.position.z,speed,dt);temp.set(0,0,nextZ-rig.position.z);translateTraveller(rig,world.cart,menu.group,temp);if(rig.position.z<=ROUTE_END&&moving){moving=false;speed=0;updateLabels();notice('The far end of the line. A good place to stay awhile.');}}
+    if(!transitioning){speed=smoothSpeed(speed,moving,dt);const nextZ=advanceJourney(rig.position.z,speed,dt);temp.set(0,0,nextZ-rig.position.z);translateTraveller(rig,world.cart.visible?world.cart:world.station,menu.group,temp);if(rig.position.z<=ROUTE_END&&moving){moving=false;speed=0;updateLabels();notice('The far end of the line. A good place to stay awhile.');}}
     if(renderer.xr.isPresenting)readHeadPose(rig,trackingHead,head,direction);
     else camera.getWorldPosition(head);
     fadeSphere.position.copy(head);

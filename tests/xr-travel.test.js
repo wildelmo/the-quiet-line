@@ -4,7 +4,7 @@ import { Scene, Group, PerspectiveCamera, Matrix4, Vector3 } from 'three';
 import { WebXRManager } from 'three/src/renderers/webxr/WebXRManager.js';
 import { advanceJourney, smoothSpeed } from '../src/motion.js';
 import { readHeadPose, snapAroundHead } from '../src/xr-pose.js';
-import { boardTravelDeck, translateTraveller } from '../src/travel.js';
+import { boardTravelDeck, boardStation, translateTraveller } from '../src/travel.js';
 
 // Exercise Three's actual stereo camera update with synthetic headset poses.
 // Only the session/graphics transport is stubbed; transforms are real Three.js.
@@ -94,4 +94,37 @@ test('travel, pause and reposition preserve the deck and ticket offsets',()=>{
     assert(ticket.position.clone().sub(rig.position).distanceTo(ticketOffset)<1e-8);
   }
   const rest=new Vector3();rig.getWorldPosition(rest);assert(rest.distanceTo(rig.position)<1e-8);
+});
+
+test('the full station and its furnishings stay beside both XR eyes throughout drift and pause',async t=>{
+  const {xr,frame}=await headset(t);
+  const scene=new Scene(),rig=new Group(),camera=new PerspectiveCamera(),station=new Group(),ticket=new Group();
+  const bench=new Group(),bell=new Group(),fixedSignal=new Group();
+  bench.position.set(-4.5,.77,5.4);bell.position.set(-2.7,2.7,4.35);station.add(bench,bell);
+  fixedSignal.position.set(2.8,3,-85);rig.position.set(0,.32,4);rig.add(camera);scene.add(rig,station,ticket,fixedSignal);
+  let speed=0,moving=true;
+  xr.setAnimationLoop(()=>{
+    speed=moving?smoothSpeed(speed,true,1/72):0;
+    translateTraveller(rig,station,ticket,new Vector3(0,0,advanceJourney(rig.position.z,speed,1/72)-rig.position.z));
+    scene.updateMatrixWorld();xr.updateCamera(camera);
+  });
+  frame(0,-.8,.4);
+  const eyes=xr.getCamera().cameras;
+  const relativeToEyes=object=>eyes.map(eye=>object.getWorldPosition(new Vector3()).sub(new Vector3().setFromMatrixPosition(eye.matrixWorld)));
+  const benchBefore=relativeToEyes(bench),bellBefore=relativeToEyes(bell),signalBefore=relativeToEyes(fixedSignal);
+  for(let i=1;i<=720;i++)frame(i*1000/72,-.8,.4);
+  for(const [object,before] of [[bench,benchBefore],[bell,bellBefore]]){
+    relativeToEyes(object).forEach((offset,i)=>assert(offset.distanceTo(before[i])<1e-8,'The station must not recede from either eye.'));
+  }
+  assert(relativeToEyes(fixedSignal)[0].distanceTo(signalBefore[0])>10,'The outside world must pass by.');
+  moving=false;const stopped=station.position.clone();frame(11000,-.8,.4);assert(station.position.equals(stopped));
+});
+
+test('boarding the station from a remote viewpoint preserves tracked height and puts its floor underfoot',()=>{
+  const rig=new Group(),station=new Group();rig.position.set(3,.22,-320);rig.rotation.y=.8;
+  const tracking=new Matrix4().makeTranslation(2,1.65,-1),head=new Vector3(),facing=new Vector3();
+  boardStation(rig,tracking,station);readHeadPose(rig,tracking,head,facing);
+  const boardingSpot=station.localToWorld(new Vector3(0,.32,4));
+  assert(Math.abs(boardingSpot.x-head.x)<1e-8);assert(Math.abs(boardingSpot.z-head.z)<1e-8);
+  assert(Math.abs(head.y-boardingSpot.y-1.65)<1e-8);
 });

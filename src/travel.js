@@ -12,8 +12,15 @@ export function boardTravelDeck(rig, trackingHead, deck) {
   deck.rotation.set(0, 0, 0);
 }
 
-// One translation carries the camera/controller rig, deck, and ticket together.
-// The deck is independent of head tracking and snap-turn pivot corrections.
+// Rejoin the full station from an observation deck. Its original boarding spot
+// is (0, .32, 4); preserve that relationship at the viewer's current location.
+export function boardStation(rig, trackingHead, station) {
+  readHeadPose(rig, trackingHead, head, facing);
+  station.position.set(head.x, rig.position.y - .32, head.z - 4);
+}
+
+// One translation carries the camera/controller rig, platform, and ticket.
+// The platform is independent of head tracking and snap-turn pivot corrections.
 export function translateTraveller(rig, deck, ticket, delta) {
   rig.position.add(delta);
   deck.position.add(delta);

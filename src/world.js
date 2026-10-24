@@ -32,7 +32,7 @@ export async function createWorld(scene, renderer){
   const batches=new Map();
   function box(x,y,z,w,h,d,mat,rz=0){const geo=new THREE.BoxGeometry(w,h,d);geo.rotateZ(rz);geo.translate(x,y,z);if(!batches.has(mat))batches.set(mat,[]);batches.get(mat).push(geo);}
   function pole(x,y,z,r,h,mat){const geo=new THREE.CylinderGeometry(r,r,h,8);geo.translate(x,y,z);if(!batches.has(mat))batches.set(mat,[]);batches.get(mat).push(geo);}
-  createStation(scene);
+  const station=createStation(scene);
   for(const x of [-.72,.72]){
     box(x,-.015,-570,.07,.12,1160,metal);
     box(x,-.08,-570,.14,.035,1160,darkWood);
@@ -63,7 +63,7 @@ export async function createWorld(scene, renderer){
   for(const x of [206.5,213.5])pole(x,-.2,-620,.18,4,concrete);
   for(const [mat,geos] of batches){const merged=mergeGeometries(geos,false);if(merged){const mesh=new THREE.Mesh(merged,mat);scene.add(mesh);}geos.forEach(g=>g.dispose());}
   // A glass wind bell and its paper strip, animated only by the breeze.
-  const bell=new THREE.Group();bell.position.set(-2.7,2.7,4.35);scene.add(bell);
+  const bell=new THREE.Group();bell.position.set(-2.7,2.7,4.35);station.add(bell);
   const bellBody=new THREE.Mesh(new THREE.SphereGeometry(.095,12,8,0,Math.PI*2,0,Math.PI*.65),new THREE.MeshStandardMaterial({color:0xc9e7de,transparent:true,opacity:.7,roughness:.25,side:THREE.DoubleSide}));bellBody.position.y=-.22;bell.add(bellBody);
   const string=new THREE.Mesh(new THREE.CylinderGeometry(.002,.002,.42,4),darkWood);string.position.y=-.21;bell.add(string);
   const paper=new THREE.Mesh(new THREE.PlaneGeometry(.055,.21),new THREE.MeshStandardMaterial({color:0xf4e9c8,side:THREE.DoubleSide}));paper.position.y=-.5;bell.add(paper);
@@ -77,7 +77,7 @@ export async function createWorld(scene, renderer){
     const rail=new THREE.Mesh(new THREE.BoxGeometry(.045,.045,2.15),brass);rail.position.set(x,.57,0);cart.add(rail);
   }
   cart.visible=false;scene.add(cart);
-  return {sky,water,waterMaterial,cart,
+  return {sky,water,waterMaterial,cart,station,
     update(t,position){water.position.x=position.x;water.position.z=position.z;waterMaterial.uniforms.time.value=t;bell.rotation.z=Math.sin(t*.8)*.08;paper.rotation.y=Math.sin(t*.5)*.25;birds.forEach((b,i)=>{const a=t*.012+b.phase;b.group.position.set(Math.cos(a)*b.radius, b.height+Math.sin(a*3)*1.2,-70+Math.sin(a)*b.radius);b.group.rotation.y=-a;b.left.rotation.z=Math.sin(t*2.2+i)*.18;b.right.rotation.z=-b.left.rotation.z;});},
   };
 }
