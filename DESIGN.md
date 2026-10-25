@@ -170,7 +170,7 @@ The sky uses the clearer-painted `summer-sky-detailed.png` revision with restrai
 
 DOM surfaces use soft, blue-tinted ambient shadows: primary action (`0 7px 24px #06334b25`), exploration toolbar (`0 6px 24px #08354a22`), and settings panel (`0 16px 65px #163d5240`). Text shadows support legibility over the image. The welcome gradient supplies contrast without an opaque content card.
 
-Motion is slow and environmental: water shimmer, birds, and a hanging wind bell. The loading indicator breathes over (1.8s); loading fades over (.8s), notices over (.3s), and the DOM travel fade over (.15s). Reduced-motion preference disables CSS animation/transitions and initializes quiet water; birds and bell still animate in the current implementation. Do not describe this as a total world-motion pause.
+Motion is slow and environmental: water shimmer, birds, a hanging wind bell, and the sky dragon's looping flight. The loading indicator breathes over (1.8s); loading fades over (.8s), notices over (.3s), and the DOM travel fade over (.15s). Reduced-motion preference disables CSS animation/transitions, initializes quiet water, and holds the dragon's local flight pose still; its region still eases along the route during travel. Birds and bell still animate in the current implementation. Do not describe this as a total world-motion pause. While the flat-screen document is hidden, the frame callback skips world updates and rendering; immersive sessions retain their XR frame loop.
 
 ## Shapes
 
@@ -185,6 +185,14 @@ The small platform is a warm, worn place to arrive in the immense blue world. `s
 The station's component-local material bases are warm timber (`#bc956c`), faded teal (`#527f77`), cream trim (`#e2d7b5`), terracotta tiles (`#ae634b`), dark worn details (`#574b3d`), brass accents (`#af8d4c`), clay pots (`#b66e51`), foliage (`#5d8050`), yellow flowers (`#e6bc68`), leather (`#9a6549`), and cloth (`#7b9993`). These extend the physical scene without changing the screen UI palette. A shared procedural grain texture provides long uneven strokes, pale washes, and knots; tinted pieces vary subtly in brightness. The main station materials use full roughness (1), vertex colors, and a small matching emissive contribution (.09), including the brass-colored accents.
 
 The two station signs use cream canvas textures with pigment variation, green framing, Georgia lettering, and small fixing marks. Separate outward-facing planes keep the text readable from either direction. Geometry for stationary boards, tiles, foliage, and props is merged by material; sign faces/backings and contact-wash planes remain separate. These choices limit per-detail draw calls, but actual Quest frame rate and comfort still require hardware testing.
+
+### Sky dragon
+
+A pearl-and-jade, wingless East Asian dragon adds a living silhouette above the ocean. Its long continuous body tapers into a swept tail; branching antlers, gold eyes with dark pupils and small highlights, long whiskers, a layered mane, and four clawed feet make it readable from multiple viewpoints. It is real world-space geometry, separate from the painted clouds, and stays in the journey's region without following the viewer's gaze.
+
+The component-local palette uses pearl (`#e9eed7`), jade (`#528f86`), deep teal (`#244f50`), warm antler ivory (`#d2b788`), eye gold (`#ddb05a`), and dark pupils (`#183639`). Vertex colors blend the body from a pale cream belly through pearl-green flanks to a muted jade back. Fully rough materials and a small emissive contribution retain the soft painted character; the dragon adds no image textures, transparent fur cards, shadow maps, or extra render passes.
+
+`src/dragon.js` deforms a continuous tube along a delayed flight curve, so the body follows the head with a traveling undulation. Head and foot details are merged by pigment, and (58) instanced mane sections follow the spine. Whiskers, mane, and feet move gently during the slow looping flight. Reduced motion fixes the local curve and articulated pose at time zero while the root still eases along the route to stay near the travel region; teleportation does not instantly snap it to the new region. The implementation totals (20) mesh objects and (43,304) triangles including instances, which is a geometry count rather than a measured Quest performance result.
 
 ### Arrival actions
 

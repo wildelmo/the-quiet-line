@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { skyVertex, skyFragment, waterVertex, waterFragment } from './shaders.js';
 import { createStation } from './station.js';
+import { createDragon } from './dragon.js';
 
 function random(seed){let a=seed;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 function woodTexture(){
@@ -10,7 +11,7 @@ function woodTexture(){
   for(let i=0;i<600;i++){g.strokeStyle=`rgba(${r()>.5?'58,67,54':'222,212,171'},${.04+r()*.17})`;g.lineWidth=r()*1.5;let x=r()*128,y=r()*512;g.beginPath();g.moveTo(x,y);g.bezierCurveTo(x+3,y+30,x-4,y+90,x+2,y+160);g.stroke();}
   const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=texture.wrapT=THREE.RepeatWrapping;return texture;
 }
-export async function createWorld(scene, renderer){
+export async function createWorld(scene, renderer, {reducedMotion=false}={}){
   const texture=await new THREE.TextureLoader().loadAsync(`${import.meta.env.BASE_URL}assets/summer-sky.png`);
   texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=THREE.RepeatWrapping;texture.minFilter=THREE.LinearMipmapLinearFilter;texture.anisotropy=Math.min(4,renderer.capabilities.getMaxAnisotropy());
   const detailedSky=await new THREE.TextureLoader().loadAsync(`${import.meta.env.BASE_URL}assets/summer-sky-detailed.png`);
@@ -77,7 +78,8 @@ export async function createWorld(scene, renderer){
     const rail=new THREE.Mesh(new THREE.BoxGeometry(.045,.045,2.15),brass);rail.position.set(x,.57,0);cart.add(rail);
   }
   cart.visible=false;scene.add(cart);
+  const dragon=createDragon(scene,{reducedMotion});
   return {sky,water,waterMaterial,cart,station,
-    update(t,position){water.position.x=position.x;water.position.z=position.z;waterMaterial.uniforms.time.value=t;bell.rotation.z=Math.sin(t*.8)*.08;paper.rotation.y=Math.sin(t*.5)*.25;birds.forEach((b,i)=>{const a=t*.012+b.phase;b.group.position.set(Math.cos(a)*b.radius, b.height+Math.sin(a*3)*1.2,-70+Math.sin(a)*b.radius);b.group.rotation.y=-a;b.left.rotation.z=Math.sin(t*2.2+i)*.18;b.right.rotation.z=-b.left.rotation.z;});},
+    update(t,position,dt){dragon.update(t,position,dt);water.position.x=position.x;water.position.z=position.z;waterMaterial.uniforms.time.value=t;bell.rotation.z=Math.sin(t*.8)*.08;paper.rotation.y=Math.sin(t*.5)*.25;birds.forEach((b,i)=>{const a=t*.012+b.phase;b.group.position.set(Math.cos(a)*b.radius, b.height+Math.sin(a*3)*1.2,-70+Math.sin(a)*b.radius);b.group.rotation.y=-a;b.left.rotation.z=Math.sin(t*2.2+i)*.18;b.right.rotation.z=-b.left.rotation.z;});},
   };
 }

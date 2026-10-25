@@ -49,7 +49,9 @@ Official references: [Meta WebXR overview](https://developers.meta.com/vr/docume
 
 ## What is built
 
-The reference is `Dreamy Ocean Sky Storyboard.png`. A generated painted panorama surrounds real 3D tracks, sleeper timbers, platform, shelter, bench, wind bell, distant house, islands, birds, and the travel deck. The water shader reflects the same sky and adds low-amplitude ripples, glints, and shallow-water caustics. Clouds are a distant painted sky, not nearby volumetric geometry. The application is designed for open space and a stable horizon.
+The reference is `Dreamy Ocean Sky Storyboard.png`. A generated painted panorama surrounds real 3D tracks, sleeper timbers, platform, shelter, bench, wind bell, distant house, islands, birds, a sky dragon, and the travel deck. The water shader reflects the same sky and adds low-amplitude ripples, glints, and shallow-water caustics. Clouds are a distant painted sky, not nearby volumetric geometry. The application is designed for open space and a stable horizon.
+
+A pearl-and-jade, wingless East Asian dragon makes slow loops above the sea, with branching antlers, gold eyes, whiskers, four clawed feet, and a flowing mane. Its continuous body undulates along the flight path; the mane is instanced and the other details are merged by material. All geometry and motion are procedural, with no downloaded model or texture. Reduced motion holds its local pose still, while its flight region continues to ease along the route as you travel. The dragon follows the journey's region rather than your gaze. Hidden flat-screen pages pause world updates and rendering. Its current geometry totals 20 mesh objects and 43,304 triangles including instances; actual Quest performance remains unmeasured.
 
 Geometry is instanced or merged by material. There are no shadow maps, bloom passes, reflection render targets, live texture downloads, or continuous audio downloads. Balanced settings cap desktop pixel ratio at 1.5; XR uses a framebuffer scale of 1 and requested foveation of 1. `window.quietLine.diagnostics` is available in browser developer tools for draw calls, triangles, texture count, position and session state.
 

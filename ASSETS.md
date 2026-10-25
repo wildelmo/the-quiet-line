@@ -28,7 +28,13 @@ Exact edit prompt:
 
 ## Geometry, textures, and sound
 
-All platform, shelter, railway, island, bird, deck, controller and menu geometry is authored procedurally in this project. Wood grain and station/menu lettering use local Canvas textures. Water is an original animated shader. Audio is synthesized using the Web Audio API: filtered noise and oscillator tones; no sampled recordings, music tracks, or remote sound assets.
+All platform, shelter, railway, island, bird, dragon, deck, controller and menu geometry is authored procedurally in this project. Wood grain and station/menu lettering use local Canvas textures. Water is an original animated shader. Audio is synthesized using the Web Audio API: filtered noise and oscillator tones; no sampled recordings, music tracks, or remote sound assets.
+
+### Sky dragon
+
+`src/dragon.js` builds the pearl-and-jade wingless East Asian dragon entirely from local Three.js geometry and material colors. Its continuous deforming body, branched antlers, layered head, gold eyes, whiskers, four clawed feet, and swept tail are procedural. The head and feet merge details by pigment; the mane uses (58) instances of a paired tapered-lock shape. No downloaded model, image texture, rig, motion capture, or external animation asset is used.
+
+The flight curve, spine undulation, and small whisker, mane, and foot motions are computed in code. `src/world.js` creates and updates the dragon, receiving the reduced-motion preference from `src/main.js`. That preference holds the local pose still while its region continues to ease along the travel route. Hidden flat-screen documents skip world updates and rendering. The current dragon has (20) mesh objects and (43,304) triangles including instances; this construction count does not establish actual headset frame rate or comfort.
 
 ### Storybook station
 

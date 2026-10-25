@@ -113,7 +113,7 @@ async function init(){
   scene=new THREE.Scene();scene.background=new THREE.Color(0x2098c7);
   camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,.05,16000);camera.position.set(0,1.65,0);camera.rotation.order='YXZ';
   rig=new THREE.Group();rig.position.set(0,.32,4);rig.add(camera);scene.add(rig);
-  world=await createWorld(scene,renderer);
+  world=await createWorld(scene,renderer,{reducedMotion});
   if(exiting)return;
   world.waterMaterial.uniforms.calm.value=reducedMotion?0:1;$('still-water').checked=reducedMotion;
   menu=createVRMenu({journey:toggleJourney,viewpoint:nextViewpoint,sound:toggleSound,home:returnHome,exit:exitExperience});scene.add(menu.group);
@@ -148,7 +148,7 @@ async function init(){
   await renderer.compileAsync(scene,camera);
   if(exiting)return;
   renderer.setAnimationLoop((time,frame)=>{
-    if(exiting)return;
+    if(exiting||(!renderer.xr.isPresenting&&document.hidden))return;
     const dt=Math.min((time-lastTime)/1000||.016,.05);lastTime=time;elapsed+=dt;
     if(!renderer.xr.isPresenting){
       if(started&&$('settings').hidden){if(keys.has('ArrowLeft'))yaw+=dt*.7;if(keys.has('ArrowRight'))yaw-=dt*.7;if(keys.has('ArrowUp'))pitch=Math.min(1.35,pitch+dt*.5);if(keys.has('ArrowDown'))pitch=Math.max(-1.35,pitch-dt*.5);}
@@ -189,7 +189,7 @@ async function init(){
     if(renderer.xr.isPresenting)readHeadPose(rig,trackingHead,head,direction);
     else camera.getWorldPosition(head);
     fadeSphere.position.copy(head);
-    world.update(elapsed,rig.position);audio.update(elapsed,speed);
+    world.update(elapsed,rig.position,dt);audio.update(elapsed,speed);
     renderer.render(scene,camera);
   });
   $('loading').style.opacity='0';setTimeout(()=>$('loading').hidden=true,800);
