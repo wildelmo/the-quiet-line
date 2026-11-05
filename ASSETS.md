@@ -22,6 +22,10 @@ Exact edit prompt:
 
 > Edit target: the attached sky panorama used as the immersive 360-degree sky texture of a Quest WebXR world. Produce a genuinely HIGH RESOLUTION 3840 x 1920 pixel (2:1) replacement with freshly resolved fine painted detail, NOT a blurred enlargement. Preserve the existing composition and style closely: saturated bright summer azure, enormous ivory cumulus towers with cyan and pale lavender shaded lobes, intricate small broken wisps, luminous hand-painted Japanese animated-film background / gouache. Preserve the EXACT level horizon at 57% from the image top and low distant island silhouettes there, blue sky across top, turquoise ocean reflections below. Main request is much sharper cloud silhouettes and fine internal painted planes and brush edges, especially when magnified in VR. No soft focus, no depth of field, no haze over the near cloud towers, no blur, no crunchy sharpening halos, no noisy photographic microtexture. Paint clear small lobes within the big cloud masses so scale feels immense. Maintain softness only in far distant horizon atmosphere. Full continuous 360-degree equirectangular panorama, left/right edges MUST join seamlessly in both cloud shapes and color, avoid stretching at poles. Preserve the open blue upper area and the distribution of the original cloud towers. No buildings, no platform, no figures, no objects, no letters, no border, no sun disk or lens flare. Output the largest native resolution possible, requested 3840 x 1920.
 
+### The passing day, stars, and moon
+
+`src/shaders.js` grades the painted panorama at runtime from uniforms computed in `src/daylight.js`. Golden hour, dusk, night, stars and the moon are all procedural shader arithmetic over the same two shipped panoramas; no additional sky image is shipped. Stars are a hashed direction grid, the moon is a thresholded dot product, and the sun glow is a power of the sun direction. The near cumulus sprites in `src/sky-life.js` use three runtime Canvas textures (256 × 192 each) built from radial gouache puffs, seeded deterministically.
+
 ## Lettering
 
 `public/assets/story.woff2` is Alegreya Latin regular, from the `@fontsource/alegreya` npm package. Its SIL Open Font License is included at `public/assets/FONT-LICENSE.txt`.
@@ -35,6 +39,10 @@ All platform, shelter, railway, island, bird, dragon, deck, controller and menu 
 `src/dragon.js` builds the pearl-and-jade wingless East Asian dragon entirely from local Three.js geometry and material colors. Its continuous deforming body, branched antlers, layered head, gold eyes, whiskers, four clawed feet, and swept tail are procedural. The head and feet merge details by pigment; the mane uses (58) instances of a paired tapered-lock shape. No downloaded model, image texture, rig, motion capture, or external animation asset is used.
 
 The flight curve, spine undulation, and small whisker, mane, and foot motions are computed in code. `src/world.js` creates and updates the dragon, receiving the reduced-motion preference from `src/main.js`. That preference holds the local pose still while its region continues to ease along the travel route. Hidden flat-screen documents skip world updates and rendering. The current dragon has (20) mesh objects and (43,304) triangles including instances; this construction count does not establish actual headset frame rate or comfort.
+
+### Living details
+
+`src/life.js` (petals, butterflies, fireflies, sea-lights), `src/sky-life.js` (near clouds, the far train, the little plane) and the cat, lanterns, pinwheel and streamers added in `src/station.js` are all local Three.js geometry, instanced meshes and material colours. The music box, crickets, train whistle, plane hum and evening pad in `src/audio.js` are oscillator and filter synthesis. No downloaded model, texture, sample, or music track is used.
 
 ### Storybook station
 

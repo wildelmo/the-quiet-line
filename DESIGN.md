@@ -106,9 +106,11 @@ components:
 
 ## Overview
 
-**Creative North Star: "A tiny station in a vast painted ocean"**
+**Creative North Star: "A tiny station in a vast painted ocean, where one slow day passes"**
 
 The supplied ocean storyboard is the visual authority. Brilliant summer blue, towering ivory clouds, reflected sky, and submerged rails make the world feel expansive. The little station supplies human scale without enclosing the view. The interface is sparse and welcoming, with illustrated-story lettering and small practical controls.
+
+The feeling to protect is the quiet of a hand-painted animated film: stillness that is never empty. The wind is visible in streamers, a pinwheel, petals and a bell. Small lives go on without needing the visitor: a cat sleeps, butterflies loop, a train and a plane pass far away. Light is the main event. The painted noon slowly becomes a golden sunset, a blue dusk with lanterns, a starlit night, and a pale morning, and the sea reflects all of it.
 
 The environment fills the viewport. Nearby structures are real geometry; the painted sky is the distant backdrop. The welcome overlay recedes when exploration begins, and immersive sessions use a physical ticket-like menu inside the world. Movement begins only through an explicit action; the horizon remains stable during travel.
 
@@ -140,6 +142,10 @@ Bright sky and turquoise water own the image; warm paper and dark sea-blue give 
 
 **The Open Blue Rule.** Preserve the broad blue sky and water as the dominant visual field; interface surfaces stay compact.
 
+### The passing day
+
+`src/daylight.js` derives every light value from one clock-hour. Day hours pass at about (62s) each and night hours at about (28s), so an afternoon arrival sees sunset in roughly four minutes and a whole cycle in under twenty. Golden hour multiplies the painted sky by a cool violet (`#c7a8f5`-like factor) and gathers a peach band (`#ffad66`) around the sun with mauve (`#e6a3b8`) opposite; clouds take gold (`#ffe099` tint) on their sunward side and mauve shadows. Night turns open sky to indigo (`#050a1f` to `#17214d`), clouds to slate (`#1a2140` to `#4d5c85` toward the moon), adds stars and a moon. Fog moves from Distance Mist through `#efc19c` to `#1a2340`; hemisphere, sun and ground light colours follow. Lanterns, signal lamps, the deck lantern and the far house window glow with `lantern`, fireflies with `fireflies`, stars with `stars`. These are shader and light settings; perceived brightness and comfort in a headset remain unverified.
+
 ## Typography
 
 The bundled `public/assets/story.woff2` is Alegreya Latin regular, exposed by CSS as **QuietStory**. Display and settings titles use `QuietStory, Georgia, serif`; the interface uses **Segoe UI** with a generic sans-serif fallback. Only the regular display face is bundled, and font synthesis is disabled.
@@ -170,7 +176,7 @@ The sky uses the clearer-painted `summer-sky-detailed.png` revision with restrai
 
 DOM surfaces use soft, blue-tinted ambient shadows: primary action (`0 7px 24px #06334b25`), exploration toolbar (`0 6px 24px #08354a22`), and settings panel (`0 16px 65px #163d5240`). Text shadows support legibility over the image. The welcome gradient supplies contrast without an opaque content card.
 
-Motion is slow and environmental: water shimmer, birds, a hanging wind bell, and the sky dragon's looping flight. The loading indicator breathes over (1.8s); loading fades over (.8s), notices over (.3s), and the DOM travel fade over (.15s). Reduced-motion preference disables CSS animation/transitions, initializes quiet water, and holds the dragon's local flight pose still; its region still eases along the route during travel. Birds and bell still animate in the current implementation. Do not describe this as a total world-motion pause. While the flat-screen document is hidden, the frame callback skips world updates and rendering; immersive sessions retain their XR frame loop.
+Motion is slow and environmental: water shimmer, birds, a hanging wind bell, the sky dragon's looping flight, the drift of the painted clouds, petals on the wind, and the slow change of the light. The loading indicator breathes over (1.8s); loading fades over (.8s), notices over (.3s), and the DOM travel fade over (.15s). Reduced-motion preference disables CSS animation/transitions, initializes quiet water, and holds the dragon's local flight pose still; its region still eases along the route during travel. Birds and bell still animate in the current implementation. Do not describe this as a total world-motion pause. While the flat-screen document is hidden, the frame callback skips world updates and rendering; immersive sessions retain their XR frame loop.
 
 ## Shapes
 
@@ -185,6 +191,16 @@ The small platform is a warm, worn place to arrive in the immense blue world. `s
 The station's component-local material bases are warm timber (`#bc956c`), faded teal (`#527f77`), cream trim (`#e2d7b5`), terracotta tiles (`#ae634b`), dark worn details (`#574b3d`), brass accents (`#af8d4c`), clay pots (`#b66e51`), foliage (`#5d8050`), yellow flowers (`#e6bc68`), leather (`#9a6549`), and cloth (`#7b9993`). These extend the physical scene without changing the screen UI palette. A shared procedural grain texture provides long uneven strokes, pale washes, and knots; tinted pieces vary subtly in brightness. The main station materials use full roughness (1), vertex colors, and a small matching emissive contribution (.09), including the brass-colored accents.
 
 The two station signs use cream canvas textures with pigment variation, green framing, Georgia lettering, and small fixing marks. Separate outward-facing planes keep the text readable from either direction. Geometry for stationary boards, tiles, foliage, and props is merged by material; sign faces/backings and contact-wash planes remain separate. These choices limit per-detail draw calls, but actual Quest frame rate and comfort still require hardware testing.
+
+### Living details
+
+**Station life.** A round ginger cat (`#d99a58`, pale `#f4e4c6`, stripes `#b9773a`) sleeps curled on the bench beside the suitcase. Three paper lanterns (`#f6e4bd` with `#a84f3c` bands) hang under the eaves and glow `#ffb860` at dusk with one warm point light (intensity 7, distance 11). A pinwheel with red, yellow, teal and cream vanes stands by the marker post. Three cloth streamers (`#f3d9a4`, `#9ec8c1`, `#f1b7b0`) hang from the gable and are displaced per vertex by the shared breeze. Three pale butterflies loop at the flower pots.
+
+**Near life.** (110) instanced petals (`#ffe3ea`) tumble on the breeze inside a (26m) box that wraps around the viewer. After dark, (70) warm fireflies (`#ffd978`) drift about the platform and (48) blue sea-lights (`#8fd8ff`) hover over the water, additive and depth-write-free.
+
+**Sky life.** Nine cumulus sprites, each a runtime gouache texture, sit (520m) to (1220m) away at (70m) to (190m) up, drifting slowly and tinted by the daylight recipe. A far four-car train (hull `#2b3a3a`, windows `#f4e2b6` with `#ffcf7a` emissive) crosses the sea (380m) ahead of the viewer over about two minutes, first after (75s) and then every four to five minutes. A cream and yellow floatplane (`#f1e3bf`, `#e8b84d`) crosses high and far a little later, propeller turning. Each arrival is announced with a quiet notice and a sound.
+
+**The breeze.** `wind(time)` in `src/life.js` is the one source of gusts for the pinwheel, streamers, bell and petals, so the whole station moves to the same air.
 
 ### Sky dragon
 
@@ -212,7 +228,7 @@ The paper panel pairs a story-font title with native range, select, and checkbox
 
 ### In-world ticket
 
-The native WebXR menu is a brass-colored backing (0.94m × 0.78m × 0.018m) carrying dark panels with warm labels. Action panels are (0.84m × 0.085m); hovering by controller ray lightens their enamel. Its five actions are drift/pause, next viewpoint, sound, return to station, and Exit experience. The exit action sits below a wider gap to separate leaving from travel. Trigger selects; grip recalls it. These are Three.js geometry and canvas textures, not a DOM overlay. The flat-screen masthead also keeps a clearly labeled Exit experience control beside settings, with equivalent exits in loading and error states.
+The native WebXR menu is a brass-colored backing (0.94m × 0.90m × 0.018m) carrying dark panels with warm labels. Action panels are (0.84m × 0.085m); hovering by controller ray lightens their enamel. Its six actions are drift/pause, next viewpoint, turn the hour, sound, return to station, and Exit experience. The exit action sits below a wider gap to separate leaving from travel. Trigger selects; grip recalls it. These are Three.js geometry and canvas textures, not a DOM overlay. The flat-screen masthead also keeps a clearly labeled Exit experience control beside settings, with equivalent exits in loading and error states.
 
 WebXR entry requires a secure context, available XR API, and supported immersive session. The implementation requests `immersive-vr`, uses a local-floor reference space, snap turning, and limited water-plane teleportation. Movement is opt-in and pauses when visibility is lost. Screen rendering caps pixel ratio at (1.5) for balanced and (2) for high detail; XR uses framebuffer scale (1) and requested foveation (1). These are code settings, not proof of headset comfort, performance, compatibility, or hardware verification. Validate those on a real headset before making such claims.
 
@@ -224,9 +240,11 @@ WebXR entry requires a secure context, available XR API, and supported immersive
 - **Do** retain clear keyboard focus and native form semantics.
 - **Do** keep movement opt-in and provide reachable controls inside immersive sessions.
 - **Do** ship the sky, font, and provenance with the application.
+- **Do** keep the living details small, slow and far: a cat that only breathes, a train on the horizon, petals rather than confetti.
 
 ### Don't:
 - **Don't** cover the world with large opaque content panels or decorative card grids.
 - **Don't** substitute DOM-only controls for the in-world VR ticket.
 - **Don't** treat reduced motion as a promise that every animated world object stops.
 - **Don't** claim headset validation from desktop screenshots or implementation settings.
+- **Don't** let the day race: sunsets take minutes, and nothing in the sky should startle.
