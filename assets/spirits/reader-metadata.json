@@ -1,0 +1,236 @@
+{
+  "name": "The Quiet Line \u2014 newspaper reader",
+  "generator": "scripts/build-reader.py",
+  "blender": "4.5.15 LTS",
+  "coordinates": {
+    "up": "Y",
+    "forward": "+Z",
+    "origin": "floor",
+    "seat_cushion_height_m": 0.45
+  },
+  "bounds_m": {
+    "min": [
+      -0.4357030391693115,
+      0.014999999664723873,
+      -0.1866496503353119
+    ],
+    "max": [
+      0.5823105573654175,
+      1.7380000352859497,
+      0.6137411594390869
+    ],
+    "size": [
+      1.018013596534729,
+      1.7230000356212258,
+      0.8003908097743988
+    ]
+  },
+  "mesh_count": 7,
+  "primitives": 7,
+  "triangles": 32672,
+  "materials": 1,
+  "glb_bytes": 4207944,
+  "texture_dimensions": [
+    1254,
+    1254
+  ],
+  "atlas_regions_blender_uv": {
+    "cloth": [
+      0.025,
+      0.525,
+      0.475,
+      0.975
+    ],
+    "skin": [
+      0.525,
+      0.525,
+      0.975,
+      0.975
+    ],
+    "bag": [
+      0.025,
+      0.025,
+      0.475,
+      0.475
+    ],
+    "paper": [
+      0.51,
+      0.01,
+      0.99,
+      0.49
+    ]
+  },
+  "estimated_rgba8_texture_with_mipmaps_mib": 8.0,
+  "nodes": {
+    "ReaderRoot": {
+      "parent": null,
+      "world_pivot_m": [
+        0,
+        0,
+        0
+      ],
+      "local_position_m": [
+        0,
+        0,
+        0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "ReaderStatic": {
+      "parent": "ReaderRoot",
+      "world_pivot_m": [
+        0,
+        0,
+        0
+      ],
+      "local_position_m": [
+        0,
+        0,
+        0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "ReaderBody": {
+      "parent": "ReaderRoot",
+      "world_pivot_m": [
+        0,
+        0.62,
+        0
+      ],
+      "local_position_m": [
+        0,
+        0.62,
+        0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "ReaderHead": {
+      "parent": "ReaderBody",
+      "world_pivot_m": [
+        0,
+        1.2,
+        0.1
+      ],
+      "local_position_m": [
+        0,
+        0.58,
+        0.1
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "ReaderPaper": {
+      "parent": "ReaderBody",
+      "world_pivot_m": [
+        0,
+        0.9,
+        0.425
+      ],
+      "local_position_m": [
+        0,
+        0.28,
+        0.425
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "ReaderTurnPage": {
+      "parent": "ReaderPaper",
+      "world_pivot_m": [
+        0,
+        0.9,
+        0.425
+      ],
+      "local_position_m": [
+        0,
+        0.0,
+        0.0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "ReaderLeftHand": {
+      "parent": "ReaderPaper",
+      "world_pivot_m": [
+        -0.39,
+        0.86,
+        0.43
+      ],
+      "local_position_m": [
+        -0.39,
+        -0.040000000000000036,
+        0.0050000000000000044
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "ReaderRightHand": {
+      "parent": "ReaderPaper",
+      "world_pivot_m": [
+        0.39,
+        0.88,
+        0.43
+      ],
+      "local_position_m": [
+        0.39,
+        -0.020000000000000018,
+        0.0050000000000000044
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    }
+  },
+  "page_turn": {
+    "node": "ReaderTurnPage",
+    "axis": "local Y",
+    "radians": [
+      0,
+      3.141592653589793
+    ],
+    "side": "reader-facing -Z",
+    "hidden_at_rest": true,
+    "leaf_width_m": 0.392,
+    "both_sides_printed": true
+  },
+  "notes": [
+    "Original editable custom mesh geometry; the generated concept informed silhouette and material only.",
+    "Opaque matte shared atlas; finite cloth hems, fingers, seams, paper thickness and printed reverse sides.",
+    "Source retains named individual components. Export combines by pose node into seven shared-material meshes.",
+    "Construction counts are not measured Quest performance. Inspect the GLB in the application."
+  ]
+}

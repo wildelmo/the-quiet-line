@@ -1,0 +1,438 @@
+{
+  "name": "The Quiet Line \u2014 original painted little companions",
+  "generator": "scripts/build-companions.py",
+  "blender": "4.5.15 LTS",
+  "coordinates": {
+    "up": "Y",
+    "forward": "+Z",
+    "origin": "each root at ground; perch top Y=0"
+  },
+  "bounds_m": {
+    "min": [
+      -0.6200000047683716,
+      -0.07453756034374237,
+      -0.11999999731779099
+    ],
+    "max": [
+      0.6200000047683716,
+      0.23127561807632446,
+      0.11999999731779099
+    ],
+    "size": [
+      1.2400000095367432,
+      0.30581317842006683,
+      0.23999999463558197
+    ]
+  },
+  "mesh_count": 10,
+  "primitives": 10,
+  "triangles": 17266,
+  "characters": {
+    "Mouse": {
+      "bounds_m": {
+        "min": [
+          -0.07809470593929291,
+          0.0,
+          -0.07925073802471161
+        ],
+        "max": [
+          0.14429056644439697,
+          0.23127561807632446,
+          0.09522770345211029
+        ],
+        "size": [
+          0.22238527238368988,
+          0.23127561807632446,
+          0.1744784414768219
+        ]
+      },
+      "mesh_count": 5,
+      "primitives": 5,
+      "triangles": 11566
+    },
+    "Fuzz": {
+      "bounds_m": {
+        "min": [
+          -0.04387255758047104,
+          0.0007250045891851187,
+          -0.03664030507206917
+        ],
+        "max": [
+          0.04568846523761749,
+          0.09216897934675217,
+          0.03818996995687485
+        ],
+        "size": [
+          0.08956102281808853,
+          0.09144397475756705,
+          0.07483027502894402
+        ]
+      },
+      "mesh_count": 4,
+      "primitives": 4,
+      "triangles": 5024
+    },
+    "Perch": {
+      "bounds_m": {
+        "min": [
+          -0.6200000047683716,
+          -0.07453756034374237,
+          -0.11999999731779099
+        ],
+        "max": [
+          0.6200000047683716,
+          0.0,
+          0.11999999731779099
+        ],
+        "size": [
+          1.2400000095367432,
+          0.07453756034374237,
+          0.23999999463558197
+        ]
+      },
+      "mesh_count": 1,
+      "primitives": 1,
+      "triangles": 676
+    }
+  },
+  "materials": 2,
+  "images": 1,
+  "alpha_mode": "OPAQUE",
+  "glb_bytes": 3820316,
+  "source_blend_bytes": 5710066,
+  "source_parts_by_pose_group": {
+    "MouseBody": 20,
+    "MouseHead": 21,
+    "MouseEyes": 4,
+    "MouseNose": 1,
+    "MouseTail": 1,
+    "FuzzBody": 33,
+    "FuzzEyes": 6,
+    "FuzzLeftLeg": 2,
+    "FuzzRightLeg": 2,
+    "Perch": 3
+  },
+  "texture_dimensions": [
+    1254,
+    1254
+  ],
+  "atlas": "public/assets/spirits/reader-material-atlas.png",
+  "atlas_regions_blender_uv": {
+    "ivory": [
+      0.525,
+      0.525,
+      0.975,
+      0.975
+    ],
+    "wood": [
+      0.025,
+      0.025,
+      0.475,
+      0.475
+    ]
+  },
+  "nodes": {
+    "Mouse": {
+      "parent": null,
+      "world_pivot_m": [
+        0,
+        0,
+        0
+      ],
+      "local_position_m": [
+        0,
+        0,
+        0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "local_scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "MouseBody": {
+      "parent": "Mouse",
+      "world_pivot_m": [
+        0,
+        0.08,
+        0
+      ],
+      "local_position_m": [
+        0,
+        0.08,
+        0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "local_scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "MouseHead": {
+      "parent": "MouseBody",
+      "world_pivot_m": [
+        0,
+        0.14,
+        0.015
+      ],
+      "local_position_m": [
+        0,
+        0.06000000000000001,
+        0.015
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "local_scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "MouseEyes": {
+      "parent": "MouseHead",
+      "world_pivot_m": [
+        0,
+        0.168,
+        0.064
+      ],
+      "local_position_m": [
+        0,
+        0.027999999999999997,
+        0.049
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "local_scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "MouseNose": {
+      "parent": "MouseHead",
+      "world_pivot_m": [
+        0,
+        0.151,
+        0.092
+      ],
+      "local_position_m": [
+        0,
+        0.010999999999999982,
+        0.077
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "local_scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "MouseTail": {
+      "parent": "Mouse",
+      "world_pivot_m": [
+        0.044,
+        0.032,
+        -0.041
+      ],
+      "local_position_m": [
+        0.044,
+        0.032,
+        -0.041
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "local_scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "Fuzz": {
+      "parent": null,
+      "world_pivot_m": [
+        0,
+        0,
+        0
+      ],
+      "local_position_m": [
+        0,
+        0,
+        0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "local_scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "FuzzBody": {
+      "parent": "Fuzz",
+      "world_pivot_m": [
+        0,
+        0,
+        0
+      ],
+      "local_position_m": [
+        0,
+        0,
+        0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "local_scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "FuzzEyes": {
+      "parent": "FuzzBody",
+      "world_pivot_m": [
+        0,
+        0.059,
+        0.038
+      ],
+      "local_position_m": [
+        0,
+        0.059,
+        0.038
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "local_scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "FuzzLeftLeg": {
+      "parent": "FuzzBody",
+      "world_pivot_m": [
+        -0.016,
+        0.027,
+        0.001
+      ],
+      "local_position_m": [
+        -0.016,
+        0.027,
+        0.001
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "local_scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "FuzzRightLeg": {
+      "parent": "FuzzBody",
+      "world_pivot_m": [
+        0.016,
+        0.027,
+        0.001
+      ],
+      "local_position_m": [
+        0.016,
+        0.027,
+        0.001
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "local_scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "Perch": {
+      "parent": null,
+      "world_pivot_m": [
+        0,
+        0,
+        0
+      ],
+      "local_position_m": [
+        0,
+        0,
+        0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "local_scale": [
+        1,
+        1,
+        1
+      ]
+    }
+  },
+  "notes": [
+    "Original editable sculptures; separate named source parts retained in the .blend.",
+    "All three roots remain at origin. Runtime places the mouse and perch and clones Fuzz.",
+    "One unchanged reader atlas; one opaque atlas material and one untextured matte eye material.",
+    "Chalk white fuzz eyes uses white eyeball and dark pupil vertex colors and has no texture.",
+    "Mouse cheek and brow tufts, cupped ears, pink paws and curled tail are actual solid geometry.",
+    "Fuzz uses short bent tapered wisps and white eyes; no alpha planes, hair simulation or emission.",
+    "FuzzLeftLeg and FuzzRightLeg pivot at their authored hips with identity rest axes; local X swings the legs forward/back.",
+    "Leg mesh children countertranslate their hip pivots to preserve the approved geometry and rest bounds exactly.",
+    "MouseEyes and FuzzEyes support blink scaling on local Y. MouseNose supports a small twitch.",
+    "Perch top is Y=0, width X=1.24 m, depth Z=.24 m, underside within .08 m.",
+    "No animation, camera or light is exported.",
+    "Construction counts are not measured device performance."
+  ]
+}

@@ -12,10 +12,13 @@ No source image pixels, downloaded model or extracted model parts are used.
 | `carriage.blend` | Editable Blender source, with packed painted atlas |
 | `../../scripts/build-train.py` | Rebuilds source, GLB and metadata |
 | `carriage-metadata.json` | Dimensions, anchors and measured export counts |
-| `materials.json` | Atlas regions, safe UV coordinates and provenance |
+| `lived-in-materials.json` | Current atlas regions, safe UV coordinates and provenance |
+| `materials.json` | Historical original-atlas UVs and provenance |
 | `../../public/assets/train/carriage.glb` | Runtime asset, with one embedded atlas |
-| `../../public/assets/train/carriage-material-atlas.png` | Original 1254 × 1254 native generated artwork |
-| `../../public/assets/train/carriage-material-atlas.exact.prompt.txt` | Exact generation prompt, also embedded in the PNG |
+| `../../public/assets/train/carriage-lived-in-atlas.png` | Current 1536 × 1024 native generated artwork |
+| `../../public/assets/train/carriage-lived-in-atlas.exact.prompt.txt` | Current exact prompt, also embedded in the PNG |
+| `../../public/assets/train/carriage-material-atlas.png` | Historical 1254 × 1254 native artwork; not embedded in the current GLB |
+| `../../public/assets/train/carriage-material-atlas.exact.prompt.txt` | Preserved original prompt, also embedded in the historical PNG |
 | `../../src/train.js` | GLB loader, door movement and lighting adaptation |
 
 ## Rebuild
@@ -46,6 +49,13 @@ timber frames, floorboards, rounded roof, hanging straps and lamps form the
 interior. `DoorLeftForward` and `DoorLeftRear` slide at the left boarding opening;
 its clear width is 1.35m. Doors close on departure and reopen at the home berth.
 
+The rear maroon lower body consists of two side panels and a sill below the
+cream door. The previous full-width body and door both placed an interior face
+at z=7.49, producing viewpoint-dependent maroon tearing. Splitting the body
+removes that overlap while retaining the painted door and exterior enclosure.
+The exported-geometry regression in `tests/train-asset.test.js` checks 28 opaque
+ray probes across the lower wall for closure and one nearest front surface.
+
 The station remains independent at (-3.4, 0.6, -3) on the raised grassy shore.
 `src/travel.js` moves the train, visitor rig and ticket together along the 1.1km
 route, with a 3m/s cruise. Boarding, seat changes and return use explicit faded
@@ -53,25 +63,73 @@ placements. There is no water-plane teleport or moving station.
 
 ## Material provenance and cost
 
-The opaque RGB sRGB atlas has maroon enamel, cream enamel, walnut and red
-moquette quadrants. The generation prompt requested 1024 square; native output
-was 1254 square and is preserved at that size. Only exact-prompt metadata was
-added to the project PNG; its pixels and opacity were preserved. `materials.json`
-records the retained original output path and safe UVs, including Blender's V
-inversion. The atlas is not tileable; keep UV islands inside their inset regions.
+The current 1536 × 1024 opaque RGB sRGB atlas supplies worn oxblood and cream
+enamel, walnut, faded plain and repaired red cloth, and two illustrated notices.
+It is one built-in image-generation output with no revisions or pixel edits;
+only exact-prompt metadata was added. `lived-in-materials.json` records native
+provenance, exact field boundaries, safe UVs and Blender's V inversion. The atlas
+is not tileable; keep UV islands within their safe regions and grain aligned
+to the timber. The editable Blender source packs it; the GLB embeds one copy.
+
+Two upward cushion faces carry small stitched repairs. The upper right route
+notice reads THE QUIET LINE, REED BANK, SEA GLASS and LANTERN PIER. The rear wall
+carries a Lantern Pier poster and 03 plate. The rear scarf and forward tied
+cloth parcel are opaque static geometry in the existing painted batch.
+Soft floor/bench/trim shading is stored in vertex colors; existing day/night
+lighting remains active. One refinement batch corrected floor UV stretch and
+tint before final review. No runtime JavaScript, live lights, shadow passes or
+animation were added for this treatment.
 
 References: [exterior](https://images4.alphacoders.com/127/thumb-1920-1274022.jpg)
 and [interior](https://images5.alphacoders.com/501/thumbbig-501188.webp). Copies in
 `.impeccable/review/` are ignored local inspection aids, not runtime assets.
 
-Current export: 42,580 triangles, seven mesh primitives, five materials and
-3,941,940 bytes. The one 1254 × 1254 atlas is about 8 MiB decoded as RGBA8 with
-mipmaps. Low-opacity double-sided glass uses no transmission render target but
-can add a pass. Seven primitives are not a promise of seven actual draw calls.
+Current export: 45,097 triangles, seven mesh primitives, five materials and
+5,406,204 bytes. The atlas is about 8.00 MiB decoded as RGBA8 with mipmaps.
+Against the rear-wall export, the addition is 2,285 triangles: 1,936 for floor
+vertex shading, 177 for notices/numbering and 172 for belongings. Download size
+grows by 1,455,112 bytes; estimated texture memory grows by 1,856 bytes from
+7.99823 MiB. All 13 matched browser views retain their draw-call counts.
+Low-opacity double-sided glass uses no transmission render target but can add
+a pass. Counts and desktop samples do not establish Quest performance.
 
-The asset checks, 47-test suite and production build pass. Independent browser
-QA and the fresh **ship** visual verdict cover the first carriage/window-seat
-milestone. Captures include both seats, aisle, exterior, daylight/night and
-mobile controls. No physical Quest stereo, comfort, controller, audio-balance
-or sustained frame-time validation has been performed. This milestone is local;
-the published site was not updated in this pass.
+All 95 tests and the production build pass in the retained `character-*` logs;
+the existing 732.63 kB JavaScript chunk warning remains. The final exported-asset
+checks cover rear-wall closure, upward-only repairs, inward notices, readable
+UV orientation and costs. Browser checks report no errors across 19 captures,
+including both seats, day/night, mobile and the user's viewport, with boarding,
+departure, pause and return exercised. `character-finish-review.md` returns
+**ship** with all 19 captures valid and no material fixes. The user accepted
+the finished result: “I think we nailed it.” Provenance scan:
+seven rasters, zero missing. See `.impeccable/review/character-verification.md`.
+`output/carriage-character.png` is the final left-rear browser capture.
+This extension is maintained on `codex/newspaper-spirit`.
+
+## Historical atlas and rear-wall evidence
+
+The original 1254 × 1254 atlas and `materials.json` remain historical source,
+with their pixels, UVs and provenance retained. Its generation prompt requested
+1024 square; the native 1254-square output was preserved with only prompt
+metadata added. It is no longer embedded in the current GLB.
+
+The rear-wall repair produced 42,812 triangles and a 3,951,092-byte GLB, adding
+232 triangles and 9,152 bytes to the historical
+42,580-triangle, 3,941,940-byte export. Materials, primitive count, atlas pixels
+and provenance were unchanged at that milestone. No new image was generated.
+
+At that repair milestone, all 90 tests and the production build passed. The regression fails
+on the old GLB and passes on the rebuilt asset. Post-fix browser evidence covers
+19 captures across both seats, the user's viewport, boarding, eye-contact/rest
+framing, night, mobile, travel, separate exterior asset inspections and five
+frames from a slow looking sweep. The original reviewer returned **ship** in
+`rear-wall-verdict.md`, opening all 19 captures and resolving its two findings
+without visible repair-induced material regression. The verdict covers those
+two fixes only; its initial **fix** review supersedes earlier approval for this defect.
+The retained WebM has not received continuous-playback visual certification.
+This repair is local, uncommitted and unpublished.
+
+At the historical first carriage milestone, the asset checks, 47-test suite and
+production build passed; the then-current **ship** review covered both seats,
+aisle, exterior, daylight/night and mobile controls. That train milestone was
+subsequently deployed. No physical Quest stereo, comfort, controller,
+audio-balance or sustained frame-time validation has been performed.

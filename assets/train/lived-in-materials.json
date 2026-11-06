@@ -1,0 +1,538 @@
+{
+  "asset": "Quiet Line lived-in carriage painted material atlas",
+  "image": "../../public/assets/train/carriage-lived-in-atlas.png",
+  "width": 1536,
+  "height": 1024,
+  "format": "PNG",
+  "channels": "RGB",
+  "bitDepth": 8,
+  "opaque": true,
+  "colorSpace": "sRGB",
+  "purpose": "One opaque base-color atlas for the existing carriage material batches: five painted material fields and one field containing two railway notices. Permanent wear is painted; changing daylight remains separate.",
+  "origin": "imageUV: top-left origin, x right, y down. blenderUV: bottom-left origin, u right, v up; V = 1 - image y.",
+  "layout": {
+    "columns": 3,
+    "rows": 2,
+    "fieldWidth": 512,
+    "fieldHeight": 512,
+    "columnBoundariesPixels": [
+      0,
+      512,
+      1024,
+      1536
+    ],
+    "rowBoundariesPixels": [
+      0,
+      512,
+      1024
+    ],
+    "columnBoundariesNormalizedExact": [
+      "0",
+      "1/3",
+      "2/3",
+      "1"
+    ],
+    "rowBoundariesNormalizedExact": [
+      "0",
+      "1/2",
+      "1"
+    ],
+    "noticeSplitPixelY": 768,
+    "noticeSplitNormalizedExact": "3/4"
+  },
+  "sampling": {
+    "wrap": "ClampToEdge",
+    "tileable": false,
+    "fullBounds": "imageUV and blenderUV are exact full field bounds. Thirds are represented by nearest JSON double; pixelBounds give exact integer boundaries.",
+    "safeBounds": "Use safeImageUV/safeBlenderUV to avoid adjacent field bleed; 12 pixels inset on material fields and 4 pixels inside notice cream borders. Notice UVs preserve the complete title and route labels.",
+    "grain": "Walnut grain runs vertically in image. Orient UVs to follow the long axis of each physical timber member.",
+    "centralUpholstery": "The plain and repaired cloth fields share appearance. Plain cloth is sampleable over its central 85 percent; repaired cloth contains one approximately 16-percent-wide patch near local x=.2,y=.75."
+  },
+  "regions": {
+    "maroon_enamel": {
+      "name": "Oxblood enamel",
+      "placement": "top-left",
+      "pixelBounds": {
+        "min": [
+          0,
+          0
+        ],
+        "max": [
+          512,
+          512
+        ],
+        "maxExclusive": true
+      },
+      "imageUV": {
+        "min": [
+          0,
+          0
+        ],
+        "max": [
+          0.3333333333333333,
+          0.5
+        ]
+      },
+      "blenderUV": {
+        "min": [
+          0,
+          0.5
+        ],
+        "max": [
+          0.3333333333333333,
+          1
+        ]
+      },
+      "safeImageUV": {
+        "min": [
+          0.0078125,
+          0.01171875
+        ],
+        "max": [
+          0.3255208333333333,
+          0.48828125
+        ]
+      },
+      "safeBlenderUV": {
+        "min": [
+          0.0078125,
+          0.51171875
+        ],
+        "max": [
+          0.3255208333333333,
+          0.98828125
+        ]
+      },
+      "safeInsetPixels": 12,
+      "suggestedRoughness": 0.8,
+      "metallic": 0
+    },
+    "cream_enamel": {
+      "name": "Buttercream enamel",
+      "placement": "top-middle",
+      "pixelBounds": {
+        "min": [
+          512,
+          0
+        ],
+        "max": [
+          1024,
+          512
+        ],
+        "maxExclusive": true
+      },
+      "imageUV": {
+        "min": [
+          0.3333333333333333,
+          0
+        ],
+        "max": [
+          0.6666666666666666,
+          0.5
+        ]
+      },
+      "blenderUV": {
+        "min": [
+          0.3333333333333333,
+          0.5
+        ],
+        "max": [
+          0.6666666666666666,
+          1
+        ]
+      },
+      "safeImageUV": {
+        "min": [
+          0.3411458333333333,
+          0.01171875
+        ],
+        "max": [
+          0.6588541666666666,
+          0.48828125
+        ]
+      },
+      "safeBlenderUV": {
+        "min": [
+          0.3411458333333333,
+          0.51171875
+        ],
+        "max": [
+          0.6588541666666666,
+          0.98828125
+        ]
+      },
+      "safeInsetPixels": 12,
+      "suggestedRoughness": 0.82,
+      "metallic": 0
+    },
+    "walnut_timber": {
+      "name": "Warm walnut timber",
+      "placement": "top-right",
+      "pixelBounds": {
+        "min": [
+          1024,
+          0
+        ],
+        "max": [
+          1536,
+          512
+        ],
+        "maxExclusive": true
+      },
+      "imageUV": {
+        "min": [
+          0.6666666666666666,
+          0
+        ],
+        "max": [
+          1,
+          0.5
+        ]
+      },
+      "blenderUV": {
+        "min": [
+          0.6666666666666666,
+          0.5
+        ],
+        "max": [
+          1,
+          1
+        ]
+      },
+      "safeImageUV": {
+        "min": [
+          0.6744791666666666,
+          0.01171875
+        ],
+        "max": [
+          0.9921875,
+          0.48828125
+        ]
+      },
+      "safeBlenderUV": {
+        "min": [
+          0.6744791666666666,
+          0.51171875
+        ],
+        "max": [
+          0.9921875,
+          0.98828125
+        ]
+      },
+      "safeInsetPixels": 12,
+      "grainDirection": "vertical in image",
+      "suggestedRoughness": 0.88,
+      "metallic": 0
+    },
+    "red_moquette": {
+      "name": "Faded brick-red upholstery",
+      "placement": "bottom-left",
+      "pixelBounds": {
+        "min": [
+          0,
+          512
+        ],
+        "max": [
+          512,
+          1024
+        ],
+        "maxExclusive": true
+      },
+      "imageUV": {
+        "min": [
+          0,
+          0.5
+        ],
+        "max": [
+          0.3333333333333333,
+          1
+        ]
+      },
+      "blenderUV": {
+        "min": [
+          0,
+          0
+        ],
+        "max": [
+          0.3333333333333333,
+          0.5
+        ]
+      },
+      "safeImageUV": {
+        "min": [
+          0.0078125,
+          0.51171875
+        ],
+        "max": [
+          0.3255208333333333,
+          0.98828125
+        ]
+      },
+      "safeBlenderUV": {
+        "min": [
+          0.0078125,
+          0.01171875
+        ],
+        "max": [
+          0.3255208333333333,
+          0.48828125
+        ]
+      },
+      "safeInsetPixels": 12,
+      "suggestedRoughness": 0.98,
+      "metallic": 0
+    },
+    "repaired_moquette": {
+      "name": "Repaired brick-red upholstery",
+      "placement": "bottom-middle",
+      "pixelBounds": {
+        "min": [
+          512,
+          512
+        ],
+        "max": [
+          1024,
+          1024
+        ],
+        "maxExclusive": true
+      },
+      "imageUV": {
+        "min": [
+          0.3333333333333333,
+          0.5
+        ],
+        "max": [
+          0.6666666666666666,
+          1
+        ]
+      },
+      "blenderUV": {
+        "min": [
+          0.3333333333333333,
+          0
+        ],
+        "max": [
+          0.6666666666666666,
+          0.5
+        ]
+      },
+      "safeImageUV": {
+        "min": [
+          0.3411458333333333,
+          0.51171875
+        ],
+        "max": [
+          0.6588541666666666,
+          0.98828125
+        ]
+      },
+      "safeBlenderUV": {
+        "min": [
+          0.3411458333333333,
+          0.01171875
+        ],
+        "max": [
+          0.6588541666666666,
+          0.48828125
+        ]
+      },
+      "safeInsetPixels": 12,
+      "suggestedRoughness": 0.98,
+      "metallic": 0,
+      "patch": "One small muted ochre woven patch with cream hand stitches, near lower-left quarter."
+    },
+    "notices": {
+      "name": "Two illustrated railway notices",
+      "placement": "bottom-right",
+      "pixelBounds": {
+        "min": [
+          1024,
+          512
+        ],
+        "max": [
+          1536,
+          1024
+        ],
+        "maxExclusive": true
+      },
+      "imageUV": {
+        "min": [
+          0.6666666666666666,
+          0.5
+        ],
+        "max": [
+          1,
+          1
+        ]
+      },
+      "blenderUV": {
+        "min": [
+          0.6666666666666666,
+          0
+        ],
+        "max": [
+          1,
+          0.5
+        ]
+      }
+    },
+    "route_map": {
+      "name": "The Quiet Line route notice",
+      "placement": "upper notice half",
+      "pixelBounds": {
+        "min": [
+          1024,
+          512
+        ],
+        "max": [
+          1536,
+          768
+        ],
+        "maxExclusive": true
+      },
+      "imageUV": {
+        "min": [
+          0.6666666666666666,
+          0.5
+        ],
+        "max": [
+          1,
+          0.75
+        ]
+      },
+      "blenderUV": {
+        "min": [
+          0.6666666666666666,
+          0.25
+        ],
+        "max": [
+          1,
+          0.5
+        ]
+      },
+      "safeImageUV": {
+        "min": [
+          0.6692708333333334,
+          0.50390625
+        ],
+        "max": [
+          0.9973958333333334,
+          0.74609375
+        ]
+      },
+      "safeBlenderUV": {
+        "min": [
+          0.6692708333333334,
+          0.25390625
+        ],
+        "max": [
+          0.9973958333333334,
+          0.49609375
+        ]
+      },
+      "safeInsetPixels": 4,
+      "aspectRatio": 2,
+      "text": [
+        "THE QUIET LINE",
+        "REED BANK",
+        "SEA GLASS",
+        "LANTERN PIER"
+      ]
+    },
+    "lantern_pier_poster": {
+      "name": "Lantern Pier seaside outing poster",
+      "placement": "lower notice half",
+      "pixelBounds": {
+        "min": [
+          1024,
+          768
+        ],
+        "max": [
+          1536,
+          1024
+        ],
+        "maxExclusive": true
+      },
+      "imageUV": {
+        "min": [
+          0.6666666666666666,
+          0.75
+        ],
+        "max": [
+          1,
+          1
+        ]
+      },
+      "blenderUV": {
+        "min": [
+          0.6666666666666666,
+          0
+        ],
+        "max": [
+          1,
+          0.25
+        ]
+      },
+      "safeImageUV": {
+        "min": [
+          0.6692708333333334,
+          0.75390625
+        ],
+        "max": [
+          0.9973958333333334,
+          0.99609375
+        ]
+      },
+      "safeBlenderUV": {
+        "min": [
+          0.6692708333333334,
+          0.00390625
+        ],
+        "max": [
+          0.9973958333333334,
+          0.24609375
+        ]
+      },
+      "safeInsetPixels": 4,
+      "aspectRatio": 2,
+      "text": [
+        "LANTERN PIER"
+      ]
+    }
+  },
+  "gpuBudget": {
+    "textureImages": 1,
+    "rgba8BaseBytes": 6291456,
+    "rgba8WithFullMipChainBytes": 8388604,
+    "rgba8WithFullMipChainMiB": 7.999996185302734,
+    "mipLevels": 11,
+    "capMiB": 32,
+    "note": "Conservative RGBA8 allocation including the complete mip chain; native PNG is RGB. This is texture-memory arithmetic, not measured headset frame time."
+  },
+  "provenance": {
+    "generatedWith": "Built-in image_gen tool; no CLI/API fallback",
+    "generatedDate": "2026-11-06",
+    "generatedOriginal": "$CODEX_HOME/generated_images/01a1b1ca-4e21-7bf2-aafe-b007e4f3fba8/exec-ed4dcd9e-1e08-4c4e-83c3-74b207de44bd.png",
+    "originalPreserved": true,
+    "originalAtlasPreserved": "../../public/assets/train/carriage-material-atlas.png",
+    "referenceImages": [
+      "../../public/assets/train/carriage-material-atlas.png",
+      "../../output/rear-wall-fixed.png"
+    ],
+    "sourceImagesRole": "Both reference images were visually inspected for palette and style only, translated into the generation prompt. No reference pixels were copied into the new atlas; no image input paths were passed to the generation call.",
+    "exactPrompt": "../../public/assets/train/carriage-lived-in-atlas.exact.prompt.txt",
+    "promptMetadata": "PNG tEXt key impeccable:prompt, embedded with Impeccable embed-prompt --prompt-file.",
+    "request": {
+      "width": 1536,
+      "height": 1024,
+      "transparent_background": false
+    },
+    "generationCount": 1,
+    "revisionCount": 0,
+    "modifications": "Copied the native generated PNG into the project and embedded the exact tool prompt. No resampling, crops, recoloring, compositing, or pixel edits."
+  },
+  "validation": {
+    "visual": "Inspected full native output: exact three-by-two arrangement, vertical walnut grain, restrained enamel wear, worn red cloth, one small repair, two stacked landscape notices. All requested title and stop labels are accurately rendered. No perspective or hard cast shadows in material fields.",
+    "file": "PNG IHDR: 1536 x 1024, 8-bit RGB color type 2; no tRNS chunk, so fully opaque. Embedded exact prompt verified against the prompt sidecar. Native pixel payload preserved."
+  }
+}

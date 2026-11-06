@@ -1,5 +1,8 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { createTrainReader } from './train-reader.js';
+import { createTrainPassengers } from './train-passengers.js';
+import { createTrainCompanions } from './train-companions.js';
 
 export const TRAIN_HOME = [0, 0, -4];
 export const TRAIN_FLOOR = .9;
@@ -53,9 +56,15 @@ export async function createTrain(scene, renderer, { reducedMotion = false } = {
     }
   }
   placeDoors();
+  const reader = await createTrainReader(root, renderer, { reducedMotion });
+  const passengers = await createTrainPassengers(root, { reducedMotion, material: reader.material });
+  const companions = await createTrainCompanions(root, { reducedMotion, material: reader.material });
   scene.add(root);
   return {
     root,
+    get reader() { return reader.state; },
+    get travellers() { return passengers.state; },
+    get companions() { return companions.state; },
     anchors: {
       boarding: new THREE.Vector3(-.55, TRAIN_FLOOR, 5),
       leftSeat: new THREE.Vector3(-.86, TRAIN_FLOOR, 0),
@@ -68,7 +77,10 @@ export async function createTrain(scene, renderer, { reducedMotion = false } = {
         placeDoors();
       }
     },
-    update(time, dt, light) {
+    update(time, dt, light, viewer) {
+      reader.update(time, light);
+      passengers.update(time);
+      companions.update(time, light, dt, viewer);
       doorAmount = THREE.MathUtils.damp(doorAmount, doorTarget, 7, Math.min(dt, .1));
       if (Math.abs(doorAmount - doorTarget) < .001) doorAmount = doorTarget;
       placeDoors();

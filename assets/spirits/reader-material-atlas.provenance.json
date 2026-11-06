@@ -1,0 +1,81 @@
+{
+  "asset": "public/assets/spirits/reader-material-atlas.png",
+  "kind": "shipping 2x2 material texture atlas",
+  "generation_tool": "built-in image_gen.imagegen",
+  "generation_mode": "new generation",
+  "native_output_path": "C:\\Users\\joemc\\.codex\\generated_images\\01a1af6f-d022-72f3-a7bf-8c53b6b32a5d\\exec-94197439-771c-4887-b512-0bdc53791aad.png",
+  "native_output_sha256": "688b6d7ce9657c1b0b4c685d0e19a3ff5ca1eb517ce03f29959a04a27ed7f9f2",
+  "prompt_file": "assets/spirits/reader-material-atlas.prompt.txt",
+  "exact_prompt": "Use case: stylized-concept.\nAsset type: one production material texture atlas for an original painterly 3D train passenger. Generate exactly ONE square image, approximately 1024 by 1024 pixels, native quality, fully opaque.\nPrimary request: a strict 2 by 2 grid of FOUR EXACTLY EQUAL square quadrants, with vertical and horizontal boundaries at precisely 50 percent of the whole canvas. Material pixels meet at those boundaries; NO gutters, NO borders, NO separator lines, NO outer margin. Entire canvas is filled. Flat orthographic material swatches, no perspective, no lighting gradient across the atlas, no cast shadows.\nUPPER LEFT quadrant, 0–50% x and 0–50% y: edge-to-edge worn muted indigo blue cloth. Handmade brush-painted coarse woven canvas/linen, fine faded blue and tiny warm ochre wear flecks, subtle irregular fibers and weave. Rich matte mid-to-dark indigo, restrained tonal range. Absolutely no written words, motifs, garment seams, drawn folds or objects; flat usable fabric surface.\nUPPER RIGHT quadrant, 50–100% x and 0–50% y: edge-to-edge pale warm ivory skin material, a soft original cross between mottled ceramic and reed husk. Fine warm-gray/ochre irregularities, gentle thin vertical reed grain and delicate pale weathered speckles. Almost-white cream, matte, restrained tonal range. Absolutely no written words, face, eyes, masks, cracks, symbols or objects.\nLOWER LEFT quadrant, 0–50% x and 50–100% y: edge-to-edge brown worn canvas/leather travel-bag surface. Warm muted ochre chestnut, matte brushed fiber and small scuffed grain, subtle weathering. Uniform material patch without seams, straps, buckles, written words, shadows or objects.\nLOWER RIGHT quadrant, 50–100% x and 50–100% y: ONE original complete flat newspaper front page, square composition filling exactly this entire square quadrant with warm cream paper. This quadrant alone includes sensible internal paper margins around the printed content, about 6 percent of its width on each side, with generous header space. No folded edge, curl, perspective or shadow. Header prominently and legibly reads exactly \"THE TIDE TIMES\" in dark warm charcoal old-fashioned serif type. Beneath it, restrained fine rules, a small ocean-and-island engraved print illustration, a smaller railway carriage engraved illustration, and tidy newspaper columns of small typographic print. Calm original coastal publication, subtle warm ink on ivory paper. Preserve entire heading and illustrations inside this quadrant's internal margins.\nStyle for all four fields: beautifully hand-painted matte textures matching a warm cream and red train carriage by a bright summer ocean, restrained pigment and brushwork, designed to wrap sculptural geometry. Do not depict any figure or scene outside the newspaper illustrations.\nConstraints: exactly equal quadrants; no labels on cloth, skin or bag fields; no text anywhere except the newspaper quadrant; no atlas titles or legend; no transparent pixels; no 3D panels; no thick grid marks; no texture elements crossing a quadrant boundary.",
+  "transparent_background_requested": false,
+  "reference_image": null,
+  "reference_role": null,
+  "inspection_utc": "2026-11-06T06:01:48.948412+00:00",
+  "metadata": {
+    "width": 1254,
+    "height": 1254,
+    "bit_depth": 8,
+    "png_color_type": 2,
+    "interlace": 0,
+    "file_sha256": "ed8bdf760fe1dc01b6a45661e9fcef650054a84debebc2664eafb67b22bf7925",
+    "idat_sha256": "09e761303b6b687a4ce1a4627520dbfaed882479cd5c34fc0db461d1b9587926",
+    "file_bytes": 3348277,
+    "png_text_keys": [
+      "impeccable:prompt"
+    ],
+    "opacity": "fully opaque (RGB PNG, no alpha or tRNS)"
+  },
+  "native_pixels_preserved": true,
+  "image_processing": "Original output copied without resizing, cropping, painting, or re-encoding. Exact generation prompt embedded as PNG tEXt with impeccable embed-prompt; PNG IDAT hash unchanged.",
+  "limitations": [
+    "Newspaper microtext is visual texture and is not expected to be meaningful editorial copy.",
+    "Rendering, UV orientation, mip bleed and in-scene material appearance must be inspected in runtime.",
+    "Generated fields meet at the half-width/half-height; use inset UVs for filtering."
+  ],
+  "layout_image_origin": "top-left; x right; y down",
+  "quadrants": {
+    "upper_left": {
+      "material": "worn indigo cloth",
+      "normalized_rect": [
+        0,
+        0,
+        0.5,
+        0.5
+      ]
+    },
+    "upper_right": {
+      "material": "warm ivory ceramic/reed skin",
+      "normalized_rect": [
+        0.5,
+        0,
+        1,
+        0.5
+      ]
+    },
+    "lower_left": {
+      "material": "brown worn canvas/leather bag",
+      "normalized_rect": [
+        0,
+        0.5,
+        0.5,
+        1
+      ]
+    },
+    "lower_right": {
+      "material": "one complete newspaper front page",
+      "normalized_rect": [
+        0.5,
+        0.5,
+        1,
+        1
+      ],
+      "header": "THE TIDE TIMES",
+      "illustrations": [
+        "ocean and island",
+        "railway carriage"
+      ],
+      "internal_print_margins": true
+    }
+  },
+  "uv_note": "For bottom-left-origin Blender UVs: TL indigo has v 0.5–1; TR ivory v 0.5–1; BL bag v 0–0.5; BR paper v 0–0.5. Inset to avoid quadrant bleed."
+}

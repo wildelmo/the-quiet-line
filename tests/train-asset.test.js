@@ -72,7 +72,7 @@ function sceneGeometry(asset) {
         for (let i = 0; i < indices.length; i += 3) {
           triangles.push(indices.slice(i, i + 3).map(n => vertices[n]));
         }
-        meshes.push({ name: node.name, primitive, vertices, triangles,
+        meshes.push({ name: node.name, primitive, vertices, triangles, indices,
           material: json.materials[primitive.material] });
       }
     }
@@ -160,12 +160,65 @@ test('the carriage stays inside its proposed geometry, draw and texture budgets'
   const asset = readCarriage(), { meshes } = sceneGeometry(asset);
   const triangles = meshes.reduce((total, mesh) => total + mesh.triangles.length, 0);
   assert(triangles <= 50000, `Export has ${triangles} triangles; proposed cap is 50,000.`);
-  assert(meshes.length <= 12, `Export needs ${meshes.length} primitive draws; proposed cap is 12.`);
+  assert(meshes.length <= 7, `Painted details must fit the original seven primitive draws, got ${meshes.length}.`);
+  assert(asset.json.materials.length <= 5, 'Static decorations reuse the original five material batches.');
+  assert.equal(asset.json.images.length, 1, 'Surfaces and illustrated notices share one atlas.');
   let textureBytes = 0;
   for (const image of asset.json.images) {
     const view = asset.json.bufferViews[image.bufferView];
     const start = view.byteOffset ?? 0;
     textureBytes += asset.bin.readUInt32BE(start + 16) * asset.bin.readUInt32BE(start + 20) * 4 * 4 / 3;
   }
-  assert(textureBytes <= 32 * 1024 * 1024, 'RGBA textures with mipmaps must fit the proposed 32 MiB cap.');
+  assert(textureBytes <= 8.05 * 1024 * 1024, 'The painted extension must keep the atlas close to its original 8 MiB footprint.');
+});
+
+test('repairs are confined to two cushion tops and illustrated notices face inward with upright UVs', () => {
+  const asset = readCarriage(), { meshes } = sceneGeometry(asset);
+  const repairs = new Set(), notices = { route: 0, pier: 0 };
+  const normal = new Vector3(), ab = new Vector3(), ac = new Vector3();
+  for (const mesh of meshes) {
+    if (!mesh.material.pbrMetallicRoughness?.baseColorTexture) continue;
+    const uv = values(asset, mesh.primitive.attributes.TEXCOORD_0);
+    for (let start = 0; start < mesh.indices.length; start += 3) {
+      // glTF image coordinates invert Blender's lower-left V convention.
+      const ids = mesh.indices.slice(start, start + 3), points = ids.map(i => mesh.vertices[i]), coords = ids.map(i => [uv[i][0], 1 - uv[i][1]]);
+      const meanU = coords.reduce((n, p) => n + p[0] / 3, 0), meanV = coords.reduce((n, p) => n + p[1] / 3, 0);
+      normal.crossVectors(ab.subVectors(points[1], points[0]), ac.subVectors(points[2], points[0])).normalize();
+      if (meanU > 1 / 3 && meanU < 2 / 3 && meanV > 0 && meanV < .5) {
+        assert(normal.y > .84, 'Repair artwork must stay on upward-facing fabric.');
+        for (const p of points) assert(p.y > 1.325 && p.y < 1.351, `Repair leaves seat top: y=${p.y}`);
+        const side = Math.sign(points[0].x), center = side < 0 ? -1.60125 : .88375;
+        assert(points.every(p => Math.sign(p.x) === side && Math.abs(p.z - center) < .63));
+        repairs.add(side);
+      }
+      if (meanU > 2 / 3 && meanV > 0 && meanV < .5) {
+        const role = meanV > .25 ? 'route' : 'pier'; notices[role]++;
+        const horizontal = p => role === 'route' ? p.z : -p.x;
+        const centerH = points.reduce((n, p) => n + horizontal(p) / 3, 0), centerY = points.reduce((n, p) => n + p.y / 3, 0);
+        assert(coords.reduce((sum, p, i) => sum + (p[0] - meanU) * (horizontal(points[i]) - centerH), 0) > 0,
+          `${role} lettering must not be horizontally mirrored.`);
+        assert(coords.reduce((sum, p, i) => sum + (p[1] - meanV) * (points[i].y - centerY), 0) > 0,
+          `${role} artwork must be upright.`);
+        assert(role === 'route' ? normal.x < -.99 : normal.z < -.99, `${role} paper must face the traveller.`);
+      }
+    }
+  }
+  assert.deepEqual([...repairs].sort(), [-1, 1]);
+  assert(notices.route >= 2 && notices.pier >= 2, 'Both illustrated notices must survive export.');
+});
+
+test('the rear lower wall has one visible painted surface at each point, without competing coplanar panels', () => {
+  const { meshes } = sceneGeometry(readCarriage());
+  // These non-edge sample points cover the doorway and both surrounding panels.
+  // The old maroon body and cream door shared z=7.49 across this region, causing
+  // camera-dependent speckling. Check the exported triangles, not source names.
+  for (const x of [-1.1, -.63, -.31, .11, .48, .69, 1.1]) {
+    for (const y of [1.04, 1.17, 1.34, 1.48]) {
+      const hits = intersections(meshes, new Vector3(x, y, 7.3), new Vector3(0, 0, 1), true);
+      assert(hits.length >= 2, `The rear wall must remain closed at (${x}, ${y}).`);
+      const frontSurfaces = hits.filter(distance => distance - hits[0] < .001);
+      assert.equal(frontSurfaces.length, 1,
+        `Competing rear-wall faces at (${x}, ${y}): depths ${frontSurfaces.join(', ')}`);
+    }
+  }
 });

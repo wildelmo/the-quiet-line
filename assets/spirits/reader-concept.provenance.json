@@ -1,0 +1,33 @@
+{
+  "asset": "output/reader-concept.png",
+  "kind": "concept study only; not runtime evidence",
+  "generation_tool": "built-in image_gen.imagegen",
+  "generation_mode": "reference-guided generation",
+  "native_output_path": "C:\\Users\\joemc\\.codex\\generated_images\\01a1af6f-d022-72f3-a7bf-8c53b6b32a5d\\exec-598e21b3-813a-404d-9c3e-accaab078859.png",
+  "native_output_sha256": "cd349c5651c853802d5cbf0230c41627c5a8d77ba5ec766891e3bba91a7c0afa",
+  "prompt_file": "assets/spirits/reader-concept.prompt.txt",
+  "exact_prompt": "Use case: stylized-concept.\nAsset type: original character concept study for a seated 3D passenger in The Quiet Line; not a runtime screenshot.\nInput image 1 is a carriage identity reference, not an edit target: preserve its cream carriage interior, substantial dark wood rectangular window frames, red padded bench upholstery, hanging circular straps and warm wood floor. Omit ALL overlaid UI, text labels, buttons and logos from the reference.\nPrimary request: a single original strange, quiet train commuter reading an oversized warm-paper illustrated newspaper on the existing red bench. Invent a tall bowed spirit with an elongated pale seedpod-shaped head/face tapering softly down toward the chin, gently asymmetrical crown, small sleepy horizontal slit eyes, a restrained tiny mouth, and no iconic mask, black face void or existing character features. The long pale face is soft matte ivory, like weathered ceramic crossed with reed skin. A worn indigo long robe/coat encloses a tall slender body, with physically readable weight, bent knees, dropped shoulders, loose sleeves, stitched collar and deep real cloth folds gathered across the seated lap. Small ivory hands hold opposite edges of a broad open newspaper. A modest worn brown canvas/leather travelling bag sits beside the passenger. The passenger quietly concentrates on reading, with the head inclined toward the paper.\nComposition: medium full-figure seated character study, slightly three-quarter front view across the carriage aisle; entire figure and bag visible, from crown to feet, enough carriage around it to establish scale and belonging. Only one passenger. Bench cushion height around 0.45m and seated figure total height around 1.65–1.75m. Face, hands, sculptural robe folds and open newspaper must all be legible.\nStyle: painterly 3D concept render with original handmade matte forms, visible brush texture, soft edges, restrained asymmetry, warm summer daylight. This is a physical, solid, dimensional figure, never a flat cutout.\nScene: bright blue sky with a few painted soft clouds and a calm ocean visible through the train windows. Quiet, ordinary absorbed commuter mood.\nNewspaper text (verbatim header): \"THE TIDE TIMES\"; small original ocean, island and railway illustrations, muted charcoal print columns, warm cream paper.\nAvoid: all UI; speech bubbles; captions; additional people; ghosts made of smoke; glossy plastic; extreme horror; iconic existing-character masks; decorative forehead symbols; tentacles; exaggerated monster teeth; text outside newspaper.",
+  "transparent_background_requested": false,
+  "reference_image": "D:/git-home/the-quiet-line/.impeccable/review/train-across-carriage.png",
+  "reference_role": "carriage identity only; obsolete UI explicitly omitted",
+  "inspection_utc": "2026-11-06T06:01:48.922476+00:00",
+  "metadata": {
+    "width": 1586,
+    "height": 992,
+    "bit_depth": 8,
+    "png_color_type": 2,
+    "interlace": 0,
+    "file_sha256": "e736f7376fd75e00ac4cd17442401e95442c1d7cca22e4b7a9c85e60f8b7ae9e",
+    "idat_sha256": "81830347f08d6177b8faf24b820e07ec5f85d7649cfab0a2f9ab57fb0e369514",
+    "file_bytes": 2420536,
+    "png_text_keys": [
+      "impeccable:prompt"
+    ],
+    "opacity": "fully opaque (RGB PNG, no alpha or tRNS)"
+  },
+  "native_pixels_preserved": true,
+  "image_processing": "Original output copied without resizing, cropping, painting, or re-encoding. Exact generation prompt embedded as PNG tEXt with impeccable embed-prompt; PNG IDAT hash unchanged.",
+  "limitations": [
+    "Concept art does not establish runtime fidelity, scale or performance."
+  ]
+}

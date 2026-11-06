@@ -73,7 +73,7 @@ Exact edit prompt:
 
 ## Geometry, textures, and sound
 
-Platform, shelter, shoreline, railway, island, bird, dragon, controller and menu geometry is authored locally in Three.js. The rideable carriage is original Blender geometry exported to GLB, as documented below. Wood grain and station/menu lettering use local Canvas textures. Water is an original animated shader. Audio is synthesized using the Web Audio API: filtered noise and oscillator tones; no sampled recordings, music tracks, or remote sound assets. The former observation deck is retired.
+Platform, shelter, shoreline, railway, island, bird, dragon, controller and menu geometry is authored locally in Three.js. The rideable carriage, five carriage spirits and little companions are original Blender geometry exported to GLB, as documented below. Wood grain and station/menu lettering use local Canvas textures. Water is an original animated shader. Audio is synthesized using the Web Audio API: filtered noise and oscillator tones; no sampled recordings, music tracks, or remote sound assets. The former observation deck is retired.
 
 ### Quiet train audio and preview
 
@@ -115,11 +115,128 @@ No headset listening validation has been performed.
 
 The user's [exterior reference](https://images4.alphacoders.com/127/thumb-1920-1274022.jpg) informed the cream/maroon body and rounded profile; the [interior reference](https://images5.alphacoders.com/501/thumbbig-501188.webp) informed red upholstery, substantial dark frames and hanging straps. Local reference copies are in the ignored `.impeccable/review/` directory. These images guided proportion and materials only; no source image pixels are copied into the asset.
 
-`public/assets/train/carriage-material-atlas.png` is an original native built-in image-generation output: 1254 × 1254, opaque 8-bit RGB, sRGB. Four fields provide maroon enamel, cream enamel, walnut timber and red moquette. The prompt requested 1024 square; the actual native output was preserved at 1254 square, with no resizing or repainting after generation. The exact prompt is adjacent at `carriage-material-atlas.exact.prompt.txt` and embedded under PNG metadata key `impeccable:prompt`. The preserved original is `$CODEX_HOME/generated_images/01a1af27-75ff-7110-b6f0-cc36c3cfd3f6/exec-5a708fb9-f4f1-4ce0-93ca-4988e6fffe75.png`. Only prompt metadata was added to the project copy; pixel data and opacity remain intact.
+The current `public/assets/train/carriage-lived-in-atlas.png` is one native built-in image-generation output: 1536 × 1024, opaque 8-bit RGB, sRGB. Its six fields contain oxblood enamel, buttercream enamel, walnut, faded plain cloth, repaired cloth and two illustrated notices. The exact prompt is adjacent at `carriage-lived-in-atlas.exact.prompt.txt` and embedded under PNG key `impeccable:prompt`. `assets/train/lived-in-materials.json` preserves the native output path, full and safe UV bounds, V inversion, labels, memory arithmetic and provenance. It records one generation and no revisions; only prompt metadata was added, with no pixel edits. The earlier atlas and rear-wall browser capture informed the written direction; no image inputs or reference pixels were used in generation.
 
-`assets/train/materials.json` records generation provenance and safe UV regions, including the Blender V inversion. The atlas is not tileable; islands remain inset from quadrant edges to protect mip sampling. The GLB embeds one copy of this atlas. Current metadata records 42,580 triangles, seven mesh primitives, five materials and a 3,941,940-byte GLB. Estimated decoded RGBA8 memory with mipmaps is about 8 MiB. Transparent double-sided glass can add a render pass; primitive count is not an actual draw-call or headset-performance promise. See [the train source guide](assets/train/README.md) for rebuilding and coordinate details.
+The rebuilt source packs the new atlas, and the runtime GLB embeds one copy. Painted wear and offline vertex colors supply permanent shading while the existing daylight remains active. Two upward cushion faces receive repairs; the right header carries **THE QUIET LINE** with **REED BANK**, **SEA GLASS** and **LANTERN PIER**, and the rear wall carries the **LANTERN PIER** notice and **03** plate. The scarf and tied parcel are original opaque static geometry joined into the existing material batch. Floor UVs and tint were refined in one batch before final review. No runtime JavaScript, lights, shadow passes or animation were added.
 
-The current raster provenance scan covers five files and reports zero missing records. The fresh visual finish review returned **ship** for the first carriage/window-seat milestone, using actual browser captures; neither provenance nor desktop review establishes Quest clarity, comfort or sustained frame rate.
+Current metadata records 45,097 triangles, seven mesh primitives, five materials and a 5,406,204-byte GLB. Relative to the rear-wall export, the increase is 2,285 triangles (1,936 for floor vertex shading, 177 for notices/numbering and 172 for belongings), 1,455,112 download bytes and an estimated 1,856 decoded texture bytes. RGBA8 memory with mipmaps is approximately 8.00 MiB, versus 7.99823 MiB previously. All 13 compared browser draw counts are unchanged. These are asset counts and desktop samples, not headset performance. See [the train source guide](assets/train/README.md) for rebuilding and coordinates.
+
+`character-provenance.log` records seven rasters and zero missing provenance records. The independent `character-finish-review.md` returned **ship**, with all 19 final captures valid and no material fixes. `output/carriage-character.png` is the final left-rear browser view. Implementation was approved; the user has not yet approved the resulting view. This extension is local, uncommitted and unpublished.
+
+#### Original atlas and rear-wall repair — historical
+
+`public/assets/train/carriage-material-atlas.png` remains the original native built-in image-generation output: 1254 × 1254, opaque 8-bit RGB, sRGB. Four fields provide maroon enamel, cream enamel, walnut timber and red moquette. The prompt requested 1024 square; the actual native output was preserved at 1254 square, with no resizing or repainting after generation. The exact prompt is adjacent at `carriage-material-atlas.exact.prompt.txt` and embedded under PNG metadata key `impeccable:prompt`. The preserved original is `$CODEX_HOME/generated_images/01a1af27-75ff-7110-b6f0-cc36c3cfd3f6/exec-5a708fb9-f4f1-4ce0-93ca-4988e6fffe75.png`. Only prompt metadata was added to the project copy; pixel data and opacity remain intact.
+
+`assets/train/materials.json` retains this original atlas's safe UV regions and provenance. It is historical source, no longer embedded in the current GLB. The rear-wall export embedded one copy and had 42,812 triangles, seven primitives, five materials and 3,951,092 bytes. The repair replaced the full-width maroon lower body with two side panels and a sill below the cream door, removing competing interior faces at z=7.49. Relative to the first 42,580-triangle, 3,941,940-byte export, it added 232 triangles and 9,152 bytes without a new raster, material or primitive. The then-current provenance scan covered six rasters with zero missing records.
+
+At the historical carriage milestone, the raster provenance scan covered five files and reported zero missing records. The then-current visual finish review returned **ship** for the first carriage/window-seat milestone, using actual browser captures. The later user screenshot and rear-wall **fix** review reopen that specific defect; neither provenance nor desktop review establishes Quest clarity, comfort or sustained frame rate.
+
+The subsequent `rear-wall-verdict.md` returns **ship** for the two rear-wall findings after all 19 post-fix captures were independently inspected. It does not renew whole-world approval or certify continuous WebM playback or physical Quest behavior.
+
+### Newspaper reader and four fellow travellers — November 2026
+
+`assets/spirits/newspaper-reader.blend` is the original editable source, built
+with Blender 4.5.15 LTS by `scripts/build-reader.py`. The source retains individual
+cloth, face, hand, paper and bag components; the export combines them into seven
+meshes by pose node. `public/assets/spirits/newspaper-reader.glb` is loaded by
+`src/train-reader.js` and attached to the moving carriage. No downloaded model,
+extracted geometry or external rig is used. See [the spirit source guide](assets/spirits/README.md)
+for rebuilding, coordinates and the code-driven gestures.
+
+`output/reader-concept.png` is a 1586 × 992 original built-in image-generation
+concept study. An existing carriage browser capture supplied the carriage
+identity reference; the prompt excluded its old UI. The study informed
+silhouette and material character only. It is not a runtime screenshot.
+`output/newspaper-reader.png` is the final translucent reader capture from the
+actual local application. `output/spirit-passengers.png` is the final actual
+boarding view. The older opaque reader capture remains at
+`.impeccable/review/reader-left-reading.png` as historical evidence.
+
+`public/assets/spirits/reader-material-atlas.png` is a separate original native
+built-in image-generation output: 1254 × 1254, opaque 8-bit RGB, sRGB. Its four
+fields are worn indigo cloth, pale ivory skin, brown bag material and a complete
+warm-paper **THE TIDE TIMES** front page. Newspaper microtext is visual texture,
+not meaningful editorial copy. The same atlas is embedded in both spirit GLBs and packed
+into their Blender sources. Runtime shares the reader’s actual material and
+texture across all five figures and disposes the redundant passenger texture;
+the two downloads still each include the atlas. Its inset UV regions are recorded in
+`assets/spirits/reader-metadata.json`.
+
+Both generated PNGs retain their native pixels and dimensions. Only exact-prompt
+metadata was added; the PNG IDAT hashes are unchanged from the native outputs.
+The exact prompts and `.provenance.json` records are under `assets/spirits/`,
+including retained native output paths, hashes, dimensions and reference roles.
+Each PNG also carries its exact prompt under `impeccable:prompt`.
+
+`assets/spirits/passengers.blend` contains four original editable sculptures
+built with Blender 4.5.15 LTS by `scripts/build-passengers.py`: the ochre-coated
+sleeper with hat and satchel, ivory moth with antennae, long-eared sage-smocked
+gardener with a seedling, and rust-robed keeper holding a sea shell. They reuse
+the existing atlas with per-vertex pigment washes. No new raster, image
+generation, downloaded model or external rig was used for this extension.
+`passengers-metadata.json` records exact per-character bounds and node pivots.
+`src/train-passengers.js` places and animates the runtime export.
+
+The corrected reader export is 4,207,944 bytes with 32,672 triangles and seven
+mesh primitives; the four-passenger export is 4,746,744 bytes with 51,996
+triangles and 16 primitives. Each file has one authored matte material and
+one embedded atlas. Runtime gives all five figures and belongings 70% opacity
+with `src/spirit-material.js`: a shared depth-only silhouette pass draws the
+nearest surface, followed by its color pass. The additional pass shares each
+mesh’s geometry without a duplicate vertex buffer. The cast can require 46
+render submissions during page turns (44 at rest), before culling. This is
+nearest-surface translucency, not volumetric refraction. The shared atlas costs
+about 8 MiB decoded as RGBA8 with mipmaps; these are construction figures, not
+Quest performance measurements.
+
+At the five-passenger milestone, the `public/assets` provenance scan covered
+six rasters with zero missing records. Original atlas pixels, exact prompts and provenance
+remain unchanged. The five-passenger milestone is local, uncommitted and
+unpublished; no physical-headset validation was performed.
+
+### Little painted companions — November 2026
+
+`assets/spirits/companions.blend` contains the original editable mouse, fuzzball
+and wooden perch sculptures, built with Blender 4.5.15 LTS by
+`scripts/build-companions.py`. Separate named source parts are retained; export
+joins them into ten pose meshes. `public/assets/spirits/companions.glb` has
+17,266 triangles, ten primitives, two opaque materials, one embedded atlas
+and 3,820,316 bytes. The floor extension separates the existing legs into
+`FuzzLeftLeg` and `FuzzRightLeg` hip nodes without changing rest geometry,
+materials or atlas. `companions-metadata.json` records exact geometry bounds,
+node transforms and counts. No downloaded model, extracted geometry, external
+rig or baked animation is used. See [the companion source guide](assets/spirits/COMPANIONS.md).
+
+The user supplied `C:/Users/joemc/Downloads/Untitled.png` as mouse/fuzz design
+reference. It informed character form only; it is not shipped or mapped onto
+the models. The addition uses the unchanged native 1254 × 1254 reader atlas
+with vertex pigment washes and no new image generation or raster. Its ivory
+region supplies the painted bodies; its brown region supplies the perch.
+The separate untextured matte `Chalk white fuzz eyes` material uses white
+eyeball and dark pupil vertex colors. Fur wisps, cupped ears, paws, curled tail,
+legs and feet are solid geometry, without alpha planes or hair simulation.
+
+`src/train-companions.js` shares fuzz geometry and materials among three
+perch/bench hoppers and six floor creatures. The floor colony uses four
+instanced draw calls for body, eyes and two legs. Mouse, nine fuzzballs and
+perch total 57,458 triangles and 22 draw primitives before culling (five mouse,
+one perch, twelve for three hoppers, four instanced floor draws). The historical
+three-fuzzball milestone used 27,314 triangles and twelve primitives, with an
+eight-primitive, 3,818,956-byte export. A separate opaque clone of the
+reader material shares its actual atlas texture; the redundant embedded
+companion texture is disposed. The adult material and its 0.7 opacity remain
+unchanged. Ambient fill is multiplied by vertex pigment on the companion
+materials so charcoal and pupils retain their color under night lighting.
+All companion materials remain opaque. These counts do not measure device
+performance; the shared decoded atlas remains about 8 MiB with mipmaps.
+
+`output/floor-scurriers.png` is an actual local-browser right-seat view of the
+floor colony. `output/little-companions.png` and `output/curious-companions.png`
+retain the earlier hopping-friend and shared-gaze milestones; reader and
+five-spirit previews remain at their original paths. The floor milestone's
+provenance scan covered six rasters with zero missing records. That extension
+changed no atlas pixels, prompts or provenance records. The floor, little-companion and five-spirit work is
+local, uncommitted and unpublished; no physical-headset validation was performed.
 
 ### Sky dragon
 

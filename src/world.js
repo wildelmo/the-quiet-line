@@ -123,12 +123,12 @@ export async function createWorld(scene, renderer, {reducedMotion=false,onEvent=
   applyLight();
   return {sky,water,waterMaterial,train,station,shore,light,
     setAboard(value){life.petals.visible=!value;},
-    get atmosphere(){return {weather:{...weather.state},passenger:passenger.state.phase,paintedBanks:4,localVeils:1};},
+    get atmosphere(){return {weather:{...weather.state},passenger:passenger.state.phase,reader:train.reader,travellers:train.travellers,companions:train.companions,paintedBanks:4,localVeils:1};},
     get hour(){return hour;},
     setHour(value){hour=((value%24)+24)%24;applyLight();},
     get flowing(){return flowing;},
     setFlowing(value){flowing=value;},
-    update(t,position,dt){
+    update(t,position,dt,viewer){
       worldTime=t;
       if(flowing&&!reducedMotion)hour=advanceHour(hour,dt);
       if(!reducedMotion)skyYaw+=dt*.00055;
@@ -138,7 +138,7 @@ export async function createWorld(scene, renderer, {reducedMotion=false,onEvent=
       breeze.gust+=passingWeather.gust*.4;breeze.x+=passingWeather.gust*.5;
       dragon.update(t,position,dt);
       littleIsland.update(t,light,breeze);
-      train.update(t,dt,light);
+      train.update(t,dt,light,viewer);
       cloudDancer.update();
       passenger.update(t,dt,light);
       water.position.x=position.x;water.position.z=position.z;waterMaterial.uniforms.time.value=t;skyMaterial.uniforms.skyTime.value=t;waterMaterial.uniforms.skyTime.value=t;

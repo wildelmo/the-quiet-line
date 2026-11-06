@@ -46,14 +46,316 @@
     ]
   },
   "mesh_count": 7,
-  "triangles": 42580,
+  "triangles": 45097,
   "materials": 5,
   "texture_dimensions": [
-    1254,
-    1254
+    1536,
+    1024
   ],
   "estimated_rgba8_texture_with_mipmaps_mib": 8.0,
-  "glb_bytes": 3941940,
+  "atlas": "carriage-lived-in-atlas.png",
+  "atlas_regions_uv": {
+    "maroon": [
+      0.01,
+      0.515,
+      0.3233333333333333,
+      0.985
+    ],
+    "cream": [
+      0.3433333333333333,
+      0.515,
+      0.6566666666666666,
+      0.985
+    ],
+    "wood": [
+      0.6766666666666666,
+      0.515,
+      0.99,
+      0.985
+    ],
+    "red": [
+      0.01,
+      0.015,
+      0.3233333333333333,
+      0.485
+    ],
+    "repaired_red": [
+      0.3433333333333333,
+      0.015,
+      0.6566666666666666,
+      0.485
+    ],
+    "route_notice": [
+      0.6692708333333333,
+      0.25390625,
+      0.9973958333333334,
+      0.49609375
+    ],
+    "pier_notice": [
+      0.6692708333333333,
+      0.00390625,
+      0.9973958333333334,
+      0.24609375
+    ]
+  },
+  "repaired_seats": [
+    {
+      "center_m": [
+        -0.997,
+        1.255,
+        -1.60125
+      ],
+      "size_m": [
+        0.645,
+        0.19,
+        1.2175
+      ],
+      "top_y": 1.35,
+      "atlas_region": "repaired_red",
+      "normal_y_min": 0.85
+    },
+    {
+      "center_m": [
+        0.997,
+        1.255,
+        0.88375
+      ],
+      "size_m": [
+        0.645,
+        0.19,
+        1.2175
+      ],
+      "top_y": 1.35,
+      "atlas_region": "repaired_red",
+      "normal_y_min": 0.85
+    }
+  ],
+  "details": [
+    {
+      "id": "Quiet Line route notice",
+      "kind": "illustrated_notice",
+      "bounds_m": {
+        "min": [
+          1.325,
+          2.737,
+          -0.173
+        ],
+        "max": [
+          1.339,
+          3.103,
+          0.533
+        ]
+      },
+      "triangles": 46,
+      "center_m": [
+        1.3250000476837158,
+        2.9200000762939453,
+        0.18000000715255737
+      ],
+      "paper_size_m": [
+        0.68,
+        0.34
+      ],
+      "normal": [
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "atlas_region": "route_notice",
+      "uv_bounds": [
+        0.6692708333333333,
+        0.25390625,
+        0.9973958333333334,
+        0.49609375
+      ],
+      "front_vertices_m": [
+        [
+          1.3250000476837158,
+          2.75,
+          -0.1599999964237213
+        ],
+        [
+          1.3250000476837158,
+          2.75,
+          0.5199999809265137
+        ],
+        [
+          1.3250000476837158,
+          3.0900001525878906,
+          0.5199999809265137
+        ],
+        [
+          1.3250000476837158,
+          3.0900001525878906,
+          -0.1599999964237213
+        ]
+      ],
+      "mount_gap_m": 0.002
+    },
+    {
+      "id": "Lantern Pier rear notice",
+      "kind": "illustrated_notice",
+      "bounds_m": {
+        "min": [
+          -0.503,
+          1.382,
+          7.472
+        ],
+        "max": [
+          0.503,
+          1.898,
+          7.486
+        ]
+      },
+      "triangles": 46,
+      "center_m": [
+        0.0,
+        1.6399999856948853,
+        7.4720001220703125
+      ],
+      "paper_size_m": [
+        0.98,
+        0.49
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "atlas_region": "pier_notice",
+      "uv_bounds": [
+        0.6692708333333333,
+        0.00390625,
+        0.9973958333333334,
+        0.24609375
+      ],
+      "front_vertices_m": [
+        [
+          0.49000000953674316,
+          1.3949999809265137,
+          7.4720001220703125
+        ],
+        [
+          -0.49000000953674316,
+          1.3949999809265137,
+          7.4720001220703125
+        ],
+        [
+          -0.49000000953674316,
+          1.8849999904632568,
+          7.4720001220703125
+        ],
+        [
+          0.49000000953674316,
+          1.8849999904632568,
+          7.4720001220703125
+        ]
+      ],
+      "mount_gap_m": 0.002
+    },
+    {
+      "id": "Carriage 03 number plate",
+      "kind": "native_mesh_lettering",
+      "bounds_m": {
+        "min": [
+          -0.091,
+          3.0035,
+          7.472
+        ],
+        "max": [
+          0.091,
+          3.1065,
+          7.486
+        ]
+      },
+      "triangles": 85,
+      "center_m": [
+        0,
+        3.055,
+        7.472
+      ],
+      "normal": [
+        0,
+        0,
+        -1
+      ],
+      "text": "03"
+    },
+    {
+      "id": "Forgotten cloth parcel",
+      "kind": "static_belonging",
+      "bounds_m": {
+        "min": [
+          -1.16,
+          1.351,
+          -5.525
+        ],
+        "max": [
+          -0.8,
+          1.62402,
+          -5.115
+        ]
+      },
+      "triangles": 126,
+      "support_y": 1.35,
+      "center_m": [
+        -0.98,
+        1.46,
+        -5.32
+      ],
+      "animated": false
+    },
+    {
+      "id": "Forgotten folded scarf",
+      "kind": "static_belonging",
+      "bounds_m": {
+        "min": [
+          0.84,
+          1.352,
+          6.1
+        ],
+        "max": [
+          1.16,
+          1.419,
+          6.792
+        ]
+      },
+      "triangles": 46,
+      "support_y": 1.35,
+      "center_m": [
+        1.0,
+        1.38,
+        6.43
+      ],
+      "animated": false
+    }
+  ],
+  "triangle_breakdown": {
+    "carriage_shell_and_fittings": 44748,
+    "notices_and_number_plate": 177,
+    "static_belongings": 172
+  },
+  "surface_treatment": {
+    "upholstery": "Faded woven cloth; two repairs on upward cushion faces only.",
+    "timber": "Longitudinal grain, broad knot-free floor samples, gently rubbed sill and end surfaces.",
+    "floor_uv": {
+      "sample_width_pixels": 115.2,
+      "sample_height_pixels_range": [
+        471.04,
+        481.28
+      ],
+      "mapping": "Continuous near-full-height clean central grain; no texture repeats or added geometry.",
+      "base_vertex_pigment": [
+        0.51,
+        0.55,
+        0.55
+      ]
+    },
+    "contact_shading": "Static corner colors in floor/bench/trim geometry; no shadow textures or passes.",
+    "enamel": "Warm rubbed bevel pigment and restrained doorway fading.",
+    "runtime_cost": "All new objects join the existing opaque atlas batch; no new animation, lights or render passes."
+  },
+  "glb_bytes": 5406204,
   "notes": [
     "Original geometry; visual references inform material and proportion, no extracted model parts.",
     "Real window openings and single-layer low-opacity glazing; no transmission pass.",

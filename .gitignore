@@ -4,3 +4,5 @@ dist/
 .impeccable/review/
 .tools/
 *.blend1
+__pycache__/
+*.py[cod]

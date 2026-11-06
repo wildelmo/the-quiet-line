@@ -1,0 +1,540 @@
+{
+  "name": "The Quiet Line \u2014 four original seated spirit passengers",
+  "generator": "scripts/build-passengers.py",
+  "blender": "4.5.15 LTS",
+  "coordinates": {
+    "up": "Y",
+    "forward": "+Z",
+    "origin": "floor",
+    "seat_cushion_height_m": 0.45
+  },
+  "bounds_m": {
+    "min": [
+      -0.45241743326187134,
+      0.012000000104308128,
+      -0.17298942804336548
+    ],
+    "max": [
+      0.4471627473831177,
+      1.7673999071121216,
+      0.6192258596420288
+    ],
+    "size": [
+      0.899580180644989,
+      1.7553999070078135,
+      0.7922152876853943
+    ]
+  },
+  "mesh_count": 16,
+  "primitives": 16,
+  "triangles": 51996,
+  "characters": {
+    "Sleeper": {
+      "bounds_m": {
+        "min": [
+          -0.45241743326187134,
+          0.012000000104308128,
+          -0.17298942804336548
+        ],
+        "max": [
+          0.4471627473831177,
+          1.475959300994873,
+          0.6152661442756653
+        ],
+        "size": [
+          0.899580180644989,
+          1.463959300890565,
+          0.7882555723190308
+        ]
+      },
+      "mesh_count": 4,
+      "primitives": 4,
+      "triangles": 11852
+    },
+    "Moth": {
+      "bounds_m": {
+        "min": [
+          -0.28277885913848877,
+          0.2294415682554245,
+          -0.11158781498670578
+        ],
+        "max": [
+          0.2819957137107849,
+          1.490964651107788,
+          0.5127087235450745
+        ],
+        "size": [
+          0.5647745728492737,
+          1.2615230828523636,
+          0.6242965385317802
+        ]
+      },
+      "mesh_count": 4,
+      "primitives": 4,
+      "triangles": 14454
+    },
+    "Gardener": {
+      "bounds_m": {
+        "min": [
+          -0.33588191866874695,
+          0.012000000104308128,
+          -0.1534000039100647
+        ],
+        "max": [
+          0.3300631642341614,
+          1.7673999071121216,
+          0.6046239733695984
+        ],
+        "size": [
+          0.6659450829029083,
+          1.7553999070078135,
+          0.7580239772796631
+        ]
+      },
+      "mesh_count": 4,
+      "primitives": 4,
+      "triangles": 13778
+    },
+    "Keeper": {
+      "bounds_m": {
+        "min": [
+          -0.3365105390548706,
+          0.012000000104308128,
+          -0.14917327463626862
+        ],
+        "max": [
+          0.32982105016708374,
+          1.5180000066757202,
+          0.6192258596420288
+        ],
+        "size": [
+          0.6663315892219543,
+          1.506000006571412,
+          0.7683991342782974
+        ]
+      },
+      "mesh_count": 4,
+      "primitives": 4,
+      "triangles": 11912
+    }
+  },
+  "materials": 1,
+  "glb_bytes": 4746744,
+  "source_blend_bytes": 9497953,
+  "texture_dimensions": [
+    1254,
+    1254
+  ],
+  "atlas": "public/assets/spirits/reader-material-atlas.png",
+  "atlas_regions_blender_uv": {
+    "cloth": [
+      0.025,
+      0.525,
+      0.475,
+      0.975
+    ],
+    "skin": [
+      0.525,
+      0.525,
+      0.975,
+      0.975
+    ],
+    "bag": [
+      0.025,
+      0.025,
+      0.475,
+      0.475
+    ]
+  },
+  "nodes": {
+    "Sleeper": {
+      "parent": null,
+      "world_pivot_m": [
+        0,
+        0,
+        0
+      ],
+      "local_position_m": [
+        0,
+        0,
+        0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "SleeperStatic": {
+      "parent": "Sleeper",
+      "world_pivot_m": [
+        0,
+        0,
+        0
+      ],
+      "local_position_m": [
+        0,
+        0,
+        0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "SleeperBody": {
+      "parent": "Sleeper",
+      "world_pivot_m": [
+        0,
+        0.62,
+        0
+      ],
+      "local_position_m": [
+        0,
+        0.62,
+        0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "SleeperHead": {
+      "parent": "SleeperBody",
+      "world_pivot_m": [
+        0,
+        1.03,
+        0.08
+      ],
+      "local_position_m": [
+        0,
+        0.41000000000000003,
+        0.08
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "SleeperAction": {
+      "parent": "SleeperBody",
+      "world_pivot_m": [
+        0,
+        0.73,
+        0.3
+      ],
+      "local_position_m": [
+        0,
+        0.10999999999999999,
+        0.3
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "Moth": {
+      "parent": null,
+      "world_pivot_m": [
+        0,
+        0,
+        0
+      ],
+      "local_position_m": [
+        0,
+        0,
+        0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "MothStatic": {
+      "parent": "Moth",
+      "world_pivot_m": [
+        0,
+        0,
+        0
+      ],
+      "local_position_m": [
+        0,
+        0,
+        0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "MothBody": {
+      "parent": "Moth",
+      "world_pivot_m": [
+        0,
+        0.62,
+        0
+      ],
+      "local_position_m": [
+        0,
+        0.62,
+        0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "MothHead": {
+      "parent": "MothBody",
+      "world_pivot_m": [
+        0,
+        1.0,
+        0.03
+      ],
+      "local_position_m": [
+        0,
+        0.38,
+        0.03
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "MothAction": {
+      "parent": "MothBody",
+      "world_pivot_m": [
+        0,
+        0.73,
+        0.23
+      ],
+      "local_position_m": [
+        0,
+        0.10999999999999999,
+        0.23
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "Gardener": {
+      "parent": null,
+      "world_pivot_m": [
+        0,
+        0,
+        0
+      ],
+      "local_position_m": [
+        0,
+        0,
+        0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "GardenerStatic": {
+      "parent": "Gardener",
+      "world_pivot_m": [
+        0,
+        0,
+        0
+      ],
+      "local_position_m": [
+        0,
+        0,
+        0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "GardenerBody": {
+      "parent": "Gardener",
+      "world_pivot_m": [
+        0,
+        0.62,
+        0
+      ],
+      "local_position_m": [
+        0,
+        0.62,
+        0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "GardenerHead": {
+      "parent": "GardenerBody",
+      "world_pivot_m": [
+        0,
+        1.2,
+        0.04
+      ],
+      "local_position_m": [
+        0,
+        0.58,
+        0.04
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "GardenerAction": {
+      "parent": "GardenerBody",
+      "world_pivot_m": [
+        0,
+        0.79,
+        0.36
+      ],
+      "local_position_m": [
+        0,
+        0.17000000000000004,
+        0.36
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "Keeper": {
+      "parent": null,
+      "world_pivot_m": [
+        0,
+        0,
+        0
+      ],
+      "local_position_m": [
+        0,
+        0,
+        0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "KeeperStatic": {
+      "parent": "Keeper",
+      "world_pivot_m": [
+        0,
+        0,
+        0
+      ],
+      "local_position_m": [
+        0,
+        0,
+        0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "KeeperBody": {
+      "parent": "Keeper",
+      "world_pivot_m": [
+        0,
+        0.62,
+        0
+      ],
+      "local_position_m": [
+        0,
+        0.62,
+        0
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "KeeperHead": {
+      "parent": "KeeperBody",
+      "world_pivot_m": [
+        0,
+        1.14,
+        0.04
+      ],
+      "local_position_m": [
+        0,
+        0.5199999999999999,
+        0.04
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "KeeperAction": {
+      "parent": "KeeperBody",
+      "world_pivot_m": [
+        0,
+        0.83,
+        0.37
+      ],
+      "local_position_m": [
+        0,
+        0.20999999999999996,
+        0.37
+      ],
+      "local_rotation_quaternion_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ]
+    }
+  },
+  "notes": [
+    "Original editable custom mesh sculpture; each source part is named and retained.",
+    "Each root starts at the origin; runtime places four separate passengers.",
+    "One unchanged shared atlas with per-vertex mineral pigment washes.",
+    "Export joins only by pose group: static, body, head, and hands plus held object.",
+    "Moth feet deliberately hang above the floor; all four hips sit on the .45 m cushion.",
+    "No animation, camera, light, or secondary material exported.",
+    "Construction counts are not measured device performance."
+  ]
+}

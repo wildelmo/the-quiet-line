@@ -1,5 +1,6 @@
 {
   "asset": "Quiet Line carriage painted material atlas",
+  "status": "Historical source atlas, retained with its original UVs and provenance. The current carriage.glb embeds carriage-lived-in-atlas.png instead; see lived-in-materials.json.",
   "image": "../../public/assets/train/carriage-material-atlas.png",
   "width": 1254,
   "height": 1254,
