@@ -23,11 +23,14 @@ export function snapAroundHead(rig, trackingMatrix, angle) {
   rig.updateWorldMatrix(true, false);
 }
 
-export function placeTicket(ticket, head, facing, floorHeight) {
+// Explicitly open the ticket at a consistent offset from the actual head.
+// Its last horizontal yaw is a stable fallback when looking straight up/down;
+// no floor clamp changes the placement for seated or very short visitors.
+export function placeTicket(ticket, head, facing) {
   forward.copy(facing);forward.y=0;
-  if(forward.lengthSq()<.001)forward.set(0,0,-1);
+  if(forward.lengthSq()<.001)forward.set(-Math.sin(ticket.rotation.y),0,-Math.cos(ticket.rotation.y));
   forward.normalize();
-  ticket.position.copy(head).addScaledVector(forward,1.25);
-  ticket.position.y=Math.max(floorHeight+.55,head.y-.65);
-  ticket.rotation.set(-.32,Math.atan2(-forward.x,-forward.z),0,'YXZ');
+  ticket.position.copy(head).addScaledVector(forward,.9);
+  ticket.position.y=head.y-.22;
+  ticket.rotation.set(0,Math.atan2(-forward.x,-forward.z),0,'YXZ');
 }

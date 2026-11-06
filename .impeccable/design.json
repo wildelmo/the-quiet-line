@@ -282,8 +282,8 @@
       },
       {
         "name": "settings-panel",
-        "value": "0 16px 65px #163d5240",
-        "purpose": "Float the paper panel above the world."
+        "value": "0 12px 40px #163d5240",
+        "purpose": "Lift the requested paper menu above the world."
       }
     ],
     "motion": [
@@ -300,7 +300,7 @@
       {
         "name": "notice-fade",
         "value": "opacity .3s",
-        "purpose": "Temporary status message visibility."
+        "purpose": "Temporary status notice; displayed for 3.2 seconds before fading."
       },
       {
         "name": "travel-fade",
@@ -331,7 +331,7 @@
       "refersTo": "button-primary",
       "description": "The warm-paper headset entry action; its disabled state signals unavailable VR.",
       "html": "<button class=\"ds-primary\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 7h14l2 10h-6l-3-3-3 3H3L5 7Z M7 11h2m6 0h2\"/></svg>Step inside in VR</button>",
-      "css": ".ds-primary{font:600 16px \"Segoe UI\",sans-serif;width:100%;min-height:58px;border:0;border-radius:4px;color:var(--ink,#173e4b);background:var(--paper,#fff9e8);display:flex;gap:12px;justify-content:center;align-items:center;box-shadow:0 7px 24px #06334b25;cursor:pointer}.ds-primary svg{width:24px;stroke:currentColor;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round}.ds-primary:hover:not(:disabled){background:#f4dcaa}.ds-primary:disabled{opacity:.7;cursor:default}.ds-primary:focus-visible{outline:3px solid var(--focus,#edbc65);outline-offset:5px}@media(max-width:650px){.ds-primary{min-height:52px}}"
+      "css": ".ds-primary{font:600 16px \"Segoe UI\",sans-serif;width:100%;min-height:58px;border:0;border-radius:4px;color:var(--ink,#173e4b);background:var(--paper,#fff9e8);display:flex;gap:12px;justify-content:center;align-items:center;box-shadow:0 7px 24px #06334b25;cursor:pointer}.ds-primary svg{width:24px;stroke:currentColor;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round}.ds-primary:hover:not(:disabled){background:#f4dcaa}.ds-primary:disabled{opacity:.55;cursor:default}.ds-primary:focus-visible{outline:3px solid var(--focus,#edbc65);outline-offset:4px}@media(max-width:650px){.ds-primary{min-height:52px}}"
     },
     {
       "name": "Screen exploration text action",
@@ -339,44 +339,44 @@
       "refersTo": "button-text",
       "description": "The unboxed screen-exploration action shown against the sea.",
       "html": "<div class=\"ds-text-context\"><button class=\"ds-text\">Explore on this screen <span aria-hidden=\"true\">↗</span></button></div>",
-      "css": ".ds-text-context{background:#145970;color:#fff9e8;padding:4px 16px}.ds-text{font:600 16px \"Segoe UI\",sans-serif;color:inherit;background:none;border:0;padding:15px 0;text-underline-offset:6px;cursor:pointer}.ds-text span{margin-left:12px}.ds-text:hover{text-decoration:underline}.ds-text:focus-visible{outline:3px solid var(--focus,#edbc65);outline-offset:5px}"
+      "css": ".ds-text-context{background:#145970;color:#fff9e8;padding:4px 16px}.ds-text{font:600 16px \"Segoe UI\",sans-serif;color:inherit;background:none;border:0;min-height:44px;padding:12px 0;text-underline-offset:5px;cursor:pointer}.ds-text span{margin-left:12px}.ds-text:hover{text-decoration:underline}.ds-text:focus-visible{outline:3px solid var(--focus,#edbc65);outline-offset:4px}"
     },
     {
-      "name": "Settings icon action",
+      "name": "Menu close action",
       "kind": "button",
       "refersTo": "button-icon",
-      "description": "A circular enamel control with a thin line icon.",
-      "html": "<button class=\"ds-icon\" aria-label=\"Open controls and settings\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 7h16M4 17h16M9 4v6M15 14v6\"/></svg></button>",
-      "css": ".ds-icon{width:44px;height:44px;border:1px solid #ffffff66;color:var(--paper,#fff9e8);background:#174956b8;border-radius:50%;display:grid;place-items:center;cursor:pointer}.ds-icon svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round}.ds-icon:hover{background:var(--ink,#173e4b)}.ds-icon:focus-visible{outline:3px solid var(--focus,#edbc65);outline-offset:5px}"
+      "description": "A 44px transparent Close target inside the requested paper menu.",
+      "html": "<button class=\"ds-icon\" aria-label=\"Close menu\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m6 6 12 12M18 6 6 18\"/></svg></button>",
+      "css": ".ds-icon{width:44px;height:44px;flex-shrink:0;border:0;color:var(--ink,#173e4b);background:none;border-radius:4px;display:grid;place-items:center;cursor:pointer}.ds-icon svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round}.ds-icon:hover{background:#f4dcaa}.ds-icon:focus-visible{outline:3px solid var(--focus,#edbc65);outline-offset:4px}"
     },
     {
       "name": "Exploration toolbar",
       "kind": "nav",
       "refersTo": "toolbar",
-      "description": "A compact enamel group for boarding/departing, choosing a window seat, sound and return; journey labels follow the ride state.",
-      "html": "<div class=\"ds-tools\" role=\"group\" aria-label=\"Exploration controls\"><button aria-pressed=\"false\">Board train</button><button disabled>Choose window seat</button><button aria-pressed=\"true\">Sound on</button><button>Return to station</button></div>",
-      "css": ".ds-tools{display:flex;width:max-content;max-width:100%;border-radius:6px;background:#123f50ed;box-shadow:0 6px 24px #08354a22;padding:5px}.ds-tools button{font:13px \"Segoe UI\",sans-serif;background:none;border:0;color:var(--paper,#fff9e8);padding:12px 18px;min-height:44px;border-radius:3px;cursor:pointer}.ds-tools button:hover,.ds-tools button[aria-pressed=true]{background:#2d6677}.ds-tools button:focus-visible{outline:3px solid var(--focus,#edbc65);outline-offset:5px}@media(max-width:650px){.ds-tools button{font-size:12px;padding:10px 11px}}"
+      "description": "Only Journey and Menu remain visible during screen exploration; the requested menu opens above this lower-right dock.",
+      "html": "<div class=\"ds-tools\" role=\"group\" aria-label=\"Journey controls\"><button class=\"ds-journey\" aria-pressed=\"false\">Board train</button><button aria-expanded=\"false\">Menu</button></div>",
+      "css": ".ds-tools{display:flex;gap:6px;width:max-content;max-width:100%;border-radius:6px;background:#123f50ed;box-shadow:0 6px 24px #08354a22;padding:5px}.ds-tools button{font:13px \"Segoe UI\",sans-serif;background:none;border:0;color:var(--paper,#fff9e8);padding:12px 16px;min-height:44px;border-radius:3px;white-space:nowrap;cursor:pointer}.ds-tools .ds-journey{background:#2d6677}.ds-tools button:hover:not(:disabled),.ds-tools button[aria-expanded=true]{background:var(--sea,#145970)}.ds-tools button:focus-visible{outline:3px solid var(--focus,#edbc65);outline-offset:4px}@media(max-width:650px){.ds-tools button{padding:12px}}"
     },
     {
-      "name": "Settings paper panel",
+      "name": "Requested journey menu",
       "kind": "card",
       "refersTo": "settings-panel",
-      "description": "The compact settings surface with native range and checkbox controls.",
-      "html": "<section class=\"ds-settings\" aria-label=\"Settings\"><h2>Settle in.</h2><p>This is a place to be, with no destination to reach.</p><label class=\"ds-setting\">Sound <input aria-label=\"Sound volume\" type=\"range\" min=\"0\" max=\"100\" value=\"55\"></label><label class=\"ds-setting\">Quiet water <input type=\"checkbox\"></label></section>",
-      "css": ".ds-settings{font:14px \"Segoe UI\",sans-serif;background:var(--paper,#fff9e8);color:var(--ink,#173e4b);padding:26px 28px;border-radius:5px;box-shadow:0 16px 65px #163d5240;width:360px;max-width:100%}.ds-settings h2{font:400 34px QuietStory,Georgia,serif;margin:0}.ds-settings p{line-height:1.6;margin:6px 0 25px}.ds-setting{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #c9d1c9;padding:16px 0;gap:16px}.ds-setting input[type=range]{width:145px;accent-color:var(--sea,#145970)}.ds-setting input[type=checkbox]{accent-color:var(--sea,#145970);width:20px;height:20px}.ds-setting input:focus-visible{outline:3px solid var(--focus,#edbc65);outline-offset:5px}"
+      "description": "A nonmodal 336px paper menu for seats, return, named time, sound and exit; a native disclosure holds secondary options.",
+      "html": "<section class=\"ds-settings\" aria-label=\"Your journey\"><div class=\"ds-panel-heading\"><h2>Your journey</h2><button aria-label=\"Close menu\">×</button></div><p>Left window seat · at the platform</p><div class=\"ds-actions\"><button>Take right window seat</button><button>Return to station</button></div><label class=\"ds-setting\">Time of day <select><option>Let the day pass</option><option>Morning</option><option>High summer noon</option><option>Golden hour</option><option>Blue dusk</option><option>Starlight</option></select></label><div class=\"ds-setting\"><span>Sound</span><button aria-pressed=\"true\">Sound on</button></div><details><summary>More options &amp; controls</summary><label class=\"ds-setting\">Volume <input aria-label=\"Volume\" type=\"range\" min=\"0\" max=\"100\" value=\"55\"></label><label class=\"ds-setting\">Quiet water <input type=\"checkbox\"></label></details><button class=\"ds-exit\">Exit experience</button></section>",
+      "css": ".ds-settings{font:14px \"Segoe UI\",sans-serif;background:var(--paper,#fff9e8);color:var(--ink,#173e4b);padding:18px 22px 12px;border-radius:5px;box-shadow:0 12px 40px #163d5240;width:336px;max-width:100%}.ds-settings h2{font:400 34px QuietStory,Georgia,serif;margin:0}.ds-settings p{font-size:13px;line-height:1.5;margin:2px 0 18px;color:#3a606b}.ds-actions{display:grid;gap:8px;margin-bottom:18px}.ds-settings button,.ds-settings select{font:13px \"Segoe UI\",sans-serif;min-height:44px;padding:10px 12px;border:1px solid #809b9e;border-radius:3px;background:transparent;color:inherit;cursor:pointer}.ds-settings button:hover:not(:disabled){background:#f4dcaa}.ds-setting{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #c9d1c9;padding:12px 0;gap:12px}.ds-setting select{max-width:172px;padding:7px}.ds-setting input[type=range]{width:145px;accent-color:var(--sea,#145970)}.ds-setting input[type=checkbox]{accent-color:var(--sea,#145970);width:20px;height:20px}.ds-settings details{border-top:1px solid #c9d1c9;font-size:13px}.ds-settings summary{min-height:44px;padding:14px 0;cursor:pointer}.ds-settings .ds-exit{width:100%;border:0;border-top:1px solid #c9d1c9;text-align:left}.ds-settings :is(button,input,select,summary):focus-visible{outline:3px solid var(--focus,#edbc65);outline-offset:4px}.ds-panel-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.ds-panel-heading button{width:44px;min-width:44px;border:0;padding:0;font-size:24px}"
     },
     {
       "name": "Detail select",
       "kind": "input",
       "refersTo": "select",
-      "description": "A native select with restrained framing on the paper surface.",
+      "description": "A native detail select inside More options & controls, with a 44px minimum target.",
       "html": "<label class=\"ds-select-row\">Detail <select class=\"ds-select\"><option>Balanced · Quest</option><option>High · desktop</option></select></label>",
-      "css": ".ds-select-row{font:14px \"Segoe UI\",sans-serif;display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--paper,#fff9e8);color:var(--ink,#173e4b);padding:16px}.ds-select{font:13px \"Segoe UI\",sans-serif;max-width:170px;padding:7px;border:1px solid #809b9e;border-radius:3px;background:transparent;color:var(--ink,#173e4b)}.ds-select:focus-visible{outline:3px solid var(--focus,#edbc65);outline-offset:5px}"
+      "css": ".ds-select-row{font:14px \"Segoe UI\",sans-serif;display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--paper,#fff9e8);color:var(--ink,#173e4b);padding:16px}.ds-select{font:13px \"Segoe UI\",sans-serif;max-width:172px;min-height:44px;padding:7px;border:1px solid #809b9e;border-radius:3px;background:transparent;color:var(--ink,#173e4b)}.ds-select:focus-visible{outline:3px solid var(--focus,#edbc65);outline-offset:4px}"
     }
   ],
   "narrative": {
     "northStar": "A tiny station in a vast painted ocean, where one slow day passes",
-    "overview": "The supplied ocean storyboard is the visual authority, refined by the user's explicit direction: fewer clouds, with bright, deep blue sky dominant. Deliberately spaced ivory cloud banks with feathery edges and pale-blue/mint washes, reflected sky, and submerged rails make the world feel expansive. The little station supplies human scale without enclosing the view. The interface is sparse and welcoming, with illustrated-story lettering and small practical controls.\n\nThe feeling to protect is the quiet of a hand-painted animated film: stillness that is never empty. The wind is visible in streamers, a pinwheel, petals and a bell. Small lives respond to one another: a cat notices the distant train, a sea-glass passenger watches the dragon, and the dragon skims a painted veil before rising into a broad vertical loop. A cottage island stays beside the railway as the carriage passes; the shoreline station remains fixed. Far rain and a passing cloud shadow suggest weather beyond the station. Light is the main event. The painted noon slowly becomes a golden sunset, a blue dusk with lanterns, a starlit night, and a pale morning, and the sea reflects all of it.\n\nThe environment fills the viewport. Nearby structures are real geometry; the painted sky is the distant backdrop. The welcome overlay recedes when exploration begins, and immersive sessions use a physical ticket-like menu inside the world. Movement begins only through an explicit action; the horizon remains stable during travel.",
+    "overview": "The supplied ocean storyboard is the visual authority, refined by the user's explicit direction: fewer clouds, with bright, deep blue sky dominant. Deliberately spaced ivory cloud banks with feathery edges and pale-blue/mint washes, reflected sky, and submerged rails make the world feel expansive. The little station supplies human scale without enclosing the view. The interface is sparse and welcoming, with illustrated-story lettering and small practical controls.\n\nThe feeling to protect is the quiet of a hand-painted animated film: stillness that is never empty. The wind is visible in streamers, a pinwheel, petals and a bell. Small lives respond to one another: a cat notices the distant train, a sea-glass passenger watches the dragon, and the dragon skims a painted veil before rising into a broad vertical loop. A cottage island stays beside the railway as the carriage passes; the shoreline station remains fixed. Far rain and a passing cloud shadow suggest weather beyond the station. Light is the main event. The painted noon slowly becomes a golden sunset, a blue dusk with lanterns, a starlit night, and a pale morning, and the sea reflects all of it.\n\nThe environment fills the viewport. Nearby structures are real geometry; the painted sky is the distant backdrop. The welcome overlay recedes when exploration begins, and immersive sessions use a compact menu opened only on request inside the world. Movement begins only through an explicit action; the horizon remains stable during travel.",
     "keyCharacteristics": [
       "A huge bright-blue space with a clear, distant horizon and generous cloud-free sky.",
       "Sparse, softly feathered painted cloud banks reflected in translucent, gently animated water.",

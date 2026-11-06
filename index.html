@@ -14,26 +14,30 @@
     <div id="loading" role="status"><span class="loading-line"></span><p>Somewhere, beyond the shore.</p><small>Painting the sky…</small><button id="loading-exit" class="exit-button">Exit experience</button></div>
     <header class="masthead">
       <a class="wordmark" href="./" aria-label="The Quiet Line home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="m12 5-7 23M20 5l7 23M9 13h14M7 21h18"/></svg><span>The Quiet Line</span></a>
-      <div class="header-actions"><button id="exit-experience" class="exit-button" aria-label="Exit experience and close page">Exit experience</button><button id="help-toggle" class="icon-button" aria-label="Open controls and settings" aria-expanded="false" aria-controls="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16M9 4v6M15 14v6"/></svg></button></div>
+      <div class="header-actions"><button id="exit-experience" class="exit-button" aria-label="Exit experience and close page">Exit experience</button></div>
     </header>
     <section id="intro" aria-labelledby="title">
       <div class="invitation"><h1 id="title">An ocean.<br>A sky.<br>Nothing to hurry.</h1><p>Follow the tracks into an endless summer.<br>Stay a little longer than you meant to.</p></div>
       <div class="arrival"><button id="enter-vr" class="primary" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l2 10h-6l-3-3-3 3H3L5 7Z"/><path d="M7 11h2m6 0h2"/></svg><span>Checking for a headset…</span></button><button id="explore" class="text-button">Explore on this screen <span aria-hidden="true">↗</span></button><p id="xr-note">Made for Meta Quest · Headphones welcome</p></div>
     </section>
-    <div id="toolbar" hidden>
-      <div class="place"><span class="place-dot"></span><span id="place-name">The little station</span></div>
-      <div class="tools"><button id="journey" aria-pressed="false">Board train</button><button id="viewpoint" disabled>Choose window seat</button><button id="sound" aria-pressed="true" aria-label="Mute sound">Sound on</button><button id="home" aria-label="Return to the little station">Return to station</button></div>
-      <p class="hint">Drag to look · Space to board / depart / pause · V for seats · H for controls</p>
+    <div id="toolbar" hidden role="group" aria-label="Journey controls">
+      <button id="journey" aria-pressed="false">Board train</button>
+      <button id="help-toggle" aria-expanded="false" aria-controls="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16M9 4v6M15 14v6"/></svg><span>Menu</span></button>
     </div>
     <aside id="settings" hidden aria-labelledby="settings-title">
-      <div class="panel-heading"><h2 id="settings-title">Settle in.</h2><button id="close-settings" class="icon-button" aria-label="Close controls"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
-      <p>This is a place to be, with no destination to reach. The day passes slowly here: a sunset in a few minutes, then stars, then morning again.</p>
-      <label class="setting" for="volume">Sound <input id="volume" type="range" min="0" max="100" value="55" /></label>
-      <label class="setting" for="quality">Detail <select id="quality"><option value="balanced">Balanced · Quest</option><option value="high">High · desktop</option></select></label>
-      <label class="setting" for="still-water">Quiet water <input id="still-water" type="checkbox" /></label>
+      <div class="panel-heading"><h2 id="settings-title">Your journey</h2><button id="close-settings" class="icon-button" aria-label="Close menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+      <p id="place-name" class="journey-status">At the little station</p>
+      <div class="journey-actions"><button id="viewpoint" disabled>Choose window seat</button><button id="home" disabled>Return to station</button></div>
       <label class="setting" for="moment">Time of day <select id="moment"><option value="flowing">Let the day pass</option><option value="morning">Morning</option><option value="noon">High summer noon</option><option value="golden">Golden hour</option><option value="dusk">Blue dusk</option><option value="night">Starlight</option></select></label>
-      <div class="instructions"><h3>Your journey</h3><p>Board the waiting train, choose a window seat, then depart. Switch between the left and right windows whenever you like; changing seats pauses the journey. Return to station brings you back to the platform.</p><h3>In your headset</h3><p>Point a controller at the brass ticket and press the trigger. Squeeze either grip to bring the ticket in front of you. Right stick: snap turn. Look and lean naturally; choosing a seat keeps your real head height.</p><p>Turn the hour holds a sunset or the stars, or lets the day pass. Exit experience at the bottom of the ticket leaves VR and closes the page.</p><h3>On this screen</h3><p>Drag to look. Arrow keys to turn. Space boards, departs or pauses. V changes window seat. T turns the hour. R returns to the station. M mutes. H opens controls. Escape closes them.</p><p>Exit experience stops everything and closes this page. If your browser keeps the tab open, it will become a blank page.</p></div>
-      <button id="return-intro" class="text-button">Back to the welcome screen</button>
+      <div class="setting"><span>Sound</span><button id="sound" aria-pressed="true" aria-label="Mute sound">Sound on</button></div>
+      <details class="more-settings"><summary>More options &amp; controls</summary>
+        <label class="setting" for="volume">Volume <input id="volume" type="range" min="0" max="100" value="35" /></label>
+        <label class="setting" for="quality">Detail <select id="quality"><option value="balanced">Balanced · Quest</option><option value="high">High · desktop</option></select></label>
+        <label class="setting" for="still-water">Quiet water <input id="still-water" type="checkbox" /></label>
+        <div class="instructions"><h3>On this screen</h3><p>Drag to look. Space boards, departs or pauses. V changes seats. H or Escape toggles this menu. T changes the time; R returns to the station; M mutes sound. Arrow keys turn the view.</p><h3>In your headset</h3><p>Squeeze either grip to open or close the menu. Point and press the trigger to choose. Right stick turns you. Look and lean naturally.</p><p>Choosing a seat pauses the journey. Opening this menu keeps your current journey and view.</p></div>
+        <button id="return-intro" class="text-button">Back to the welcome screen</button>
+      </details>
+      <button id="menu-exit" class="text-button">Exit experience</button>
     </aside>
     <p id="notice" role="status" aria-live="polite"></p>
     <div id="fade" aria-hidden="true"></div>

@@ -9,12 +9,61 @@ FIRST VIEWPORT: Horizon through the middle, generous blue between deliberately p
 FORM: User-pinned ocean storyboard overrides direction selection, refined by the later explicit instruction for FEWER CLOUDS and dominant bright, deep blue sky. Seed 53425ab6 ran with no remote challengers. Creative decisions are explicitly delegated. The current surface uses four softly painted banks over a procedural blue wash, with the same sky reflected in water. Their sampling occupies limited angular windows; their visible edges are soft and feathery.
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
 
-## Active carriage milestone
+## Current quiet-train audio extension
+
+Default volume is now 35%. Original low rolling noise and rounded paired
+track contacts follow train distance and speed, replacing repeated travel
+chimes while preserving existing ambience. Pausing settles the train layer to
+silence. The user reported that the first pass sounded like a constant whoosh.
+The revision reduces the rolling bed, sharpens the definition of the rounded
+paired taps and lowers water/wind inside the carriage. After the user heard the
+bumps but reported a low screech, sustained and sliding sine tones were removed
+and contact-window levels raised about 3dB. All 66 tests/build pass;
+offline Web Audio and real-browser checks
+passed in `.impeccable/review/audio-result.json`. The 36-second
+`output/quiet-train-preview.wav` is the train layer at actual default gain,
+unnormalized. `output/train-track-soft-knocks.wav` is the latest 12-second
+steady-cruise sample; `output/train-track-rhythm.wav` also contains this revision.
+Signal metrics are not headphone loudness or listening approval;
+the latest tuning is retained for this release and Quest listening remains unverified.
+The reviewed controls layout and visual world are unchanged. The user authorized
+committing the controls/audio release, merging to main and pushing to remote.
+
+## Compact-controls extension — reviewed
+
+The user rejected the giant floating VR board and retained station, boarding and
+seat actions without free walking. Screen exploration now shows only Journey
+and Menu at the lower right. The requested menu holds seats, return, named time
+choices, sound and exit; More options & controls holds secondary settings/help.
+H/Escape toggle it; Close or a world click dismisses it. Opening or changing
+time/sound preserves journey and gaze; travel actions close it. Notices last 3.2s.
+
+The VR menu starts closed. Either grip toggles a 0.54m × 0.55m panel, placed only
+on request 0.9m ahead and 0.22m below the actual head with no floor clamp.
+Trigger selects; Close and Back are explicit; six named time choices have their
+own page. No auto-open on entry or seat changes. Travel actions, snap turns and
+XR visibility loss close it. Late full-opacity rendering prevents water/glass
+holes. Preserve the existing palette, lettering and world.
+
+At that controls milestone, all 54 tests/build passed; desktop1440, touch390 and reduced-motion320 checks
+report no errors in `.impeccable/review/controls-result.json`. Ten fresh
+`controls-*.png` captures support the fresh **ship** finish review in `controls-finish-review.md`,
+with all ten captures valid and no material fixes. Projected VR views
+are production meshes in a monoscopic inspection scene, not headset/controller
+validation. Twelve detector advisories include inherited token drift and
+selector/computed-color false positives; no retokenizing was performed. Five
+rasters retain provenance, zero missing; none were added. Actual Quest, motion,
+audio and frame-time limits remain; the dragon is not reapproved.
+
+Train commit `7c04a1f` deployed successfully. These compact-controls changes and
+their preview images are included in the controls/audio release.
+
+## Earlier carriage milestone
 The user superseded the moving-station design with a stationary platform on raised ground and a train one can ride while looking through the windows. The approved process uses Blender geometry plus painted textures and GLB export; references show a cream/maroon vintage carriage, rounded roof, red bench upholstery, dark substantial window frames and hanging straps. Build one complete carriage and window-seat experience before extending the journey. User criticism of the smooth procedural dragon overrides its earlier visual acceptance; do not use that earlier verdict to claim the new art is accepted. Evaluate the actual exported carriage in the browser, including both seat views, aisle, exterior, daylight/dusk and mobile controls. The existing full-viewport visual world and UI tokens remain.
 
 The first carriage is implemented and locally reviewed. The station stays at (-3.4, 0.6, -3) on raised grass; the train starts at (0, 0, -4) with a 0.9m floor. Board train → Depart → Pause/Continue → Journey complete shares actions across screen, keyboard and VR ticket. Left/right seat selection pauses travel; Return restores the berth. The train carries the visitor over 1.1km with a 3m/s cruise. Gaze and real tracked height remain independent; no forced roll/bobbing or generic water teleport remains. Petals hide indoors; visibility loss pauses travel.
 
-The fresh review in `.impeccable/review/train-finish-review.md` returned **ship** with no material fixes across 13 valid actual-browser captures. It covers the first carriage/window-seat geometry, materials, framing, daylight/night and mobile readability; the sloped cab also has secondary Blender inspection. All 47 tests and the production build pass. Independent functional/asset evidence is in `train-verify-result.json`; provenance scan: five rasters, zero missing records. The 1254 × 1254 original painted atlas, exact prompt and editable Blender source are retained. Detector advisories record inherited palette/type documentation drift and a shoreline material color; existing UI tokens and schema remain. Continuous motion, audio balance and actual Quest stereo, controls, comfort and sustained frame rate remain unverified. The dragon is not reapproved. Preview captures are local; the published site was not updated in this pass.
+The fresh review in `.impeccable/review/train-finish-review.md` returned **ship** with no material fixes across 13 valid actual-browser captures. It covers the first carriage/window-seat geometry, materials, framing, daylight/night and mobile readability; the sloped cab also has secondary Blender inspection. At that milestone, all 47 tests and the production build passed. Independent functional/asset evidence is in `train-verify-result.json`; provenance scan: five rasters, zero missing records. The 1254 × 1254 original painted atlas, exact prompt and editable Blender source are retained. Detector advisories record inherited palette/type documentation drift and a shoreline material color; existing UI tokens and schema remain. Continuous motion, audio balance and actual Quest stereo, controls, comfort and sustained frame rate remain unverified. The dragon is not reapproved. That implementation pass did not publish; its train commit was subsequently deployed. Current controls status is recorded above.
 
 ## Earlier approved atmospheric sequence — historical
 1. Open summer sky: four sparse painted banks using two 1536 × 1024 transparent paintings; the panorama and nine procedural cloud sprites are retired.

@@ -1,6 +1,85 @@
 # A little more wonder
 
-## Current milestone: one rideable carriage — complete locally
+## Current milestone: quieter train audio — implemented
+
+Default volume is reduced from 55% to 35%, retaining the existing 0.65 master
+multiplier. `src/train-audio.js` replaces the repeated 70Hz travel chimes with
+dry filtered rolling noise and rounded paired track contacts. The
+layer follows ride speed and distance: groups occur about every 6m, with a
+roughly 0.86m paired offset and slight deterministic variation. That is about
+2s per group at cruise or 5s at 1.2m/s. Soft envelopes settle the train layer to
+silence when paused; route resets and long gaps do not create catch-up bursts.
+The user rejected the first pass because only a constant whoosh was audible.
+The revision lowers the continuous train noise sixfold, gives contacts a
+12ms rounded onset and separate low-mid filtering, and shortens their tails
+to keep the two wheel contacts distinct. Water and wind fade down inside the
+carriage and restore outside, without changing the visitor's volume setting.
+The user could then hear the bumps but wanted them slightly louder and reported
+an unpleasant low screech. The latest tuning removes both the sustained sine
+hum and each contact's falling sine tone, softens the noise filters and raises
+the contact-window level by about 3dB. The train layer now uses noise alone.
+
+All 66 tests and the production build pass, including eight train-audio tests
+and four audio integration tests. Actual OfflineAudioContext rendering and
+browser volume/mute/depart/pause checks passed with no errors in
+`.impeccable/review/audio-result.json`. The unnormalized 36-second
+`output/quiet-train-preview.wav` uses actual 35% default gain and demonstrates
+acceleration, cruise, slowing, pause and resume for the train layer only.
+The 12-second `output/train-track-soft-knocks.wav` isolates steady cruise;
+`output/train-track-rhythm.wav` is also refreshed with this render.
+It measured peak −29.16dBFS and RMS −57.42dBFS, with the weaker median contact
+window 22.09dB above the intervening rolling bed. Stationary and settled paused
+sections were zero. These signal metrics do not establish headphone SPL or
+listening approval. The latest tuning is retained for this release; actual Quest
+audio/comfort validation remains outstanding.
+
+The controls layout is unchanged from its **ship** review; only the initial
+volume value and read-only audio diagnostics changed. No second visual review
+was needed, and no design tokens or raster assets changed. The user authorized
+committing the controls/audio release, merging to main and pushing to remote.
+GitHub Actions tests and deploys each main push; its run is the deployment record.
+
+## Earlier milestone: compact controls — reviewed
+
+The user found the floating VR board too large and asked for less obstructive
+controls, while retaining the station, boarding and seat actions without free
+walking. Screen exploration now keeps only the journey button and Menu at the
+lower right. The requested menu contains seats, return, named time selection,
+sound and exit; volume, detail, quiet water, help and welcome-screen navigation
+sit inside More options & controls. H/Escape toggle it, Close or an outside world
+click dismisses it, and focus returns appropriately. Notices last 3.2 seconds.
+Opening the menu or changing time/sound preserves the journey and view; travel
+actions close it.
+
+The VR menu starts closed and toggles with either grip. Its 0.54m × 0.55m panel
+opens 0.9m ahead and 0.22m below the actual head, only on request and without a
+floor clamp. Trigger selects; Close dismisses; Time of day opens six named
+choices with Back to journey. It does not reopen on entry or after seat changes,
+and closes on travel actions, snap turn and XR visibility loss. Late full-opacity
+rendering keeps water and glass from cutting holes through the panel.
+
+At this controls milestone, all 54 tests and the production build passed. Functional browser checks at 1440px,
+390px touch and 320px with reduced motion cover menu/focus, boarding, both seats,
+pause, time, return and exit without reported errors. Evidence is in the ignored
+`.impeccable/review/controls-result.json` and ten fresh `controls-*.png` captures.
+The fresh review in `.impeccable/review/controls-finish-review.md` returned **ship**
+for this controls refinement, with all ten captures valid and no material fixes. Projected VR captures use
+production meshes in a monoscopic browser inspection scene; they are layout
+evidence, not headset or controller proof. Quest stereo/readability, physical
+controller behavior, comfort, audio and sustained frame time remain unverified.
+
+The detector recorded 12 advisory findings, including inherited palette/type
+documentation drift and false positives for the `#fade` selector and computed
+HTML black. Palette and font choices remain. No new raster assets were added;
+the five-file provenance scan reports zero missing records. This pass does not
+renew the rejected dragon's art review.
+
+The earlier train commit `7c04a1f` deployed successfully via GitHub Actions run
+`42166060991`. The compact-controls changes are included in the controls/audio release.
+Local preview remains `http://127.0.0.1:5173`. Updated local images are
+`output/train-window-seat.png` and `output/controls-menu-preview.png`.
+
+## Earlier milestone: one rideable carriage — deployed
 
 The user authorized implementation by a coordinated fleet of agents. The
 first milestone is implemented: one original Blender-authored carriage with a
@@ -59,8 +138,9 @@ The current dragon is not replaced or reapproved by this review.
 palette/type documentation drift and the new shoreline's local material color.
 No palette, typography or token-schema changes were made to chase the detector.
 Boundary docs, current controls, preview captures and asset provenance are
-updated. Local preview is `http://127.0.0.1:5173`; the published site was not
-updated in this pass.
+updated. The implementation pass itself did not publish; commit `7c04a1f`
+was subsequently deployed successfully. These 47-test checks describe the
+earlier carriage milestone, not the current controls verification above.
 
 ## Completed train research
 

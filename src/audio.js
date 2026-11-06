@@ -1,5 +1,8 @@
 // Everything is synthesized on-device: water, wind, a music box that remembers a
 // few notes at a time, crickets after dark, and the far voices of visitors.
+import { TrainRollingSound } from './train-audio.js';
+
+export const DEFAULT_VOLUME = .35;
 
 // A pentatonic music-box phrase, picked note by note so each one is a small
 // surprise that still belongs. Pure, so tests can inspect it.
@@ -16,7 +19,7 @@ export function composePhrase(random = Math.random, length = 5 + Math.floor(rand
 }
 
 export class Soundscape {
-  constructor(){this.context=null;this.volume=.55;this.muted=false;this.running=false;this.closed=false;this.nextNote=0;this.nextBird=0;this.nextPhrase=22;this.nextCricket=0;this.travel=0;}
+  constructor(){this.context=null;this.volume=DEFAULT_VOLUME;this.muted=false;this.running=false;this.closed=false;this.nextNote=0;this.nextBird=0;this.nextPhrase=22;this.nextCricket=0;this.rolling=null;}
   async start(){
     if(this.closed)return;
     if(!this.context){
@@ -24,6 +27,7 @@ export class Soundscape {
       if(!Audio)return;
       this.context=new Audio(); const c=this.context;
       this.master=c.createGain();this.master.gain.value=0;this.master.connect(c.destination);
+      this.rolling=new TrainRollingSound(c,this.master);
       const buffer=c.createBuffer(2,c.sampleRate*6,c.sampleRate);
       for(let ch=0;ch<2;ch++){const a=buffer.getChannelData(ch);let last=0;for(let i=0;i<a.length;i++){last=(last+(Math.random()*2-1)*.02)/1.02;a[i]=last*3.5;}}
       this.surf=c.createBufferSource();this.surf.buffer=buffer;this.surf.loop=true;
@@ -31,7 +35,7 @@ export class Soundscape {
       this.surfGain=c.createGain();this.surfGain.gain.value=.35;this.surf.connect(low).connect(this.surfGain).connect(this.master);this.surf.start();
       this.wind=c.createBufferSource();this.wind.buffer=buffer;this.wind.loop=true;this.wind.playbackRate.value=.72;
       const windFilter=c.createBiquadFilter();windFilter.type='bandpass';windFilter.frequency.value=1100;windFilter.Q.value=.4;
-      const windGain=c.createGain();windGain.gain.value=.13;this.wind.connect(windFilter).connect(windGain).connect(this.master);this.wind.start();
+      this.windGain=c.createGain();this.windGain.gain.value=.13;this.wind.connect(windFilter).connect(this.windGain).connect(this.master);this.wind.start();
       // A feedback delay gives the music box and bells somewhere wide to ring.
       this.space=c.createGain();this.space.gain.value=1;
       const delay=c.createDelay(1.5);delay.delayTime.value=.37;const feedback=c.createGain();feedback.gain.value=.42;
@@ -44,7 +48,7 @@ export class Soundscape {
     await this.context.resume();if(this.closed)return;this.running=true;this.applyVolume();
   }
   applyVolume(){if(this.context&&!this.closed)this.master.gain.setTargetAtTime(this.muted?0:this.volume*.65,this.context.currentTime,.35);}
-  setVolume(v){this.volume=v;this.applyVolume();}
+  setVolume(v){if(Number.isFinite(v)){this.volume=Math.min(1,Math.max(0,v));this.applyVolume();}}
   toggle(){this.muted=!this.muted;this.applyVolume();return !this.muted;}
   chime(frequency=660,pan=0,level=.13){
     if(!this.context||!this.running)return;
@@ -110,23 +114,27 @@ export class Soundscape {
     o.connect(lp).connect(g).connect(p).connect(this.master);o.start(t);wobble.start(t);o.stop(t+seconds);wobble.stop(t+seconds);
     o.onended=()=>{o.disconnect();lp.disconnect();g.disconnect();p.disconnect();wobbleGain.disconnect();};
   }
-  update(time,speed,light={night:0,lantern:0}){
+  update(time,speed,light={night:0,lantern:0},distance=0,aboard=false){
     if(!this.context||!this.running||this.context.state!=='running')return;
     const now=this.context.currentTime;
-    this.surfGain.gain.setTargetAtTime(.25+Math.sin(time*.25)*.07,now,.5);
+    this.rolling.update(speed,distance);
+    // The carriage shelters the listener from the constant water/wind wash.
+    // Keep the outside world present without covering the wheel contacts.
+    this.surfGain.gain.setTargetAtTime((.25+Math.sin(time*.25)*.07)*(aboard?.35:1),now,.65);
+    this.windGain.gain.setTargetAtTime(.13*(aboard?.3:1),now,.65);
     this.pad.gain.setTargetAtTime(light.lantern*.9,now,2);
     if(time>this.nextNote){this.chime([330,440,495,660,742.5][Math.floor(Math.random()*5)],Math.sin(time*.12)*.7,.045);this.nextNote=time+16+Math.random()*18;}
     if(time>this.nextPhrase){this.phrase();this.nextPhrase=time+38+Math.random()*34;}
     if(time>this.nextBird&&light.night<.5){this.bird();this.nextBird=time+24+Math.random()*28;}
     if(time>this.nextCricket&&light.lantern>.4){this.cricket(.006*light.lantern);this.nextCricket=time+2+Math.random()*4;}
-    if(speed>.2&&time>this.travel){this.chime(70,0,.025);this.travel=time+1.4/speed;}
   }
-  async suspend(){if(this.context&&!this.closed)await this.context.suspend();}
+  async suspend(){if(this.context&&!this.closed){this.rolling?.silence();await this.context.suspend();}}
   async dispose(){
     if(this.closed)return;this.closed=true;this.running=false;
     if(!this.context)return;
     this.master.gain.cancelScheduledValues(this.context.currentTime);
     this.master.gain.setValueAtTime(0,this.context.currentTime);
+    this.rolling?.dispose();
     this.master.disconnect();
     if(this.context.state!=='closed')await this.context.close();
   }

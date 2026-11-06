@@ -67,15 +67,15 @@ components:
     backgroundColor: "{colors.primary-hover}"
   button-text:
     backgroundColor: "transparent"
-    padding: "15px 0"
+    padding: "12px 0"
   button-icon:
-    backgroundColor: "#174956b8"
-    textColor: "{colors.paper}"
-    rounded: "{rounded.circle}"
+    backgroundColor: "transparent"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.action}"
     width: "44px"
     height: "44px"
   button-icon-hover:
-    backgroundColor: "{colors.ink}"
+    backgroundColor: "{colors.primary-hover}"
   toolbar:
     backgroundColor: "{colors.enamel-panel}"
     rounded: "{rounded.toolbar}"
@@ -85,15 +85,15 @@ components:
     textColor: "{colors.paper}"
     rounded: "{rounded.field}"
     typography: "{typography.label}"
-    padding: "12px 18px"
+    padding: "12px 16px"
   toolbar-action-active:
     backgroundColor: "{colors.enamel-active}"
   settings-panel:
     backgroundColor: "{colors.paper}"
     textColor: "{colors.ink}"
     rounded: "{rounded.panel}"
-    padding: "{spacing.panel-padding}"
-    width: "360px"
+    padding: "18px 22px 12px"
+    width: "336px"
   select:
     backgroundColor: "transparent"
     textColor: "{colors.ink}"
@@ -112,7 +112,7 @@ The supplied ocean storyboard is the visual authority, refined by the user's exp
 
 The feeling to protect is the quiet of a hand-painted animated film: stillness that is never empty. The wind is visible in streamers, a pinwheel, petals and a bell. Small lives respond to one another: a cat notices the distant train, a sea-glass passenger watches the dragon, and the dragon skims a painted veil before rising into a broad vertical loop. A cottage island stays beside the railway as the carriage passes; the shoreline station remains fixed. Far rain and a passing cloud shadow suggest weather beyond the station. Light is the main event. The painted noon slowly becomes a golden sunset, a blue dusk with lanterns, a starlit night, and a pale morning, and the sea reflects all of it.
 
-The environment fills the viewport. Nearby structures are real geometry; the painted sky is the distant backdrop. The welcome overlay recedes when exploration begins, and immersive sessions use a physical ticket-like menu inside the world. Movement begins only through an explicit action; the horizon remains stable during travel.
+The environment fills the viewport. Nearby structures are real geometry; the painted sky is the distant backdrop. The welcome overlay recedes when exploration begins, and immersive sessions use a compact menu opened only on request inside the world. Movement begins only through an explicit action; the horizon remains stable during travel.
 
 **Key Characteristics:**
 - A huge bright-blue space with a clear, distant horizon and generous cloud-free sky.
@@ -152,7 +152,7 @@ The bundled `public/assets/story.woff2` is Alegreya Latin regular, exposed by CS
 
 The pairing reads like a quiet illustrated travel story with straightforward operating instructions. Welcome copy uses the display role with balanced wrapping. Settings titles use the title role; invitation prose uses body; settings prose uses panel-body; toolbar controls and utility labels use label. Action weight is reserved for primary and welcome actions.
 
-On narrow screens, the display becomes (43px) with (1.02) line height and invitation prose becomes (14px). On short desktop screens, the display becomes (42px). In-world station signs deliberately use canvas-rendered Georgia, while the VR ticket uses canvas-rendered sans-serif (42px on its source texture); these are separate world textures, not DOM font styles.
+On narrow screens, the display becomes (43px) with (1.02) line height and invitation prose becomes (14px). On short desktop screens, the display becomes (42px). In-world station signs deliberately use canvas-rendered Georgia, while the VR menu uses canvas-rendered sans-serif (27–44px depending on label role); these are separate world textures, not DOM font styles.
 
 **The Quiet Lettering Rule.** Use the bundled regular story face for invitations and titles; use the interface sans-serif for actions and instructions.
 
@@ -162,9 +162,9 @@ The app and canvas are fixed to all viewport edges with dynamic viewport height.
 
 At widths up to (650px), the masthead has (20px) padding and the welcome layout stacks vertically with (80px 26px 32px) padding. Arrival controls use the available width, capped at (330px), after a (28px) gap. The primary action minimum height changes from (58px) to (52px). At heights up to (590px) with widths from (651px), desktop welcome spacing and typography compress without changing the overall arrangement.
 
-During exploration, a compact toolbar sits centered (26px) above the lower edge, or (20px) on mobile, capped at viewport width minus (30px). The settings panel anchors to the upper right, with width capped by viewport width minus (32px) and a scrollable maximum height of viewport height minus (110px). It moves inward and uses smaller padding on mobile.
+During exploration, only the journey action and Menu sit in an enamel dock at the lower right, inset at least (24px) on desktop and (16px) on mobile, respecting safe areas. The requested paper menu anchors above the dock, (66px) above its bottom inset. Its width is (336px), capped at viewport width minus (32px), with internal scrolling when height is constrained. Desktop panel padding is (18px 22px 12px); mobile padding is (16px 20px 10px), with narrower side padding below (350px). The dock stays available while the nonmodal menu is open.
 
-Immersive WebXR hides the masthead, welcome, toolbar, and settings DOM overlays. The ticket menu is world-space geometry, placed in front of the headset and recalled with either controller grip. Maintain the distinction between flat-screen responsive layout and stereo, real-scale world layout.
+Immersive WebXR hides the masthead, welcome, toolbar, and settings DOM overlays. The compact menu is world-space geometry, initially hidden and placed only when explicitly opened with either controller grip. It does not follow gaze continuously or reopen after seat placement. Maintain the distinction between flat-screen responsive layout and stereo, real-scale world layout.
 
 ## Elevation & Depth
 
@@ -174,13 +174,13 @@ The station's shelter, bench, and selected plant pots sit over soft radial conta
 
 The sky places `cloud-tower.png` and `cloud-veil.png` in four limited angular windows over a resolution-independent blue wash. Both paintings are (1536 × 1024) RGBA assets with real transparent margins. The latest reference-led repaint softens their silhouettes into feathery ivory edges and pale-blue/mint washes while retaining the four-bank composition and broad blue intervals. The limited sampling windows preserve brush detail without stretching one raster around the full sphere; “angular” describes placement, not the painted edge treatment. Sky and water sample the same painting and daylight recipe. Preserve mip filtering, explicit derivatives and faded patch edges. The old panoramas and nine procedural cloud sprites are retired. Cloud detail remains limited by the source images, and actual headset clarity is unverified.
 
-DOM surfaces use soft, blue-tinted ambient shadows: primary action (`0 7px 24px #06334b25`), exploration toolbar (`0 6px 24px #08354a22`), and settings panel (`0 16px 65px #163d5240`). Text shadows support legibility over the image. The welcome gradient supplies contrast without an opaque content card.
+DOM surfaces use soft, blue-tinted ambient shadows: primary action (`0 7px 24px #06334b25`), exploration toolbar (`0 6px 24px #08354a22`), and requested menu (`0 12px 40px #163d5240`). Text shadows support legibility over the image. The welcome gradient supplies contrast without an opaque content card.
 
-Environmental motion stays unhurried: water shimmer, birds, a hanging wind bell, sparse cloud drift, petals, distant weather, the passenger's quiet visit, and the slow change of the light. The dragon's faster cloud skim, full vertical loop, banking dive and rising turn provide the user-requested aerial movement without moving the camera. Island tree crowns and laundry share the breeze. The loading indicator breathes over (1.8s); loading fades over (.8s), notices over (.3s), and the DOM travel fade over (.15s). Reduced-motion preference disables CSS animation/transitions, initializes quiet water, holds the daylight clock and cloud drift, disables rain/cloud-shadow/weather-gust events, keeps the passenger resting without arrival or departure, and freezes island crown and cloth motion. It holds the dragon's local pose while its region still eases along the route during travel. Existing birds, bell, train and plane animation can continue. Do not describe this as a total world-motion pause. While the flat-screen document is hidden, the frame callback skips world updates and rendering; immersive sessions retain their XR frame loop. Document and XR visibility loss pause the journey.
+Environmental motion stays unhurried: water shimmer, birds, a hanging wind bell, sparse cloud drift, petals, distant weather, the passenger's quiet visit, and the slow change of the light. The dragon's faster cloud skim, full vertical loop, banking dive and rising turn provide the user-requested aerial movement without moving the camera. Island tree crowns and laundry share the breeze. The loading indicator breathes over (1.8s); loading fades over (.8s), notices over (.3s) after a (3.2s) display, and the DOM travel fade over (.15s). Reduced-motion preference disables CSS animation/transitions, initializes quiet water, holds the daylight clock and cloud drift, disables rain/cloud-shadow/weather-gust events, keeps the passenger resting without arrival or departure, and freezes island crown and cloth motion. It holds the dragon's local pose while its region still eases along the route during travel. Existing birds, bell, train and plane animation can continue. Do not describe this as a total world-motion pause. While the flat-screen document is hidden, the frame callback skips world updates and rendering; immersive sessions retain their XR frame loop. Document and XR visibility loss pause the journey.
 
 ## Shapes
 
-Physical forms retain human scale, with softened edges and small signs of wear. The station platform uses staggered board ends, rounded edges, and old nail heads. Its open-sided gabled shelter pairs braced posts with a gently curved roof profile, lifted eaves, overlapping rounded terracotta tiles, and cylindrical ridge caps. A slatted bench, luggage, rounded clay pots, and a watering can make it feel inhabited. These details stay clustered at the station, leaving the horizon and the view along the rails open. The screen UI uses lightly eased rectangles for actions, toolbar, and settings, while the settings icon is circular. Thin line icons have rounded caps and joins. Use the small radii in frontmatter rather than introducing oversized capsules or decorative containers.
+Physical forms retain human scale, with softened edges and small signs of wear. The station platform uses staggered board ends, rounded edges, and old nail heads. Its open-sided gabled shelter pairs braced posts with a gently curved roof profile, lifted eaves, overlapping rounded terracotta tiles, and cylindrical ridge caps. A slatted bench, luggage, rounded clay pots, and a watering can make it feel inhabited. These details stay clustered at the station, leaving the horizon and the view along the rails open. The screen UI uses lightly eased rectangles for actions, toolbar, and settings, and a rectangular Close icon inside the menu. Thin line icons have rounded caps and joins. Use the small radii in frontmatter rather than introducing oversized capsules or decorative containers.
 
 ## Components
 
@@ -240,23 +240,27 @@ Geometry is merged by material, with crowns and cloth kept separate for their sm
 
 ### Arrival actions
 
-The primary action is a warm-paper rectangle with dark ink, a headset line icon, centered content, and a minimum height defined in Layout. Hover warms the surface; disabled state reduces opacity to (.7). The adjacent text action provides desktop exploration, with underline on hover. VR availability changes the primary label and enabled state; the screen option stays accessible.
+The primary action is a warm-paper rectangle with dark ink, a headset line icon, centered content, and a minimum height defined in Layout. Hover warms the surface; disabled state reduces opacity to (.55). The adjacent text action provides desktop exploration, with underline on hover. VR availability changes the primary label and enabled state; the screen option stays accessible.
 
-### Settings icon
+### Menu close action
 
-The circular control uses a translucent dark background and a pale border. Hover darkens to Sea Ink. The close control inside settings retains the icon shape but drops the background and border.
+The (44px) close target has a thin line X, transparent background, Sea Ink lettering and the existing small action radius. Hover warms the paper surface. It replaces the former circular header settings icon; Menu is now a labeled dock action.
 
 ### Exploration toolbar
 
-Four actions sit within one enamel container. Hover and `aria-pressed="true"` share the active surface. Buttons have a (44px) minimum height, with (12px 18px) desktop padding and (10px 12px) mobile padding. Mobile controls form a two-column grid. The journey label follows board, depart, pause/continue and completion; the second action chooses or alternates window seats. A small place label and interaction hint float above and below it.
+Two actions sit in the lower-right enamel dock: the stateful journey action and Menu. The journey label follows board, depart, pause/continue and completion. Buttons retain a (44px) minimum height, with (12px 16px) desktop padding and (12px) mobile padding. The journey action uses Enamel Active; hover and expanded Menu use Deep Sea. Ride status and instructions live in the requested menu, with only brief notices outside it. Header Exit is visible on the welcome screen; exploration places Exit inside the menu.
 
-### Settings panel and fields
+### Requested menu and fields
 
-The paper panel pairs a story-font title with native range, select, and checkbox controls. Rows use thin dividers and generous vertical separation. Range and checkbox accents use Deep Sea; the select uses a thin muted border. The panel scrolls when space is constrained. Keyboard focus is a (3px) Amber Focus outline with a (5px) offset; the canvas offsets its outline inward.
+The paper panel pairs the story-font “Your journey” title and current ride status with seat selection, return, a native Time of day select, sound and Exit experience. More options & controls is a native disclosure for volume, detail, quiet water, help and welcome-screen navigation. It collapses again when the menu closes. Rows use thin dividers; range and checkbox accents use Deep Sea, and selects retain a muted border and (44px) minimum height. Keyboard focus is a (3px) Amber Focus outline with a (4px) offset; the canvas offsets its outline inward.
 
-### In-world ticket
+Menu, H or Escape toggles the panel. Close and outside world clicks dismiss it; keyboard closing restores Menu focus, while outside clicks and travel actions return focus to the canvas. Opening the panel or selecting time/sound preserves journey progress and gaze. Boarding, seat changes, departure/pause and return close it. The visible journey action remains available while the panel is open.
 
-The native WebXR menu is a brass-colored backing (0.94m × 1.04m × 0.018m) carrying dark panels with warm labels. Action panels are (0.84m × 0.085m); hovering by controller ray lightens their enamel. A status line identifies the current ride state. Its six actions are board/depart/pause/continue, choose the next window seat, turn the hour, sound, return to station, and Exit experience. Busy placements disable travel actions; seat choice is unavailable on the platform, and the journey action disables at the route end. The exit action sits below a wider gap to separate leaving from travel. Trigger selects; grip recalls it. These are Three.js geometry and canvas textures, not a DOM overlay. The flat-screen masthead also keeps a clearly labeled Exit experience control beside settings, with equivalent exits in loading and error states.
+### Compact in-world menu
+
+The VR menu begins closed. Either grip toggles it and trigger selects. Its brass backing is (0.54m × 0.55m × 0.012m), placed only on explicit opening (0.9m) ahead and (0.22m) below the actual head. No floor clamp raises it for a seated visitor. It retains the established enamel and warm-label treatment. Full-width journey and seat actions are (0.504m × 0.08m); paired actions and named times are (0.244m × 0.08m). Close is always visible. Time of day opens a separate six-choice page with selected state and Back to journey.
+
+Opening or choosing time/sound preserves the journey and view. The menu closes on travel actions, snap turning and XR visibility loss; it does not automatically appear on XR entry or after a seat change. Busy placements disable travel actions, seat/return are unavailable on the platform, and the journey action disables at route completion. The panels use full-opacity late rendering with depth tests/writes disabled so water and carriage glass do not cut through them. These are Three.js geometry and canvas textures, not DOM overlays. Monoscopic browser projections establish layout and layering only; headset stereo readability, controller targeting and placement comfort remain unverified.
 
 WebXR entry requires a secure context, available XR API, and supported immersive session. The implementation requests `immersive-vr`, uses a local-floor reference space, right-stick snap turning, and explicit boarding/seat/return placements. Water-plane teleportation is retired. Real tracked head height and gaze remain independent of the train. Movement is opt-in and pauses when visibility is lost. Screen rendering caps pixel ratio at (1.5) for balanced and (2) for high detail; XR uses framebuffer scale (1) and requested foveation (1). These are code settings, not proof of headset comfort, performance, compatibility, or hardware verification. Validate those on a real headset before making such claims.
 

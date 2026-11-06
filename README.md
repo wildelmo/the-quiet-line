@@ -4,11 +4,13 @@ A tiny station on a grassy shore in an immense painted summer sea. Board a waiti
 
 **[Published site](https://wildelmo.github.io/the-quiet-line/)** · [Build and deployment](https://github.com/wildelmo/the-quiet-line/actions/workflows/pages.yml)
 
-The first rideable carriage is implemented and verified locally. Its fresh visual finish review returned **ship** for the carriage/window-seat milestone. The screenshots below show this milestone. Successful pushes to `main` test, build and deploy the updated experience through GitHub Pages.
+This release adds compact controls and quieter train audio to the rideable carriage introduced in commit `7c04a1f`. Functional checks pass; the visual finish review returned **ship** for the controls refinement. Deployment status is available in the workflow linked above.
 
-![The current local build: a fixed station and waiting carriage above the sea](output/quiet-line-preview.png)
+![A fixed station and waiting carriage above the sea](output/quiet-line-preview.png)
 
-![Inside the carriage, looking through the framed windows](output/train-window-seat.png)
+![The local carriage view with only Journey and Menu controls](output/train-window-seat.png)
+
+![The compact menu, opened when needed](output/controls-menu-preview.png)
 
 ## Run
 
@@ -24,11 +26,13 @@ Open the printed local address, currently `http://127.0.0.1:5173`, and select **
 | Action | Control |
 | --- | --- |
 | Board, then depart; pause or continue while aboard | Journey button or Space |
-| Choose the left window seat, then alternate sides | Seat button or V |
-| Return to the station and restore the train to its berth | Return to station or R |
-| Let the day pass, or hold morning, noon, golden hour, dusk or starlight | Settings or T |
-| Mute sound | Sound button or M |
-| Open settings; close them | H; Escape |
+| Choose the left window seat, then alternate sides | Menu → Choose window seat, or V |
+| Return to the station and restore the train to its berth | Menu → Return to station, or R |
+| Let the day pass, or choose a named time | Menu → Time of day; T cycles times |
+| Mute sound | Menu → Sound, or M |
+| Open or close the menu | Menu button, H or Escape |
+
+Only the journey button and **Menu** remain visible at the lower right during screen exploration. The menu opens above them with seats, return, named time choices and sound; **More options & controls** reveals volume, detail, quiet water, help and the welcome-screen action. **Exit experience** is in the menu. The Close button, H, Escape or a click on the world dismisses it; keyboard closing returns focus to Menu. Opening the menu and changing time or sound preserve the journey and view. Travel actions close it. Notices disappear after 3.2 seconds.
 
 Boarding, changing seats and returning use a brief fade. Choosing a seat pauses travel; **Continue journey** resumes it. The train eases toward 3 m/s, slows near the end of its 1.1 km route, and stops at **Journey complete**. Pause stops it immediately. The station and landscape stay fixed. Returning restores the original berth and platform viewpoint. There is no free-water teleport or observation deck.
 
@@ -42,7 +46,7 @@ npm run preview
 
 ## Automatic deployment
 
-The `pages.yml` GitHub Actions workflow runs tests and builds on pushes and pull requests to `main`. Successful pushes to `main` deploy `dist/` to GitHub Pages over HTTPS. Pull requests only test and build. The workflow can also run manually from Actions. Official GitHub actions are pinned to release commits, and only the deploy job receives Pages write permission. The current carriage work has not been published in this implementation pass.
+The `pages.yml` GitHub Actions workflow runs tests and builds on pushes and pull requests to `main`. Successful pushes to `main` deploy `dist/` to GitHub Pages over HTTPS. Pull requests only test and build. The workflow can also run manually from Actions. Official GitHub actions are pinned to release commits, and only the deploy job receives Pages write permission.
 
 ## Quest launch and controls
 
@@ -53,9 +57,10 @@ For local headset development, use Meta's USB/ADB port forwarding (`adb reverse 
 Official references: [Meta WebXR overview](https://developers.meta.com/vr/documentation/web/webxr-overview/), [WebXR secure contexts](https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API/Permissions_and_security), [Three.js WebXR manager](https://threejs.org/docs/pages/WebXRManager).
 
 - Start at the fixed raised station. Boarding and seat placement preserve real tracked head height; look, lean and move naturally within your physical space. The ride adds no camera bobbing, roll or automatic orbit.
-- Point either controller at the brass ticket and pull the trigger to board, depart, pause or continue, choose a window seat, turn the hour, mute or return. These use the same ride actions as the screen controls. Squeeze either grip to recall the ticket in front of you.
+- The compact VR menu starts closed. Squeeze either grip to open or close it, then point and pull the trigger to choose. It offers the same ride actions as the screen controls, sound, return and exit. **Time of day** opens six named choices with **Back to journey**; **Close** dismisses either page.
+- The menu appears only when requested, 0.9m ahead and 0.22m below your actual head, without a floor-height clamp. It does not reopen after boarding or seat changes. Travel actions, snap turns and XR visibility loss close it. Opening it or choosing time/sound preserves journey progress and gaze.
 - Right thumbstick left/right turns by 30 degrees, once per deflection. No left-stick travel or water-target teleport is wired.
-- **Exit experience** at the bottom of the ticket ends the immersive session, stops rendering, closes the audio context and attempts to close the tab. The flat page, loading screen and graphics-error screen also have an exit. If the browser refuses to close a user-opened tab, the app navigates to `about:blank`; a stalled or rejected XR shutdown cannot block leaving. See [MDN's window.close documentation](https://developer.mozilla.org/en-US/docs/Web/API/Window/close).
+- **Exit experience** in the VR menu ends the immersive session, stops rendering, closes the audio context and attempts to close the tab. Screen exploration keeps Exit in its menu; the welcome header, loading screen and graphics-error screen also have an exit. If the browser refuses to close a user-opened tab, the app navigates to `about:blank`; a stalled or rejected XR shutdown cannot block leaving. See [MDN's window.close documentation](https://developer.mozilla.org/en-US/docs/Web/API/Window/close).
 
 The desktop preview uses authored standing and seated eye heights. A real XR session retains the visitor's tracked height instead. Headset input, perceived scale and comfort still require physical-device validation.
 
@@ -71,13 +76,17 @@ The GLB is 3,941,940 bytes, with 42,580 triangles, seven mesh primitives and fiv
 
 ### The passing day and small lives
 
-`src/daylight.js` keeps one clock-hour for sky, water, fog, lighting, lanterns, stars, sun and moon. The world starts at the visitor's local time. Daylight hours last about a minute each and night hours pass faster; the settings, T key and ticket can hold any moment still. Reduced motion holds the daylight clock and cloud drift.
+`src/daylight.js` keeps one clock-hour for sky, water, fog, lighting, lanterns, stars, sun and moon. The world starts at the visitor's local time. Daylight hours last about a minute each and night hours pass faster; the menu, T key and VR time choices can hold any moment still. Reduced motion holds the daylight clock and cloud drift.
 
 At the station, a ginger cat sleeps on the bench and briefly notices the far train whistle. A sea-glass passenger in a folded leaf cap arrives beside the suitcase, watches the dragon and leaves quietly. Lanterns, a pinwheel, streamers and butterflies bring the platform to life. Petals follow the visitor outdoors and are hidden inside the carriage. Fireflies and soft sea-lights appear after dark.
 
 A distant four-car train and little floatplane pass periodically. Far rain and a slow cloud shadow share a breeze with the station and cottage island. A pearl-and-jade procedural dragon skims a painted veil, climbs through a vertical loop and banks into a dive. The user criticized the dragon's smooth procedural appearance; this carriage milestone does not replace it, and an earlier visual-review verdict does not establish user acceptance.
 
-A fixed grassy island beside the route carries a cream cottage, terracotta roof, trees, bench and laundry. The moving carriage passes it while the station stays at home. Its windows warm at dusk. Audio is synthesized on-device: water, wind, bells, sparse music-box notes, birds, crickets, an evening pad, the far train whistle, plane hum and travel pulses. Sound begins only after interaction; mute and volume remain available.
+A fixed grassy island beside the route carries a cream cottage, terracotta roof, trees, bench and laundry. The moving carriage passes it while the station stays at home. Its windows warm at dusk. Audio is synthesized on-device: water, wind, bells, sparse music-box notes, birds, crickets, an evening pad, the far train whistle and plane hum remain. The default volume is now 35%. Low filtered rolling noise and soft, rounded paired track contacts replace the former repeated travel chimes. Contact groups follow distance about every 6m, so they slow with the train; soft attack/release avoids abrupt starts and settles the train layer to silence when paused. Sound begins only after interaction; mute and volume remain available.
+
+The first audio pass sounded like a constant whoosh to the user. The revision reduces the continuous rolling bed, gives each paired contact a short, rounded low-mid tap, and softens water and wind inside the carriage. Following feedback about a low screech, the latest tuning removes sustained and sliding train tones and raises the bumps about 3dB. The default volume remains 35%.
+
+[Listen to the revised 12-second soft knocks](output/train-track-soft-knocks.wav), or the [36-second journey sample](output/quiet-train-preview.wav) with acceleration, slowing, pause and resume. Both use the actual default gain without normalization and contain the train layer only. The latest tuning is retained for this release; actual Quest listening remains unverified.
 
 Reduced motion also suppresses weather events, holds the passenger at rest, freezes the dragon's local pose and the island's moving details, and makes door placement immediate. Some existing birds, bell, distant train and plane animation continues; it is not a total world-motion pause. Hidden flat-screen pages pause rendering and world updates. Document and XR visibility loss pause the journey.
 
@@ -85,10 +94,12 @@ Geometry is instanced or merged where appropriate. There are no shadow maps, blo
 
 ## Verification and remaining checks
 
-All 47 automated tests and the production build pass. Tests cover ride placement and state, route progress, head-tracking math, asset structure, and existing world behavior. Independent Chrome desktop and 390px mobile touch checks passed boarding, both seats, departure, pause/continue, return, rapid placement clicks, keyboard controls, sound and time settings, with no reported runtime, shader or network errors. Asset checks confirm actual window/floor geometry and exported counts. Current evidence is in `.impeccable/review/train-verify-result.json` and `train-*.png`; that review directory is local and ignored by Git.
+All 66 automated tests and the production build pass. Current desktop (1440px), mobile touch (390px) and narrow reduced-motion (320px) browser checks passed menu dismissal, focus, boarding, both seats, departure/pause, named time selection, return and exit, with no reported errors. Opening the menu and changing time or sound preserve journey progress and gaze. Evidence is in `.impeccable/review/controls-result.json` and ten fresh `controls-*.png` captures; that review directory is local and ignored by Git.
 
-The fresh review in `.impeccable/review/train-finish-review.md` returned **ship**, with no material fixes across 13 required actual-browser captures. It covers the first carriage/window-seat milestone: visible geometry, materials, framing, daylight/night and mobile readability. The sloped cab was additionally inspected in Blender, which is secondary evidence. This verdict does not renew approval of the dragon. The detector reports six advisories in `.impeccable/review/train-detect.json`: existing palette/type documentation drift plus a local shoreline material color. The established UI palette, typography and token schema were preserved.
+Audio checks rendered the production train layer through Web Audio's `OfflineAudioContext` and exercised actual browser volume, mute, departure and pause; `.impeccable/review/audio-result.json` passed with no reported errors. The rendered stationary and settled paused sections were silent. Signal measurements do not establish physical headphone loudness or listening approval.
 
-No physical Quest headset was tested. Stereo appearance, controller mappings, room-scale scale/comfort, audio balance and sustained headset frame time remain unverified. On the first headset run, inspect the carriage from both seats, recall and use the ticket, test each controller, board, depart, pause, switch seats and return. Measure frame time with device developer tools using balanced detail first. Captures and synthetic XR tests do not establish continuous-motion comfort.
+The fresh review in `.impeccable/review/controls-finish-review.md` returned **ship** for the compact-controls refinement, with all ten captures valid and no material fixes. Its projected VR captures use the production menu meshes in a monoscopic browser inspection scene; they establish layout only, not actual headset or controller behavior. The prior carriage review in `.impeccable/review/train-finish-review.md` returned **ship** for that milestone. Neither pass renews approval of the dragon. `.impeccable/review/controls-detect.json` reports 12 advisory findings, including inherited palette/type documentation drift and false positives for the CSS `#fade` selector and computed HTML black. Existing palette and font choices remain unchanged.
 
-Asset provenance is in [ASSETS.md](ASSETS.md). The five-raster provenance scan found no missing records; exact generated-image prompts are adjacent to their PNGs and embedded in metadata. Historical work and review limits are recorded in [WORKFLOW.md](WORKFLOW.md).
+No physical Quest headset was tested. Stereo appearance, controller mappings, room-scale scale/comfort, audio balance and sustained headset frame time remain unverified. On the first headset run, inspect the carriage from both seats, open and close the compact menu, test each controller, board, depart, pause, switch seats and return. Measure frame time with device developer tools using balanced detail first. Captures and synthetic XR tests do not establish continuous-motion comfort.
+
+Asset provenance is in [ASSETS.md](ASSETS.md). This controls pass adds no raster assets. The five-raster provenance scan found no missing records; exact generated-image prompts are adjacent to their PNGs and embedded in metadata. Historical work and review limits are recorded in [WORKFLOW.md](WORKFLOW.md).

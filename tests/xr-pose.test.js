@@ -24,12 +24,34 @@ test('snap turns preserve the head position at every travel distance',()=>{
   }
 });
 
-test('recalled ticket and blackout center stay with translated rotated viewer',()=>{
+test('explicit ticket placement follows the actual tracked head without changing its pose',()=>{
   const rig=new Group();rig.position.set(-3,.22,-720);rig.rotation.y=-Math.PI/2;
   const head=new Vector3(),direction=new Vector3(),tracking=new Matrix4().makeTranslation(0,1.2,0);
   readHeadPose(rig,tracking,head,direction);
+  const originalHead=head.clone(),originalDirection=direction.clone(),originalRig=rig.matrixWorld.clone(),originalTracking=tracking.clone();
   const ticket=new Group();placeTicket(ticket,head,direction,rig.position.y);
-  near(ticket.position,new Vector3(-1.75,.77,-720));
+  near(ticket.position,new Vector3(-2.1,1.2,-720));
   const blackout=new Group();blackout.position.copy(head);near(blackout.position,new Vector3(-3,1.42,-720));
-  assert(ticket.position.distanceTo(head)<1.5);
+  near(head,originalHead);near(direction,originalDirection);assert(rig.matrixWorld.equals(originalRig));assert(tracking.equals(originalTracking));
+  assert.equal(ticket.rotation.x,0);assert.equal(ticket.rotation.z,0);
+});
+
+test('standing, seated and short visitors get the same head-relative menu offset',()=>{
+  for(const height of [.3,.8,1.2,1.65,2.4])for(const pitch of [-1,-.3,0,.7,1]){
+    const head=new Vector3(6,height,-700),facing=new Vector3(0,0,-1).applyEuler(new Euler(pitch,.7,0,'YXZ'));
+    const ticket=new Group();placeTicket(ticket,head,facing,20);
+    const offset=ticket.position.clone().sub(head);
+    assert(Math.abs(Math.hypot(offset.x,offset.z)-.9)<1e-8);assert(Math.abs(offset.y+.22)<1e-8);
+    assert(Math.abs(ticket.rotation.y-.7)<1e-8);assert.equal(ticket.rotation.x,0);
+  }
+});
+
+test('vertical gaze reuses the last horizontal placement yaw without jumping to a floor clamp',()=>{
+  const ticket=new Group(),head=new Vector3(-4,.35,-80),facing=new Vector3(-1,0,0);
+  placeTicket(ticket,head,facing);const previous=ticket.position.clone(),yaw=ticket.rotation.y;
+  for(const vertical of [new Vector3(0,1,0),new Vector3(0,-1,0),new Vector3(.000001,1,.000002)]){
+    placeTicket(ticket,head,vertical,4);near(ticket.position,previous);assert.equal(ticket.rotation.y,yaw);
+  }
+  assert(Math.abs(ticket.position.y-.13)<1e-8);
+  const firstOpen=new Group();placeTicket(firstOpen,head,new Vector3(0,1,0));near(firstOpen.position,new Vector3(-4,.13,-80.9));
 });
