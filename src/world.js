@@ -3,6 +3,9 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { skyVertex, skyFragment, waterVertex, waterFragment } from './shaders.js';
 import { createStation } from './station.js';
 import { createDragon } from './dragon.js';
+import { createLife, wind } from './life.js';
+import { createSkyLife } from './sky-life.js';
+import { daylight, advanceHour, START_HOUR } from './daylight.js';
 
 function random(seed){let a=seed;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 function woodTexture(){
@@ -11,24 +14,28 @@ function woodTexture(){
   for(let i=0;i<600;i++){g.strokeStyle=`rgba(${r()>.5?'58,67,54':'222,212,171'},${.04+r()*.17})`;g.lineWidth=r()*1.5;let x=r()*128,y=r()*512;g.beginPath();g.moveTo(x,y);g.bezierCurveTo(x+3,y+30,x-4,y+90,x+2,y+160);g.stroke();}
   const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=texture.wrapT=THREE.RepeatWrapping;return texture;
 }
-export async function createWorld(scene, renderer, {reducedMotion=false}={}){
+export async function createWorld(scene, renderer, {reducedMotion=false,onEvent=()=>{},startHour=START_HOUR}={}){
   const texture=await new THREE.TextureLoader().loadAsync(`${import.meta.env.BASE_URL}assets/summer-sky.png`);
   texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=THREE.RepeatWrapping;texture.minFilter=THREE.LinearMipmapLinearFilter;texture.anisotropy=Math.min(4,renderer.capabilities.getMaxAnisotropy());
   const detailedSky=await new THREE.TextureLoader().loadAsync(`${import.meta.env.BASE_URL}assets/summer-sky-detailed.png`);
   detailedSky.colorSpace=THREE.SRGBColorSpace;detailedSky.wrapS=THREE.RepeatWrapping;detailedSky.minFilter=THREE.LinearMipmapLinearFilter;detailedSky.anisotropy=texture.anisotropy;
-  const sky=new THREE.Mesh(new THREE.SphereGeometry(1,48,24),new THREE.ShaderMaterial({defines:{SHARP_SKY:1},uniforms:{skyMap:{value:detailedSky},skyTexel:{value:new THREE.Vector2(1/detailedSky.image.width,1/detailedSky.image.height)}},vertexShader:skyVertex,fragmentShader:skyFragment,side:THREE.BackSide,depthWrite:false,depthTest:false}));
+  // One recipe of light for the whole world, shared by both sky-sampling shaders.
+  const light=daylight(startHour);
+  const dayUniforms=()=>({skyYaw:{value:0},sunDir:{value:light.sunDirection},moonDir:{value:light.moonDirection},night:{value:0},golden:{value:0},starLight:{value:0},skyTime:{value:0}});
+  const skyMaterial=new THREE.ShaderMaterial({defines:{SHARP_SKY:1},uniforms:{skyMap:{value:detailedSky},skyTexel:{value:new THREE.Vector2(1/detailedSky.image.width,1/detailedSky.image.height)},...dayUniforms()},vertexShader:skyVertex,fragmentShader:skyFragment,side:THREE.BackSide,depthWrite:false,depthTest:false});
+  const sky=new THREE.Mesh(new THREE.SphereGeometry(1,48,24),skyMaterial);
   sky.frustumCulled=false;sky.renderOrder=-10;scene.add(sky);
-  const waterMaterial=new THREE.ShaderMaterial({uniforms:{skyMap:{value:texture},time:{value:0},calm:{value:1}},vertexShader:waterVertex,fragmentShader:waterFragment,transparent:true,depthWrite:false,side:THREE.FrontSide});
+  const waterMaterial=new THREE.ShaderMaterial({uniforms:{skyMap:{value:texture},time:{value:0},calm:{value:1},...dayUniforms()},vertexShader:waterVertex,fragmentShader:waterFragment,transparent:true,depthWrite:false,side:THREE.FrontSide});
   const water=new THREE.Mesh(new THREE.PlaneGeometry(15000,15000),waterMaterial);water.rotation.x=-Math.PI/2;water.renderOrder=3;scene.add(water);
-  scene.add(new THREE.HemisphereLight(0xe1f6ff,0x7e8f70,2.5));
+  const hemisphere=new THREE.HemisphereLight(0xe1f6ff,0x7e8f70,2.5);scene.add(hemisphere);
   const sun=new THREE.DirectionalLight(0xfff0ca,2.4);sun.position.set(-200,450,-250);scene.add(sun);
   scene.fog=new THREE.FogExp2(0xa6d4dd,.00013);
   const wood=new THREE.MeshStandardMaterial({map:woodTexture(),color:0xb9a585,roughness:.95});
-  const darkWood=new THREE.MeshStandardMaterial({color:0x5a6253,roughness:1});
+  const darkWood=new THREE.MeshStandardMaterial({color:0x6a6a58,roughness:1});
   const enamel=new THREE.MeshStandardMaterial({color:0x42706e,roughness:.8});
   const roof=new THREE.MeshStandardMaterial({color:0x526d68,roughness:.95});
   const brass=new THREE.MeshStandardMaterial({color:0x9a875d,metalness:.35,roughness:.65});
-  const metal=new THREE.MeshStandardMaterial({color:0x8b9f99,metalness:.38,roughness:.5});
+  const metal=new THREE.MeshStandardMaterial({color:0x7d6a58,metalness:.3,roughness:.6});
   const concrete=new THREE.MeshStandardMaterial({color:0x999e8d,roughness:1});
   const batches=new Map();
   function box(x,y,z,w,h,d,mat,rz=0){const geo=new THREE.BoxGeometry(w,h,d);geo.rotateZ(rz);geo.translate(x,y,z);if(!batches.has(mat))batches.set(mat,[]);batches.get(mat).push(geo);}
@@ -43,11 +50,12 @@ export async function createWorld(scene, renderer, {reducedMotion=false}={}){
   for(let i=0;i<tieCount;i++){dummy.position.set(0,-.16,9-i*.78);dummy.updateMatrix();ties.setMatrixAt(i,dummy.matrix);}ties.instanceMatrix.needsUpdate=true;scene.add(ties);
   const bolts=new THREE.InstancedMesh(new THREE.BoxGeometry(.18,.055,.18),brass,600);
   for(let i=0;i<300;i++)for(let s=0;s<2;s++){dummy.position.set(s===0?-.72:.72,-.055,8-i*.78);dummy.updateMatrix();bolts.setMatrixAt(i*2+s,dummy.matrix);}scene.add(bolts);
-  // Signal posts punctuate the distance without enclosing it.
+  // Signal posts punctuate the distance without enclosing it. Their lamps wake at dusk.
+  const signalLampMat=new THREE.MeshBasicMaterial({color:0xffdfa1});
   for(const z of [-85,-320,-720,-1100]){
     pole(2.8,1.65,z,.055,3.8,enamel);box(2.8,3.25,z,.55,.13,.13,wood);
     box(2.8,2.95,z,.28,.35,.25,enamel);
-    const glass=new THREE.Mesh(new THREE.SphereGeometry(.09,10,6),new THREE.MeshBasicMaterial({color:0xffdfa1}));glass.position.set(2.8,3.0,z+.15);scene.add(glass);
+    const glass=new THREE.Mesh(new THREE.SphereGeometry(.09,10,6),signalLampMat);glass.position.set(2.8,3.0,z+.15);scene.add(glass);
     box(0,.13,z,2.8,.18,3,wood);
   }
   // Far-away, low silhouettes. Their small apparent size keeps the ocean immense.
@@ -62,6 +70,7 @@ export async function createWorld(scene, renderer, {reducedMotion=false}={}){
   box(210,3.7,-620,8,7,6,concrete);box(210,7.4,-620,9,.6,7,roof);
   for(const x of [207.8,210.5])box(x,4.1,-616.94,1.1,1.9,.12,enamel);
   for(const x of [206.5,213.5])pole(x,-.2,-620,.18,4,concrete);
+  const houseWindow=new THREE.Mesh(new THREE.PlaneGeometry(2.6,1.6),new THREE.MeshStandardMaterial({color:'#f6e3b4',emissive:'#ffc46a',emissiveIntensity:0,roughness:1}));houseWindow.position.set(210,4.3,-616.9);scene.add(houseWindow);
   for(const [mat,geos] of batches){const merged=mergeGeometries(geos,false);if(merged){const mesh=new THREE.Mesh(merged,mat);scene.add(mesh);}geos.forEach(g=>g.dispose());}
   // A glass wind bell and its paper strip, animated only by the breeze.
   const bell=new THREE.Group();bell.position.set(-2.7,2.7,4.35);station.add(bell);
@@ -77,9 +86,46 @@ export async function createWorld(scene, renderer, {reducedMotion=false}={}){
     for(const z of [-1.05,1.05]){const p=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.65,8),brass);p.position.set(x,.26,z);cart.add(p);}
     const rail=new THREE.Mesh(new THREE.BoxGeometry(.045,.045,2.15),brass);rail.position.set(x,.57,0);cart.add(rail);
   }
+  // A small lantern on the deck's post keeps the traveller company after dark.
+  const deckLantern=new THREE.Mesh(new THREE.SphereGeometry(.07,10,8),new THREE.MeshStandardMaterial({color:'#f6e4bd',emissive:'#ffb860',emissiveIntensity:0,roughness:1}));deckLantern.position.set(1.14,.72,-1.05);cart.add(deckLantern);
   cart.visible=false;scene.add(cart);
   const dragon=createDragon(scene,{reducedMotion});
-  return {sky,water,waterMaterial,cart,station,
-    update(t,position,dt){dragon.update(t,position,dt);water.position.x=position.x;water.position.z=position.z;waterMaterial.uniforms.time.value=t;bell.rotation.z=Math.sin(t*.8)*.08;paper.rotation.y=Math.sin(t*.5)*.25;birds.forEach((b,i)=>{const a=t*.012+b.phase;b.group.position.set(Math.cos(a)*b.radius, b.height+Math.sin(a*3)*1.2,-70+Math.sin(a)*b.radius);b.group.rotation.y=-a;b.left.rotation.z=Math.sin(t*2.2+i)*.18;b.right.rotation.z=-b.left.rotation.z;});},
+  const life=createLife(scene,station,{reducedMotion,random:random(417)});
+  const skyLife=createSkyLife(scene,{reducedMotion,random:random(523),onEvent});
+  const sunColor=new THREE.Color(),birdDusk=new THREE.Color();
+  let hour=startHour,flowing=true,skyYaw=0;
+  function applyLight(){
+    daylight(hour,light);
+    scene.fog.color.copy(light.fog);
+    hemisphere.color.copy(light.skyLight);hemisphere.groundColor.copy(light.groundLight);hemisphere.intensity=light.hemisphereIntensity;
+    sun.color.copy(light.sunLight);sun.intensity=light.sunIntensity;
+    sun.position.copy(light.night>.5?light.moonDirection:light.sunDirection).multiplyScalar(600);
+    for(const material of [skyMaterial,waterMaterial]){
+      const u=material.uniforms;u.night.value=light.night;u.golden.value=light.golden;u.starLight.value=light.stars;u.skyYaw.value=skyYaw;
+    }
+    signalLampMat.color.set('#ffdfa1').multiplyScalar(.75+light.lantern*1.6);
+    houseWindow.material.emissiveIntensity=light.lantern*1.8;
+    deckLantern.material.emissiveIntensity=light.lantern*2;
+    birdMat.color.copy(birdDusk.set(0xf9f6db).lerp(sunColor.set(0x2a2d3c),light.night));
+  }
+  applyLight();
+  return {sky,water,waterMaterial,cart,station,light,
+    get hour(){return hour;},
+    setHour(value){hour=((value%24)+24)%24;applyLight();},
+    get flowing(){return flowing;},
+    setFlowing(value){flowing=value;},
+    update(t,position,dt){
+      if(flowing&&!reducedMotion)hour=advanceHour(hour,dt);
+      if(!reducedMotion)skyYaw+=dt*.00055;
+      applyLight();
+      const breeze=wind(reducedMotion?0:t);
+      dragon.update(t,position,dt);
+      water.position.x=position.x;water.position.z=position.z;waterMaterial.uniforms.time.value=t;skyMaterial.uniforms.skyTime.value=t;waterMaterial.uniforms.skyTime.value=t;
+      bell.rotation.z=Math.sin(t*.8)*.08*(.6+breeze.gust);paper.rotation.y=Math.sin(t*.5)*.25;
+      birds.forEach((b,i)=>{const a=t*.012+b.phase;b.group.position.set(Math.cos(a)*b.radius, b.height+Math.sin(a*3)*1.2,-70+Math.sin(a)*b.radius);b.group.rotation.y=-a;b.left.rotation.z=Math.sin(t*2.2+i)*.18;b.right.rotation.z=-b.left.rotation.z;});
+      station.userData.animate(t,dt,light,breeze,reducedMotion);
+      life.update(t,position,dt,light);
+      skyLife.update(t,position,dt,light);
+    },
   };
 }

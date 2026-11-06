@@ -185,10 +185,85 @@ export function createStation(scene) {
   for(const [x,z,w,h] of [[-3.9,5.4,3.5,3.1],[-4.5,5.4,1.2,2.5],[-2.65,4.03,.7,.7],[-5.05,3.35,.9,.9]]) {
     const shadow=new THREE.Mesh(new THREE.PlaneGeometry(w,h),shadowMat);shadow.rotation.x=-Math.PI/2;shadow.position.set(x,.307,z);station.add(shadow);
   }
+  // Paper lanterns under the eaves, lit as the day goes. They are warm paper by
+  // day and the station's own small moons by night.
+  const lanternMat=new THREE.MeshStandardMaterial({color:'#f6e4bd',emissive:'#ffb860',emissiveIntensity:0,roughness:1});
+  const lanternBand=material('#a84f3c');
+  const lanterns=[];
+  for(const [x,z] of [[-2.9,4.35],[-2.9,6.45],[-4.9,6.5]]) {
+    cylinder([x,2.52,z],.004,.004,.26,dark);
+    const body=new THREE.Mesh(new THREE.SphereGeometry(.13,12,10),lanternMat);body.scale.set(1,1.25,1);body.position.set(x,2.22,z);station.add(body);lanterns.push(body);
+    for(const y of [2.36,2.08])add(new THREE.TorusGeometry(.085,.012,5,14),lanternBand,[x,y,z],[Math.PI/2,0,0]);
+  }
+  const lanternLight=new THREE.PointLight('#ffb866',0,11,2);lanternLight.position.set(-3.4,2.1,5.4);station.add(lanternLight);
+
+  // A pinwheel by the marker post turns whenever the wind remembers it.
+  cylinder([-4.55,1.1,1.9],.012,.012,.9,timber);
+  const pinwheel=new THREE.Group();pinwheel.position.set(-4.55,1.56,1.9);pinwheel.rotation.y=Math.PI/2;station.add(pinwheel);
+  const vaneColours=['#e2574b','#f0c04a','#5fa89d','#f5ecd5'];
+  for(let i=0;i<4;i++){
+    const shape=new THREE.Shape();shape.moveTo(0,0);shape.lineTo(.11,.02);shape.lineTo(.085,.1);shape.lineTo(0,0);
+    const vane=new THREE.Mesh(new THREE.ShapeGeometry(shape),new THREE.MeshStandardMaterial({color:vaneColours[i],side:THREE.DoubleSide,roughness:.9,emissive:vaneColours[i],emissiveIntensity:.08}));
+    vane.rotation.z=i*Math.PI/2;vane.position.z=.012*(i%2?1:-1)*.4;pinwheel.add(vane);
+  }
+  const hub=new THREE.Mesh(new THREE.SphereGeometry(.016,8,6),brass);pinwheel.add(hub);
+
+  // Cloth streamers from the gable, so the breeze has something to carry.
+  const streamers=[];
+  for(const [x,colour] of [[-3.3,'#f3d9a4'],[-3.0,'#9ec8c1'],[-2.72,'#f1b7b0']]) {
+    const geometry=new THREE.PlaneGeometry(.07,.95,1,9);
+    const mesh=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({color:colour,side:THREE.DoubleSide,roughness:1,emissive:colour,emissiveIntensity:.07}));
+    mesh.position.set(x,2.75-.475,3.78);station.add(mesh);streamers.push({mesh,phase:x*3});
+  }
+
+  // A round ginger cat asleep on the bench. Nobody knows whose it is.
+  const cat=new THREE.Group();cat.position.set(-4.62,1.03,5.12);cat.rotation.y=.35;station.add(cat);
+  const fur=new THREE.MeshStandardMaterial({color:'#d99a58',roughness:1,emissive:'#d99a58',emissiveIntensity:.08});
+  const paleFur=new THREE.MeshStandardMaterial({color:'#f4e4c6',roughness:1,emissive:'#f4e4c6',emissiveIntensity:.08});
+  const body=new THREE.Mesh(new THREE.SphereGeometry(1,16,12),fur);body.scale.set(.2,.12,.17);cat.add(body);
+  const chest=new THREE.Mesh(new THREE.SphereGeometry(1,12,8),paleFur);chest.scale.set(.1,.07,.1);chest.position.set(.08,-.01,.06);cat.add(chest);
+  const head=new THREE.Group();head.position.set(.16,.07,.05);head.rotation.set(.15,.5,-.35);cat.add(head);
+  const skull=new THREE.Mesh(new THREE.SphereGeometry(.085,14,10),fur);head.add(skull);
+  const muzzle=new THREE.Mesh(new THREE.SphereGeometry(.04,10,8),paleFur);muzzle.position.set(0,-.025,.065);muzzle.scale.set(1.2,.8,1);head.add(muzzle);
+  const nose=new THREE.Mesh(new THREE.SphereGeometry(.009,6,5),new THREE.MeshStandardMaterial({color:'#c96c6c',roughness:1}));nose.position.set(0,-.012,.102);head.add(nose);
+  const ears=[];
+  for(const side of [-1,1]){
+    const ear=new THREE.Mesh(new THREE.ConeGeometry(.028,.055,4),fur);ear.position.set(side*.05,.078,-.005);ear.rotation.z=-side*.35;head.add(ear);ears.push(ear);
+    const inner=new THREE.Mesh(new THREE.ConeGeometry(.014,.034,4),new THREE.MeshStandardMaterial({color:'#e8a9a0',roughness:1}));inner.position.set(0,-.006,.008);ear.add(inner);
+    const eye=new THREE.Mesh(new THREE.TorusGeometry(.012,.0025,4,8,Math.PI),new THREE.MeshStandardMaterial({color:'#3a2a20',roughness:1}));eye.position.set(side*.034,.012,.074);eye.rotation.set(0,0,Math.PI);head.add(eye);
+    for(let w=0;w<2;w++){const whisker=new THREE.Mesh(new THREE.CylinderGeometry(.0008,.0008,.09,3),paleFur);whisker.position.set(side*.055,-.02-w*.012,.085);whisker.rotation.z=side*(1.25+w*.25);head.add(whisker);}
+  }
+  const stripes=new THREE.MeshStandardMaterial({color:'#b9773a',roughness:1,emissive:'#b9773a',emissiveIntensity:.06});
+  for(let i=0;i<4;i++){const stripe=new THREE.Mesh(new THREE.TorusGeometry(.17-i*.015,.011,4,16,Math.PI*.8),stripes);stripe.position.set(-.09+i*.065,.03,0);stripe.rotation.set(Math.PI/2,0,Math.PI*1.1);stripe.scale.set(1,.75,.6);cat.add(stripe);}
+  const tailCurve=new THREE.CatmullRomCurve3([new THREE.Vector3(-.15,-.02,.03),new THREE.Vector3(-.2,-.03,.13),new THREE.Vector3(-.08,-.03,.2),new THREE.Vector3(.06,-.02,.2)]);
+  const tail=new THREE.Mesh(new THREE.TubeGeometry(tailCurve,16,.022,7,false),fur);cat.add(tail);
+  const tailTip=new THREE.Mesh(new THREE.SphereGeometry(.024,8,6),paleFur);tailTip.position.set(.06,-.02,.2);cat.add(tailTip);
+
   for(const [mat,geometries] of batches) {
     const merged=mergeGeometries(geometries,false);
     if(!merged)throw new Error('Station geometry could not be merged.');
     station.add(new THREE.Mesh(merged,mat));geometries.forEach(geo=>geo.dispose());
   }
+  const streamerPositions=streamers.map(s=>s.mesh.geometry.attributes.position);
+  station.userData.animate=(time,dt,light,breeze,still=false)=>{
+    const t=still?0:time;
+    const glow=light.lantern;
+    lanternMat.emissiveIntensity=glow*2.2;lanternLight.intensity=glow*7;
+    pinwheel.rotation.z+=still?0:dt*(1.5+breeze.gust*9);
+    streamers.forEach(({mesh,phase},i)=>{
+      const position=streamerPositions[i];
+      for(let v=0;v<position.count;v++){
+        const y=position.getY(v), hang=(0.475-y)/.95;
+        position.setZ(v,Math.sin(t*2.4+phase+hang*4)*.035*hang*(.5+breeze.gust)+hang*hang*.16*(.4+breeze.gust));
+        position.setX(v,(v%2?-.035:.035)+Math.sin(t*1.7+phase+hang*3)*.02*hang);
+      }
+      position.needsUpdate=true;mesh.geometry.computeVertexNormals();
+    });
+    // Slow breathing, an ear that twitches, and a tail tip that remembers a dream.
+    body.scale.y=.12+Math.sin(t*1.1)*.004;chest.scale.y=.07+Math.sin(t*1.1)*.003;
+    const twitch=Math.max(0,Math.sin(t*.37))>.995?1:0;ears[1].rotation.z=-.35-twitch*.3;
+    tailTip.position.y=-.02+Math.max(0,Math.sin(t*.23))**12*.05;
+  };
+  station.userData.cat=cat;station.userData.lanterns=lanterns;station.userData.pinwheel=pinwheel;
   return station;
 }

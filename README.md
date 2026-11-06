@@ -1,10 +1,10 @@
 # The Quiet Line
 
-A tiny station in an immense painted summer sea. A local, static WebXR experience for Meta Quest, with an interactive desktop and mobile preview.
+A tiny station in an immense painted summer sea, where one slow day passes: afternoon, a golden sunset, blue dusk, lanterns and stars, then morning again. A local, static WebXR experience for Meta Quest, with an interactive desktop and mobile preview.
 
 **[Enter The Quiet Line](https://wildelmo.github.io/the-quiet-line/)** · [Build and deployment](https://github.com/wildelmo/the-quiet-line/actions/workflows/pages.yml)
 
-![The Quiet Line: a painted sky above an immense summer sea](output/quiet-line-preview.png)
+![The Quiet Line: golden hour over an immense painted sea](output/quiet-line-preview.png)
 
 ## Run
 
@@ -15,7 +15,7 @@ npm install
 npm run dev
 ```
 
-Open the printed local address. Select **Explore on this screen**. Drag to look; arrow keys also turn the camera. Space starts or stops the slow journey, V changes viewpoint, R returns to the station, M mutes, and H opens settings. Buttons and settings also work on touch screens.
+Open the printed local address. Select **Explore on this screen**. Drag to look; arrow keys also turn the camera. Space starts or stops the slow journey, V changes viewpoint, T turns the hour (let the day pass, morning, noon, golden hour, dusk, starlight), R returns to the station, M mutes, and H opens settings. Buttons and settings also work on touch screens.
 
 ```sh
 npm test
@@ -40,24 +40,37 @@ Official references: [Meta WebXR overview](https://developers.meta.com/vr/docume
 ## In the headset
 
 - Start stationary at the little station, at real-world head height. Room-scale head tracking is preserved. No automatic bobbing, roll, or camera orbit.
-- Point either controller at the brass ticket panel and pull the trigger to drift, pause, change viewpoint, mute, or return. The ticket travels with you. Squeeze either grip to recall it into your current view.
+- Point either controller at the brass ticket panel and pull the trigger to drift, pause, change viewpoint, turn the hour, mute, or return. The ticket travels with you. Squeeze either grip to recall it into your current view.
 - **Exit experience** at the bottom of the VR ticket ends the immersive session, stops rendering, closes the audio context, and attempts to close the browser tab. The same control is available at the top of the flat-screen page, while loading, and if graphics fail. If the browser disallows closing a user-opened tab, the app replaces itself with `about:blank`, fully unloading the experience; only an empty browser tab remains. A stalled or rejected XR shutdown cannot block leaving. Browser restrictions are described in [MDN's window.close documentation](https://developer.mozilla.org/en-US/docs/Web/API/Window/close).
 - Right thumbstick left/right: 30-degree snap turn, once per stick deflection.
 - Hold the left thumbstick forward, point down at nearby water, and release to teleport to the ring. Teleports are limited to 35 meters and the railway corridor, with a brief blackout. A little observation deck appears beneath you.
 - **Begin drifting** carries the entire station with you: platform, shelter, bench, plants, signs, and wind bell. These stay beside you while the tracks and sea pass underneath. Room-scale walking and snap turns remain independent of the platform. Starting drift from a remote observation deck brings the station to your current location; Return restores it to its original home. Travel eases up to 1.35 m/s and stops immediately when paused. It ends at 1.1 km rather than wrapping or snapping the world.
-- Sound is generated on-device: layered water and wind, sparse bell tones, distant bird calls, and subtle travel pulses. The controls provide mute and volume. Audio begins only with user interaction.
+- Sound is generated on-device: layered water and wind, sparse bell tones, a music box that plays a few pentatonic notes now and then, distant bird calls by day, crickets after dark, a low warm pad in the evening, the far whistle of the passing train, the faint hum of the little plane, and subtle travel pulses. The controls provide mute and volume. Audio begins only with user interaction.
 
 ## What is built
 
 The reference is `Dreamy Ocean Sky Storyboard.png`. A generated painted panorama surrounds real 3D tracks, sleeper timbers, platform, shelter, bench, wind bell, distant house, islands, birds, a sky dragon, and the travel deck. The water shader reflects the same sky and adds low-amplitude ripples, glints, and shallow-water caustics. Clouds are a distant painted sky, not nearby volumetric geometry. The application is designed for open space and a stable horizon.
 
+### The passing day
+
+`src/daylight.js` keeps one clock-hour for the world and turns it into a recipe of light: fog, hemisphere and sun colours, lantern glow, star brightness, and sun and moon directions. The world starts at the visitor's own local clock time, so an evening visit begins with the lanterns already lit. Daylight hours then pass at about a minute each and night hours faster, so an afternoon arrival sees the sunset within about four minutes, stars a couple of minutes later, and morning again before twenty minutes are up. Both sky-sampling shaders grade the painted panorama from the same uniforms: golden hour warms the painted brushwork rather than replacing it, night turns the open blue indigo with slate clouds, procedural stars, and a moon, and the water reflects all of it. The painted clouds also drift very slowly around the viewer. The settings panel, the T key, and the VR ticket's **Turn the hour** action hold any moment still or let the day flow. Reduced motion holds the clock and the cloud drift still.
+
+### Living details
+
+- At the station: a round ginger cat asleep on the bench, breathing, with an occasional ear twitch and tail flick; three paper lanterns under the eaves that light at dusk, with one warm point light; a four-coloured pinwheel by the marker post that spins with the gusts; three cloth streamers from the gable that show the wind; and three butterflies at the flower pots.
+- Around the visitor: pale petals tumbling on the breeze, wrapping around whichever place you are in; fireflies about the platform and soft blue sea-lights above the water after dark.
+- In the sky: nine near painted-cumulus sprites drifting between the viewer and the painted horizon for depth; a far-off four-car train that glides across the sea ahead of you every few minutes, its windows lit in the evening; and a small yellow-winged floatplane that hums over a little later. Their arrivals are announced quietly on screen and in sound.
+- Along the line: signal lamps, the deck lantern, and the distant house window all wake at dusk.
+
 A pearl-and-jade, wingless East Asian dragon makes slow loops above the sea, with branching antlers, gold eyes, whiskers, four clawed feet, and a flowing mane. Its continuous body undulates along the flight path; the mane is instanced and the other details are merged by material. All geometry and motion are procedural, with no downloaded model or texture. Reduced motion holds its local pose still, while its flight region continues to ease along the route as you travel. The dragon follows the journey's region rather than your gaze. Hidden flat-screen pages pause world updates and rendering. Its current geometry totals 20 mesh objects and 43,304 triangles including instances; actual Quest performance remains unmeasured.
+
+The living details add roughly fifteen draw calls on screen (instanced petals, fireflies and sea-lights, nine cloud sprites, the train, the plane, the cat and the streamers) and around 25,000 triangles. The per-frame CPU work is small: a few hundred instance matrices, three nine-segment streamers, and the daylight recipe. Quest frame rate remains unmeasured.
 
 Geometry is instanced or merged by material. There are no shadow maps, bloom passes, reflection render targets, live texture downloads, or continuous audio downloads. Balanced settings cap desktop pixel ratio at 1.5; XR uses a framebuffer scale of 1 and requested foveation of 1. `window.quietLine.diagnostics` is available in browser developer tools for draw calls, triangles, texture count, position and session state.
 
 ## Verification and remaining headset checks
 
-Movement tests and the production build pass. A synthetic WebXR session exercises Three.js's actual stereo camera update, checking that both eyes travel with the deck even when the tracked viewer is several meters from the play-space origin. Additional checks cover boarding after rotation, physical walking, snap turns, pausing, and repositioning. Browser checks cover shader rendering, entering the flat experience, start/pause, viewpoints, mute, quiet water, settings, desktop and 390-pixel mobile layouts. No actual Quest headset was connected during development. Stereo rendering, controller mapping, perceived scale, audio balance, comfort, and sustained headset frame rate require a hardware check.
+Movement, daylight, visitor-schedule, breeze and music-box tests and the production build pass. A synthetic WebXR session exercises Three.js's actual stereo camera update, checking that both eyes travel with the deck even when the tracked viewer is several meters from the play-space origin. Additional checks cover boarding after rotation, physical walking, snap turns, pausing, and repositioning. Browser checks cover shader rendering at noon, golden hour, dusk and night, entering the flat experience, start/pause, viewpoints, mute, quiet water, settings, the passing train and plane, desktop and 390-pixel mobile layouts. No actual Quest headset was connected during development. Stereo rendering, controller mapping, perceived scale, audio balance, comfort, and sustained headset frame rate require a hardware check.
 
 On the first Quest run: remain still, look all the way around and up, recall and use the ticket, test each controller, try a short teleport, then start and pause travel. Measure frame time using browser/Quest developer tools; the target is stable native headset refresh, not an unmeasured claim of performance. Use balanced detail first.
 

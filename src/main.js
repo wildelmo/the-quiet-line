@@ -7,13 +7,14 @@ import { WAYPOINTS, ROUTE_END, smoothSpeed, advanceJourney, snapDirection, valid
 import { readHeadPose, snapAroundHead, placeTicket } from './xr-pose.js';
 import { createExitAction } from './exit.js';
 import { boardTravelDeck, boardStation, translateTraveller } from './travel.js';
+import { MOMENTS, startHourFromDate } from './daylight.js';
 
 const $=id=>document.getElementById(id);
 const canvas=$('world');
 const audio=new Soundscape();
 let renderer,scene,camera,rig,world,menu;
 let started=false,moving=false,speed=0,waypoint=0,yaw=0,pitch=-.055,transitioning=false,elapsed=0,lastTime=0;
-let noticeTimer,sessionStarting=false,needsMenuPlacement=false,needsDeckBoarding=false,exiting=false;
+let noticeTimer,lastLabelSecond=-1,sessionStarting=false,needsMenuPlacement=false,needsDeckBoarding=false,exiting=false;
 const keys=new Set(),controllers=[],snapLatches=new Map(),teleportLatches=new Map();
 const temp=new THREE.Vector3(),direction=new THREE.Vector3(),head=new THREE.Vector3();
 const trackingHead=new THREE.Matrix4().makeTranslation(0,1.65,0);
@@ -38,7 +39,7 @@ function failure(error){console.error(error);$('loading').hidden=true;$('fatal')
 function updateLabels(){
   $('journey').textContent=moving?'Pause drifting':'Begin drifting';$('journey').setAttribute('aria-pressed',String(moving));
   $('sound').textContent=audio.muted?'Sound off':'Sound on';$('sound').setAttribute('aria-pressed',String(!audio.muted));$('sound').setAttribute('aria-label',audio.muted?'Enable sound':'Mute sound');
-  menu?.update(moving,!audio.muted);
+  menu?.update(moving,!audio.muted,MOMENTS[moment].label);
 }
 async function startAudio(){if(exiting)return;try{await audio.start();}catch{if(!exiting)notice('Sound is unavailable. The world is still yours to explore.');}}
 function explore(){started=true;document.body.classList.add('exploring');$('intro').hidden=true;$('toolbar').hidden=false;startAudio();canvas.focus();}
@@ -57,9 +58,22 @@ function toggleJourney(){
     world.cart.visible=false;needsDeckBoarding=false;
   }
   updateLabels();
-  if(moving){$('place-name').textContent='The drifting station';notice('The whole station travels with you. Pause whenever you like.');}
+  placeLabel();
+  if(moving)notice('The whole station travels with you. Pause whenever you like.');
 }
 function toggleSound(){audio.toggle();if(!audio.muted)startAudio();updateLabels();}
+let moment=0;
+function placeLabel(){const base=WAYPOINTS[waypoint]?.name||$('place-name').textContent;$('place-name').textContent=moving?`The drifting station, ${world.light.description}`:`${base}, ${world.light.description}`;}
+function setMoment(index){
+  moment=((index%MOMENTS.length)+MOMENTS.length)%MOMENTS.length;const chosen=MOMENTS[moment];
+  world.setFlowing(chosen.hour===undefined);if(chosen.hour!==undefined)world.setHour(chosen.hour);
+  $('moment').value=chosen.name;menu?.update(moving,!audio.muted,chosen.label);placeLabel();
+}
+function nextMoment(){if(!started)explore();setMoment(moment+1);notice(MOMENTS[moment].hour===undefined?'The day flows on at its own pace.':`${MOMENTS[moment].label}, held still for a while.`);audio.chime(528,-.2,.05);}
+function visitor(kind,light){
+  if(kind==='train'){audio.trainWhistle();if(started)notice(light.lantern>.5?'Far off, a lit train glides across the sea.':'Far off, a train crosses the water, in no hurry either.');}
+  if(kind==='plane'){audio.planeHum();if(started)notice('A little plane hums over, going somewhere slowly.');}
+}
 let fadeMaterial;
 function transitionTo(position,label,index){
   if(transitioning)return;transitioning=true;moving=false;speed=0;keys.clear();updateLabels();
@@ -72,7 +86,7 @@ function transitionTo(position,label,index){
     world.cart.visible=index!==0;
     if(world.cart.visible)boardDeck();
     else world.station.position.set(0,0,0);
-    $('place-name').textContent=label;
+    $('place-name').textContent=label;placeLabel();
     setTimeout(()=>{$('fade').style.opacity='0';fadeMaterial.opacity=0;transitioning=false;},100);
   },160);
 }
@@ -113,10 +127,10 @@ async function init(){
   scene=new THREE.Scene();scene.background=new THREE.Color(0x2098c7);
   camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,.05,16000);camera.position.set(0,1.65,0);camera.rotation.order='YXZ';
   rig=new THREE.Group();rig.position.set(0,.32,4);rig.add(camera);scene.add(rig);
-  world=await createWorld(scene,renderer,{reducedMotion});
+  world=await createWorld(scene,renderer,{reducedMotion,onEvent:visitor,startHour:startHourFromDate()});
   if(exiting)return;
   world.waterMaterial.uniforms.calm.value=reducedMotion?0:1;$('still-water').checked=reducedMotion;
-  menu=createVRMenu({journey:toggleJourney,viewpoint:nextViewpoint,sound:toggleSound,home:returnHome,exit:exitExperience});scene.add(menu.group);
+  menu=createVRMenu({journey:toggleJourney,viewpoint:nextViewpoint,sound:toggleSound,home:returnHome,moment:nextMoment,exit:exitExperience});scene.add(menu.group);
   fadeMaterial=new THREE.MeshBasicMaterial({color:0x122c3d,transparent:true,opacity:0,side:THREE.BackSide,depthTest:false,depthWrite:false});
   const fadeSphere=new THREE.Mesh(new THREE.SphereGeometry(.15,16,12),fadeMaterial);fadeSphere.frustumCulled=false;fadeSphere.renderOrder=1000;scene.add(fadeSphere);
   const reticle=new THREE.Group();
@@ -189,13 +203,14 @@ async function init(){
     if(renderer.xr.isPresenting)readHeadPose(rig,trackingHead,head,direction);
     else camera.getWorldPosition(head);
     fadeSphere.position.copy(head);
-    world.update(elapsed,rig.position,dt);audio.update(elapsed,speed);
+    world.update(elapsed,rig.position,dt);audio.update(elapsed,speed,world.light);
+    if((elapsed|0)%4===0&&lastLabelSecond!==(elapsed|0)){lastLabelSecond=elapsed|0;if(started&&!renderer.xr.isPresenting)placeLabel();}
     renderer.render(scene,camera);
   });
   $('loading').style.opacity='0';setTimeout(()=>$('loading').hidden=true,800);
   detectXR();
   // Read-only metrics for real-device performance inspection.
-  window.quietLine={get diagnostics(){return {drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,textures:renderer.info.memory.textures,immersive:renderer.xr.isPresenting,position:rig.position.toArray(),moving,speed,waypoint,ready:true};}};
+  window.quietLine={look(y,p){yaw=y;pitch=p;},setHour(h){world.setFlowing(false);world.setHour(h);},skip(seconds){elapsed+=seconds;},get diagnostics(){return {drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,textures:renderer.info.memory.textures,immersive:renderer.xr.isPresenting,position:rig.position.toArray(),moving,speed,waypoint,hour:world.hour,ready:true};}};
 }
 
 $('explore').addEventListener('click',explore);$('enter-vr').addEventListener('click',enterVR);
@@ -206,6 +221,7 @@ $('journey').addEventListener('click',toggleJourney);$('viewpoint').addEventList
 $('help-toggle').addEventListener('click',()=>settings($('settings').hidden));$('close-settings').addEventListener('click',()=>settings(false));
 $('volume').addEventListener('input',e=>{audio.setVolume(Number(e.target.value)/100);});
 $('still-water').addEventListener('change',e=>{world.waterMaterial.uniforms.calm.value=e.target.checked?0:1;});
+$('moment').addEventListener('change',e=>{setMoment(MOMENTS.findIndex(m=>m.name===e.target.value));});
 $('quality').addEventListener('change',e=>{renderer.setPixelRatio(Math.min(devicePixelRatio,e.target.value==='high'?2:1.5));if(renderer.xr.isPresenting)notice('Screen detail changed. VR keeps its headset-friendly rendering.');});
 $('return-intro').addEventListener('click',()=>{settings(false);moving=false;speed=0;started=false;updateLabels();$('intro').hidden=false;$('toolbar').hidden=true;document.body.classList.remove('exploring');});
 let dragging=false,previousX=0,previousY=0;
@@ -220,7 +236,7 @@ window.addEventListener('keydown',e=>{
   if(!world)return;keys.add(e.code);
   if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
   if(e.repeat)return;
-  if(e.code==='Space')toggleJourney();if(e.code==='KeyV')nextViewpoint();if(e.code==='KeyR')returnHome();if(e.code==='KeyM')toggleSound();if(e.code==='KeyH')settings($('settings').hidden);if(e.code==='Escape')settings(false);
+  if(e.code==='Space')toggleJourney();if(e.code==='KeyV')nextViewpoint();if(e.code==='KeyR')returnHome();if(e.code==='KeyM')toggleSound();if(e.code==='KeyT')nextMoment();if(e.code==='KeyH')settings($('settings').hidden);if(e.code==='Escape')settings(false);
 });
 window.addEventListener('keyup',e=>keys.delete(e.code));window.addEventListener('blur',()=>{keys.clear();dragging=false;});
 document.addEventListener('visibilitychange',()=>{if(exiting)return;if(document.hidden){keys.clear();moving=false;speed=0;updateLabels();audio.suspend();}else if(started)startAudio();});
