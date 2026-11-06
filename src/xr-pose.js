@@ -34,3 +34,20 @@ export function placeTicket(ticket, head, facing) {
   ticket.position.y=head.y-.22;
   ticket.rotation.set(0,Math.atan2(-forward.x,-forward.z),0,'YXZ');
 }
+
+// The headset occasionally reports a floor that is not where the real floor is,
+// most often when a session begins before the room's floor is established. The
+// visitor then stands a metre or more above the boards, or sinks into them. A
+// tracked head height no human could have is treated as a wrong floor: the rig
+// is re-levelled so the eyes sit at standing height, and the correction eases
+// away again once the headset reports a believable height.
+export const STANDING_EYE_HEIGHT = 1.62;
+export const PLAUSIBLE_HEAD_HEIGHT = Object.freeze({ min: .35, max: 2.3 });
+export function levelCorrection(trackedHeight, current, dt) {
+  if (!Number.isFinite(trackedHeight)) return current;
+  const plausible = trackedHeight >= PLAUSIBLE_HEAD_HEIGHT.min && trackedHeight <= PLAUSIBLE_HEAD_HEIGHT.max;
+  const target = plausible ? 0 : STANDING_EYE_HEIGHT - trackedHeight;
+  const rate = plausible ? 2.5 : .9;
+  const step = Math.min(Math.max(dt, 0), .1);
+  return current + (target - current) * (1 - Math.exp(-step * rate));
+}

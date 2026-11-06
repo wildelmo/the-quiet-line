@@ -4,7 +4,7 @@ import { createWorld } from './world.js';
 import { createVRMenu } from './vr-menu.js';
 import { Soundscape } from './audio.js';
 import { HOME, snapDirection } from './motion.js';
-import { readHeadPose, snapAroundHead, placeTicket } from './xr-pose.js';
+import { readHeadPose, snapAroundHead, placeTicket, levelCorrection } from './xr-pose.js';
 import { createExitAction } from './exit.js';
 import { createTrainRide, placeTraveller, classifyTeleport, TELEPORT_RANGE, CARRIAGE_INTERIOR } from './travel.js';
 import { MOMENTS, startHourFromDate } from './daylight.js';
@@ -21,7 +21,7 @@ const direction=new THREE.Vector3(),head=new THREE.Vector3();
 // platform, carriage floor or the sea itself. The ride decides what it means.
 const raycaster=new THREE.Raycaster(),aimRotation=new THREE.Matrix4(),aimPoint=new THREE.Vector3(),aimCandidate=new THREE.Vector3();
 const waterPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),carriagePlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
-let teleportTarget=null,teleporting=false,reticle;
+let teleportTarget=null,teleporting=false,reticle,floorCorrection=0,trackedHeight=0;
 const trackingHead=new THREE.Matrix4().makeTranslation(0,1.65,0);
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const exitExperience=createExitAction({
@@ -222,12 +222,20 @@ async function init(){
   renderer.xr.addEventListener('sessionstart',()=>{
     if(exiting){void renderer.xr.getSession().end().catch(()=>{});return;}
     started=true;ride.pause();keys.clear();snapLatches.clear();teleportLatches.clear();teleportTarget=null;document.body.classList.add('immersive','exploring');$('intro').hidden=true;$('toolbar').hidden=false;$('settings').hidden=true;
-    menu.close();updateLabels();
+    menu.close();floorCorrection=0;updateLabels();
     renderer.xr.getSession().addEventListener('visibilitychange',()=>{if(renderer.xr.getSession()?.visibilityState!=='visible'){menu.close();ride.pause();updateLabels();audio.suspend();}else startAudio();});
+    // A headset view reset moves the tracking origin under the visitor. Keep
+    // them where they were standing, on the ground, facing the same way.
+    renderer.xr.getReferenceSpace()?.addEventListener?.('reset',()=>{
+      if(exiting||!renderer.xr.isPresenting)return;
+      readHeadPose(rig,trackingHead,head,direction);
+      trackingPlacement={anchor:new THREE.Vector3(head.x,ride.floorHeight,head.z),yaw:Math.atan2(-direction.x,-direction.z)};
+      menu.close();teleportTarget=null;
+    });
   });
   renderer.xr.addEventListener('sessionend',()=>{
     if(exiting)return;
-    document.body.classList.remove('immersive');menu.close();ride.pause();keys.clear();snapLatches.clear();teleportLatches.clear();teleportTarget=null;reticle.visible=false;
+    document.body.classList.remove('immersive');menu.close();ride.pause();keys.clear();snapLatches.clear();teleportLatches.clear();teleportTarget=null;reticle.visible=false;floorCorrection=0;
     // Preserve the last actual viewpoint, including a lean or snap turn. The
     // next XR session rebases its new room origin here once, after its first pose.
     readHeadPose(rig,trackingHead,head,direction);
@@ -250,6 +258,7 @@ async function init(){
       if(viewerPose)trackingHead.fromArray(viewerPose.transform.matrix);
       rig.updateWorldMatrix(true,true);
       if(trackingPlacement&&viewerPose){placeTraveller(rig,trackingHead,trackingPlacement.anchor,trackingPlacement.yaw);trackingPlacement=null;}
+      if(viewerPose){trackedHeight=trackingHead.elements[13];floorCorrection=levelCorrection(trackedHeight,floorCorrection,dt);rig.position.y=ride.floorHeight+floorCorrection;}
       let hovered=null,aiming=false;
       for(const controller of controllers){
         const source=controller.userData.input;if(!source)continue;
@@ -294,7 +303,7 @@ async function init(){
   $('loading').style.opacity='0';setTimeout(()=>$('loading').hidden=true,800);
   detectXR();
   // Read-only state and existing scene-inspection controls for device QA.
-  window.quietLine={look(y,p){yaw=y;pitch=p;},setHour(h){world.setFlowing(false);world.setHour(h);placeLabel();},skip(seconds){elapsed+=seconds;},get diagnostics(){return {drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,textures:renderer.info.memory.textures,immersive:renderer.xr.isPresenting,position:rig.position.toArray(),camera:head.toArray(),cameraDirection:direction.toArray(),rig:{position:rig.position.toArray(),yaw:rig.rotation.y},moving:ride.moving,speed:ride.speed,transitioning:ride.transitioning,audio:{volume:audio.volume,muted:audio.muted,context:audio.context?.state??'not-started'},controls:{screenOpen:!$('settings').hidden,xrOpen:menu.group.visible,xrPage:menu.page,xrPosition:menu.group.position.toArray()},train:{state:ride.state,distance:ride.distance,position:world.train.root.position.toArray(),doorOpen:ride.doorOpen,seat:ride.seat},station:world.station.position.toArray(),hour:world.hour,elapsed,atmosphere:world.atmosphere,ready:true};}};
+  window.quietLine={look(y,p){yaw=y;pitch=p;},setHour(h){world.setFlowing(false);world.setHour(h);placeLabel();},skip(seconds){elapsed+=seconds;},get diagnostics(){return {drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,textures:renderer.info.memory.textures,immersive:renderer.xr.isPresenting,position:rig.position.toArray(),camera:head.toArray(),cameraDirection:direction.toArray(),rig:{position:rig.position.toArray(),yaw:rig.rotation.y,trackedHeight,floorCorrection},moving:ride.moving,speed:ride.speed,transitioning:ride.transitioning,audio:{volume:audio.volume,muted:audio.muted,context:audio.context?.state??'not-started'},controls:{screenOpen:!$('settings').hidden,xrOpen:menu.group.visible,xrPage:menu.page,xrPosition:menu.group.position.toArray()},train:{state:ride.state,distance:ride.distance,position:world.train.root.position.toArray(),doorOpen:ride.doorOpen,seat:ride.seat},station:world.station.position.toArray(),hour:world.hour,elapsed,atmosphere:world.atmosphere,ready:true};}};
 }
 
 $('explore').addEventListener('click',explore);$('enter-vr').addEventListener('click',enterVR);
