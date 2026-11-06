@@ -104,13 +104,20 @@ ${skySampling}
 ${cloudShadowGLSL}
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p); f=f*f*(3.0-2.0*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
+// Analytic level of detail. A ripple whose wavelength spans only a few pixels
+// cannot be drawn as a ripple: sampled per pixel it becomes shimmering moire,
+// worst toward the horizon in a headset. Each wave settles into the flat
+// surface it averages to as its wavelength approaches the pixel footprint.
+float settled(float wavelength,float footprint){return 1.0-smoothstep(wavelength*.06,wavelength*.3,footprint);}
 void main(){
  vec2 p=vWorld.xz; float t=time*calm;
  float dist=length(cameraPosition.xz-p);
  float small=1.0-smoothstep(8.0,140.0,dist);
- float n=noise(p*.48+vec2(t*.06,-t*.09));
- float wx=sin(p.x*.45+p.y*.25+t*.45)*.035+sin(p.x*1.3-p.y*.7+t*.65)*.019*small;
- float wz=cos(p.y*.55+p.x*.18+t*.36)*.045+sin(p.y*2.3+t*.9)*.018*small;
+ float footprint=fwidth(p.x)+fwidth(p.y);
+ float broad=settled(11.0,footprint),fine=settled(4.0,footprint),grain=settled(2.2,footprint);
+ float n=mix(.5,noise(p*.48+vec2(t*.06,-t*.09)),grain);
+ float wx=sin(p.x*.45+p.y*.25+t*.45)*.035*broad+sin(p.x*1.3-p.y*.7+t*.65)*.019*small*fine;
+ float wz=cos(p.y*.55+p.x*.18+t*.36)*.045*broad+sin(p.y*2.3+t*.9)*.018*small*grain;
  vec3 normal=normalize(vec3(wx,1.0,wz));
  vec3 eye=normalize(cameraPosition-vWorld);
  vec3 reflection=reflect(-eye,normal);
@@ -122,10 +129,12 @@ void main(){
  vec3 color=mix(shallow,reflected,clamp(fresnel*.85+.12,0.,1.));
  float streak=pow(max(0.,sin(p.y*4.0+sin(p.x*1.9+t*.23)*2.2+t*.45)),20.0);
  float streak2=pow(max(0.,sin(p.x*3.5+sin(p.y*1.6-t*.24)*2.0)),24.0);
- color+=mix(vec3(.30,.43,.30),vec3(.08,.12,.2),night)*(streak*streak2)*small*.44;
+ color+=mix(vec3(.30,.43,.30),vec3(.08,.12,.2),night)*(streak*streak2)*small*grain*.44;
  vec3 lightDir=normalize(mix(sunDir,moonDir,night));
- float glint=pow(max(dot(reflect(-lightDir,normal),eye),0.0),120.0);
- color+=mix(vec3(1.,.91,.65),vec3(.75,.8,1.),night)*glint*mix(.28,.45,golden);
+ // Far water has no ripples left to scatter the sun, so its glitter path
+ // broadens and dims rather than sharpening into a hard mirror spot.
+ float glint=pow(max(dot(reflect(-lightDir,normal),eye),0.0),mix(28.0,120.0,fine));
+ color+=mix(vec3(1.,.91,.65),vec3(.75,.8,1.),night)*glint*mix(.28,.45,golden)*mix(.22,1.0,fine);
  color=mix(color,skyColor(normalize(vec3(-eye.x,0.005,-eye.z))),smoothstep(1800.,5800.,dist));
  color*=mix(vec3(1.0),vec3(.76,.84,.94),cloudShade(vWorld));
  float alpha=mix(.65,1.,smoothstep(4.,60.,dist));

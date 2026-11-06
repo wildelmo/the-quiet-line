@@ -55,3 +55,19 @@ test('vertical gaze reuses the last horizontal placement yaw without jumping to 
   assert(Math.abs(ticket.position.y-.13)<1e-8);
   const firstOpen=new Group();placeTicket(firstOpen,head,new Vector3(0,1,0));near(firstOpen.position,new Vector3(-4,.13,-80.9));
 });
+
+test('an impossible tracked head height is treated as a wrong headset floor and levelled away', async () => {
+  const { levelCorrection, STANDING_EYE_HEIGHT } = await import('../src/xr-pose.js');
+  let correction = 0;
+  for (let i = 0; i < 72 * 8; i++) correction = levelCorrection(2.85, correction, 1 / 72);
+  assert.ok(Math.abs(correction - (STANDING_EYE_HEIGHT - 2.85)) < .01, `floating visitor is brought down: ${correction}`);
+  for (let i = 0; i < 72 * 8; i++) correction = levelCorrection(.2, correction, 1 / 72);
+  assert.ok(Math.abs(correction - (STANDING_EYE_HEIGHT - .2)) < .01, 'a sunken visitor is lifted');
+  for (let i = 0; i < 72 * 8; i++) correction = levelCorrection(1.7, correction, 1 / 72);
+  assert.ok(Math.abs(correction) < .005, 'a believable height restores the real floor');
+  let glitch = 0;
+  for (let i = 0; i < 3; i++) glitch = levelCorrection(9, glitch, 1 / 72);
+  assert.ok(Math.abs(glitch) < .3, 'a momentary tracking glitch barely moves the visitor');
+  assert.equal(levelCorrection(NaN, .4, 1 / 72), .4, 'an unreadable pose changes nothing');
+  assert.equal(levelCorrection(1.0, 0, 1 / 72), 0, 'a seated visitor is left alone');
+});
