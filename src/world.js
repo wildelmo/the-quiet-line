@@ -14,13 +14,13 @@ function woodTexture(){
   for(let i=0;i<600;i++){g.strokeStyle=`rgba(${r()>.5?'58,67,54':'222,212,171'},${.04+r()*.17})`;g.lineWidth=r()*1.5;let x=r()*128,y=r()*512;g.beginPath();g.moveTo(x,y);g.bezierCurveTo(x+3,y+30,x-4,y+90,x+2,y+160);g.stroke();}
   const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=texture.wrapT=THREE.RepeatWrapping;return texture;
 }
-export async function createWorld(scene, renderer, {reducedMotion=false,onEvent=()=>{}}={}){
+export async function createWorld(scene, renderer, {reducedMotion=false,onEvent=()=>{},startHour=START_HOUR}={}){
   const texture=await new THREE.TextureLoader().loadAsync(`${import.meta.env.BASE_URL}assets/summer-sky.png`);
   texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=THREE.RepeatWrapping;texture.minFilter=THREE.LinearMipmapLinearFilter;texture.anisotropy=Math.min(4,renderer.capabilities.getMaxAnisotropy());
   const detailedSky=await new THREE.TextureLoader().loadAsync(`${import.meta.env.BASE_URL}assets/summer-sky-detailed.png`);
   detailedSky.colorSpace=THREE.SRGBColorSpace;detailedSky.wrapS=THREE.RepeatWrapping;detailedSky.minFilter=THREE.LinearMipmapLinearFilter;detailedSky.anisotropy=texture.anisotropy;
   // One recipe of light for the whole world, shared by both sky-sampling shaders.
-  const light=daylight(START_HOUR);
+  const light=daylight(startHour);
   const dayUniforms=()=>({skyYaw:{value:0},sunDir:{value:light.sunDirection},moonDir:{value:light.moonDirection},night:{value:0},golden:{value:0},starLight:{value:0},skyTime:{value:0}});
   const skyMaterial=new THREE.ShaderMaterial({defines:{SHARP_SKY:1},uniforms:{skyMap:{value:detailedSky},skyTexel:{value:new THREE.Vector2(1/detailedSky.image.width,1/detailedSky.image.height)},...dayUniforms()},vertexShader:skyVertex,fragmentShader:skyFragment,side:THREE.BackSide,depthWrite:false,depthTest:false});
   const sky=new THREE.Mesh(new THREE.SphereGeometry(1,48,24),skyMaterial);
@@ -93,7 +93,7 @@ export async function createWorld(scene, renderer, {reducedMotion=false,onEvent=
   const life=createLife(scene,station,{reducedMotion,random:random(417)});
   const skyLife=createSkyLife(scene,{reducedMotion,random:random(523),onEvent});
   const sunColor=new THREE.Color(),birdDusk=new THREE.Color();
-  let hour=START_HOUR,flowing=true,skyYaw=0;
+  let hour=startHour,flowing=true,skyYaw=0;
   function applyLight(){
     daylight(hour,light);
     scene.fog.color.copy(light.fog);

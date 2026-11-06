@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { daylight, advanceHour, sunElevation, describeHour, START_HOUR, DAWN_HOUR, DUSK_HOUR, MOMENTS, DAY_SECONDS_PER_HOUR, NIGHT_SECONDS_PER_HOUR } from '../src/daylight.js';
+import { daylight, advanceHour, sunElevation, describeHour, startHourFromDate, START_HOUR, DAWN_HOUR, DUSK_HOUR, MOMENTS, DAY_SECONDS_PER_HOUR, NIGHT_SECONDS_PER_HOUR } from '../src/daylight.js';
 
 test('the sun stands high at noon and sits on the horizon at dawn and dusk', () => {
   assert.ok(sunElevation(12) > .95);
@@ -67,4 +67,11 @@ test('hours are described in words and the chosen moments cover the day', () => 
   for (const moment of MOMENTS.slice(1)) assert.ok(moment.hour >= 0 && moment.hour < 24);
   assert.ok(daylight(MOMENTS.find(m => m.name === 'night').hour).stars > .99);
   assert.ok(daylight(MOMENTS.find(m => m.name === 'golden').hour).golden > .9);
+});
+
+test('the world starts at the visitor\'s local clock time', () => {
+  assert.ok(Math.abs(startHourFromDate(new Date(2026, 5, 21, 18, 30)) - 18.5) < 1e-9);
+  assert.equal(startHourFromDate(new Date(2026, 5, 21, 0, 0)), 0);
+  assert.ok(daylight(startHourFromDate(new Date(2026, 5, 21, 21, 15))).lantern > .99, 'an evening arrival finds the lanterns lit');
+  assert.equal(startHourFromDate(new Date(NaN)), START_HOUR, 'an unreadable clock falls back to the afternoon');
 });

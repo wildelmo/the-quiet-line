@@ -5,6 +5,14 @@ import { Color, Vector3 } from 'three';
 // a dawn follows soon after. Everything is derived from a single clock-hour.
 export const DAWN_HOUR = 5.6, DUSK_HOUR = 18.6;
 export const START_HOUR = 14.2;
+
+// The world keeps the visitor's own clock: arrive in the evening and the
+// lanterns are already lit. Hours in the dead of night are not pushed toward
+// daylight; the day flows on from wherever it is.
+export function startHourFromDate(date = new Date()) {
+  const hour = date.getHours() + date.getMinutes() / 60;
+  return Number.isFinite(hour) ? hour : START_HOUR;
+}
 export const DAY_SECONDS_PER_HOUR = 62, NIGHT_SECONDS_PER_HOUR = 28;
 export const MOMENTS = [
   { name: 'flowing', label: 'Let the day pass' },

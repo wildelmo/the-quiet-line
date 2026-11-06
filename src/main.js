@@ -7,7 +7,7 @@ import { WAYPOINTS, ROUTE_END, smoothSpeed, advanceJourney, snapDirection, valid
 import { readHeadPose, snapAroundHead, placeTicket } from './xr-pose.js';
 import { createExitAction } from './exit.js';
 import { boardTravelDeck, boardStation, translateTraveller } from './travel.js';
-import { MOMENTS } from './daylight.js';
+import { MOMENTS, startHourFromDate } from './daylight.js';
 
 const $=id=>document.getElementById(id);
 const canvas=$('world');
@@ -127,7 +127,7 @@ async function init(){
   scene=new THREE.Scene();scene.background=new THREE.Color(0x2098c7);
   camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,.05,16000);camera.position.set(0,1.65,0);camera.rotation.order='YXZ';
   rig=new THREE.Group();rig.position.set(0,.32,4);rig.add(camera);scene.add(rig);
-  world=await createWorld(scene,renderer,{reducedMotion,onEvent:visitor});
+  world=await createWorld(scene,renderer,{reducedMotion,onEvent:visitor,startHour:startHourFromDate()});
   if(exiting)return;
   world.waterMaterial.uniforms.calm.value=reducedMotion?0:1;$('still-water').checked=reducedMotion;
   menu=createVRMenu({journey:toggleJourney,viewpoint:nextViewpoint,sound:toggleSound,home:returnHome,moment:nextMoment,exit:exitExperience});scene.add(menu.group);
