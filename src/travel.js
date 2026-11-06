@@ -2,7 +2,21 @@ import { Vector3 } from 'three';
 import { readHeadPose } from './xr-pose.js';
 import { HOME, ROUTE_LENGTH, advanceJourney, smoothSpeed } from './motion.js';
 
-const head = new Vector3(), facing = new Vector3(), localFacing = new Vector3();
+const head = new Vector3(), facing = new Vector3(), localFacing = new Vector3(), local = new Vector3();
+
+// Where a visitor may step with the stick. Inside the carriage the floor is
+// always walkable. Outside, the station, shore and nearby sea are open only
+// while the train is at home: nobody steps off a train that has left.
+export const CARRIAGE_INTERIOR = Object.freeze({ halfWidth: 1.25, halfLength: 7.6, floor: .9 });
+export const TELEPORT_RANGE = 60;
+export function classifyTeleport(point, trainRoot, distance) {
+  local.copy(point).sub(trainRoot.position);
+  const inside = Math.abs(local.x) <= CARRIAGE_INTERIOR.halfWidth && Math.abs(local.z) <= CARRIAGE_INTERIOR.halfLength;
+  const anchor = new Vector3(point.x, inside ? trainRoot.position.y + CARRIAGE_INTERIOR.floor : point.y, point.z);
+  const home = distance <= 0;
+  const near = Math.hypot(point.x - HOME.x, point.z - HOME.z) <= TELEPORT_RANGE;
+  return { inside, anchor, allowed: inside || (home && near) };
+}
 
 // Place the tracked head horizontally once, retaining actual local-floor height.
 // Leaning and walking after this explicit placement never move the train.
@@ -29,7 +43,7 @@ export function translateTraveller(rig, train, ticket, delta) {
 export function createTrainRide({ rig, train, ticket }) {
   const origin = train.root.position.clone();
   const anchor = new Vector3(), delta = new Vector3();
-  let state = 'platform', distance = 0, speed = 0, seat = null;
+  let state = 'platform', distance = 0, speed = 0, seat = null, floorY = HOME.y;
   let pending = null, committed = false, doorOpen = true;
   train.setDoorOpen(true);
   function doors(open) { doorOpen = open; train.setDoorOpen(open); }
@@ -56,21 +70,35 @@ export function createTrainRide({ rig, train, ticket }) {
       train.root.localToWorld(anchor);
     }
     placeTraveller(rig, trackingHead, anchor, worldYaw);
+    floorY = anchor.y;
     committed = true;
     return true;
+  }
+  // A stick teleport never changes the train's place or its doors. Stepping
+  // aboard counts as boarding; stepping off at the station is just that.
+  function teleport(trackingHead, point) {
+    if (pending) return null;
+    const target = classifyTeleport(point, train.root, distance);
+    if (!target.allowed) return null;
+    seat = null;
+    if (target.inside) { if (state === 'platform') state = 'boarded'; }
+    else state = 'platform';
+    placeTraveller(rig, trackingHead, target.anchor);
+    floorY = target.anchor.y;
+    return target;
   }
   return {
     get state() { return state; }, get distance() { return distance; }, get speed() { return speed; },
     get seat() { return seat; }, get moving() { return state === 'travelling'; },
     get transitioning() { return pending !== null; }, get pending() { return pending; },
     get doorOpen() { return doorOpen; },
-    get floorHeight() { return state === 'platform' ? HOME.y : train.root.position.y + train.anchors.boarding.y; },
+    get floorHeight() { return floorY; },
     get eyeHeight() { return seat ? 1.2 : 1.65; },
     get journeyLabel() {
       return state === 'platform' ? 'Board train' : state === 'travelling' ? 'Pause journey' : state === 'arrived' ? 'Journey complete' : distance > 0 ? 'Continue journey' : 'Depart';
     },
     get seatLabel() { return seat ? `Take ${seat === 'left' ? 'right' : 'left'} window seat` : 'Choose window seat'; },
-    request, commitPlacement,
+    request, commitPlacement, teleport,
     finishTransition() { if (committed) { pending = null; committed = false; } },
     pause,
     toggleJourney() {

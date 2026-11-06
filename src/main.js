@@ -6,7 +6,7 @@ import { Soundscape } from './audio.js';
 import { HOME, snapDirection } from './motion.js';
 import { readHeadPose, snapAroundHead, placeTicket } from './xr-pose.js';
 import { createExitAction } from './exit.js';
-import { createTrainRide, placeTraveller } from './travel.js';
+import { createTrainRide, placeTraveller, classifyTeleport, TELEPORT_RANGE, CARRIAGE_INTERIOR } from './travel.js';
 import { MOMENTS, startHourFromDate } from './daylight.js';
 
 const $=id=>document.getElementById(id);
@@ -15,8 +15,13 @@ const audio=new Soundscape();
 let renderer,scene,camera,rig,world,menu,ride;
 let started=false,yaw=-.65,pitch=-.055,elapsed=0,lastTime=0;
 let noticeTimer,lastLabelSecond=-1,sessionStarting=false,trackingPlacement=null,exiting=false;
-const keys=new Set(),controllers=[],snapLatches=new Map();
+const keys=new Set(),controllers=[],snapLatches=new Map(),teleportLatches=new Map();
 const direction=new THREE.Vector3(),head=new THREE.Vector3();
+// Stick teleport: a downward ray from the left controller lands on the shore,
+// platform, carriage floor or the sea itself. The ride decides what it means.
+const raycaster=new THREE.Raycaster(),aimRotation=new THREE.Matrix4(),aimPoint=new THREE.Vector3(),aimCandidate=new THREE.Vector3();
+const waterPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),carriagePlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
+let teleportTarget=null,teleporting=false,reticle;
 const trackingHead=new THREE.Matrix4().makeTranslation(0,1.65,0);
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const exitExperience=createExitAction({
@@ -76,6 +81,39 @@ function visitor(kind,light){
   if(kind==='plane'){audio.planeHum();if(started)notice('A little plane hums over, going somewhere slowly.');}
 }
 let fadeMaterial;
+function aimTeleport(controller){
+  aimRotation.identity().extractRotation(controller.matrixWorld);
+  raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
+  raycaster.ray.direction.set(0,0,-1).applyMatrix4(aimRotation);
+  raycaster.far=TELEPORT_RANGE+20;
+  if(raycaster.ray.direction.y>-.04)return null;
+  let best=null;const consider=(point,distance)=>{if(distance<=TELEPORT_RANGE&&(!best||distance<best.distance))best={point:point.clone(),distance};};
+  const hit=raycaster.intersectObjects([world.shore,world.station],true).find(h=>h.object.visible&&h.point.y>-.3&&h.point.y<1.2);
+  if(hit)consider(hit.point,hit.distance);
+  carriagePlane.constant=-(world.train.root.position.y+CARRIAGE_INTERIOR.floor);
+  if(raycaster.ray.intersectPlane(carriagePlane,aimCandidate)&&classifyTeleport(aimCandidate,world.train.root,ride.distance).inside)consider(aimCandidate,raycaster.ray.origin.distanceTo(aimCandidate));
+  if(raycaster.ray.intersectPlane(waterPlane,aimCandidate))consider(aimCandidate,raycaster.ray.origin.distanceTo(aimCandidate));
+  if(!best)return null;
+  const target=classifyTeleport(best.point,world.train.root,ride.distance);
+  return target.allowed?{point:best.point,anchor:target.anchor,distance:best.distance}:null;
+}
+function teleportTo(point){
+  if(exiting||teleporting||ride.transitioning||trackingPlacement)return;
+  teleporting=true;closeMenus();keys.clear();
+  const wasPlatform=ride.state==='platform';
+  fadeMaterial.opacity=1;
+  setTimeout(()=>{
+    if(exiting)return;
+    const target=ride.teleport(trackingHead,point);
+    updateLabels();
+    setTimeout(()=>{
+      if(exiting)return;
+      fadeMaterial.opacity=0;teleporting=false;
+      if(target?.inside&&wasPlatform)notice('Welcome aboard. Open Menu to depart or choose a window seat.');
+      else if(target&&!target.inside&&!wasPlatform)notice('Back on the shore. The train is waiting.');
+    },90);
+  },120);
+}
 function transitionTo(action){
   if(exiting||sessionStarting||trackingPlacement||!ride.request(action))return;
   closeMenus();
@@ -164,12 +202,16 @@ async function init(){
   ride=createTrainRide({rig,train:world.train,ticket:menu.group});updateLabels();
   fadeMaterial=new THREE.MeshBasicMaterial({color:0x122c3d,transparent:true,opacity:0,side:THREE.BackSide,depthTest:false,depthWrite:false});
   const fadeSphere=new THREE.Mesh(new THREE.SphereGeometry(.15,16,12),fadeMaterial);fadeSphere.frustumCulled=false;fadeSphere.renderOrder=1000;scene.add(fadeSphere);
+  reticle=new THREE.Group();reticle.visible=false;reticle.renderOrder=8;scene.add(reticle);
+  const reticleMaterial=new THREE.MeshBasicMaterial({color:0xfff5cc,side:THREE.DoubleSide,depthTest:false,transparent:true,opacity:.9});
+  const ring=new THREE.Mesh(new THREE.RingGeometry(.2,.25,40),reticleMaterial);ring.rotation.x=-Math.PI/2;reticle.add(ring);
+  const dot=new THREE.Mesh(new THREE.CircleGeometry(.03,12),reticleMaterial);dot.rotation.x=-Math.PI/2;reticle.add(dot);
   const controllerBodyGeometry=new THREE.CapsuleGeometry(.022,.075,4,8);
   const controllerBodyMaterial=new THREE.MeshStandardMaterial({color:0xd2e0d9,roughness:.7});
   for(let i=0;i<2;i++){
     const controller=renderer.xr.getController(i);controller.userData.input=null;
     controller.addEventListener('connected',event=>{controller.userData.input=event.data;});
-    controller.addEventListener('disconnected',()=>{controller.userData.input=null;snapLatches.clear();});
+    controller.addEventListener('disconnected',()=>{controller.userData.input=null;snapLatches.clear();teleportLatches.clear();teleportTarget=null;});
     controller.addEventListener('selectstart',()=>{if(!exiting&&menu.group.visible){const hit=menu.hit(controller);if(hit){hit.object.userData.action();controller.userData.input?.gamepad?.hapticActuators?.[0]?.pulse(.2,35);}}});
     controller.addEventListener('squeezestart',toggleVRMenu);
     const lineGeo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3(0,0,-1)]);
@@ -179,13 +221,13 @@ async function init(){
   }
   renderer.xr.addEventListener('sessionstart',()=>{
     if(exiting){void renderer.xr.getSession().end().catch(()=>{});return;}
-    started=true;ride.pause();keys.clear();snapLatches.clear();document.body.classList.add('immersive','exploring');$('intro').hidden=true;$('toolbar').hidden=false;$('settings').hidden=true;
+    started=true;ride.pause();keys.clear();snapLatches.clear();teleportLatches.clear();teleportTarget=null;document.body.classList.add('immersive','exploring');$('intro').hidden=true;$('toolbar').hidden=false;$('settings').hidden=true;
     menu.close();updateLabels();
     renderer.xr.getSession().addEventListener('visibilitychange',()=>{if(renderer.xr.getSession()?.visibilityState!=='visible'){menu.close();ride.pause();updateLabels();audio.suspend();}else startAudio();});
   });
   renderer.xr.addEventListener('sessionend',()=>{
     if(exiting)return;
-    document.body.classList.remove('immersive');menu.close();ride.pause();keys.clear();snapLatches.clear();
+    document.body.classList.remove('immersive');menu.close();ride.pause();keys.clear();snapLatches.clear();teleportLatches.clear();teleportTarget=null;reticle.visible=false;
     // Preserve the last actual viewpoint, including a lean or snap turn. The
     // next XR session rebases its new room origin here once, after its first pose.
     readHeadPose(rig,trackingHead,head,direction);
@@ -208,13 +250,27 @@ async function init(){
       if(viewerPose)trackingHead.fromArray(viewerPose.transform.matrix);
       rig.updateWorldMatrix(true,true);
       if(trackingPlacement&&viewerPose){placeTraveller(rig,trackingHead,trackingPlacement.anchor,trackingPlacement.yaw);trackingPlacement=null;}
-      let hovered=null;
+      let hovered=null,aiming=false;
       for(const controller of controllers){
         const source=controller.userData.input;if(!source)continue;
         const hit=menu.group.visible?menu.hit(controller):null;if(hit)hovered=hit;
         controller.userData.line.visible=!!hit;controller.userData.line.scale.z=hit?.distance||1.6;
         const pad=source.gamepad;if(!pad)continue;
-        const ax=pad.axes.length>=4?pad.axes[2]:pad.axes[0]||0;
+        const ax=pad.axes.length>=4?pad.axes[2]:pad.axes[0]||0,ay=pad.axes.length>=4?pad.axes[3]:pad.axes[1]||0;
+        if(source.handedness==='left'){
+          const free=!ride.transitioning&&!trackingPlacement&&!teleporting;
+          if(ay<-.65&&free){
+            aiming=true;teleportLatches.set(source,true);
+            const aim=aimTeleport(controller);
+            teleportTarget=aim?aim.point:null;
+            reticle.visible=!!aim;
+            if(aim){reticle.position.copy(aim.anchor);reticle.position.y+=.03;controller.userData.line.visible=true;controller.userData.line.scale.z=aim.distance;}
+          }else if(teleportLatches.get(source)){
+            teleportLatches.set(source,false);
+            if(teleportTarget&&free)teleportTo(teleportTarget);
+            teleportTarget=null;
+          }
+        }
         if(source.handedness==='right'){
           const snap=snapDirection(ax,snapLatches.get(source)||false);snapLatches.set(source,snap.latched);
           if(snap.turn&&!ride.transitioning&&!trackingPlacement){
@@ -223,6 +279,7 @@ async function init(){
           }
         }
       }
+      if(!aiming)reticle.visible=false;
       menu.hover(hovered);
     }
     if(ride.update(dt)){updateLabels();notice('The end of the line. Stay awhile, or return to the station.');}
