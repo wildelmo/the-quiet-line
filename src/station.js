@@ -245,6 +245,8 @@ export function createStation(scene) {
     station.add(new THREE.Mesh(merged,mat));geometries.forEach(geo=>geo.dispose());
   }
   const streamerPositions=streamers.map(s=>s.mesh.geometry.attributes.position);
+  let lastWhistle=-Infinity;
+  station.userData.hearTrain=time=>{lastWhistle=time;};
   station.userData.animate=(time,dt,light,breeze,still=false)=>{
     const t=still?0:time;
     const glow=light.lantern;
@@ -262,6 +264,10 @@ export function createStation(scene) {
     // Slow breathing, an ear that twitches, and a tail tip that remembers a dream.
     body.scale.y=.12+Math.sin(t*1.1)*.004;chest.scale.y=.07+Math.sin(t*1.1)*.003;
     const twitch=Math.max(0,Math.sin(t*.37))>.995?1:0;ears[1].rotation.z=-.35-twitch*.3;
+    const sinceWhistle=time-lastWhistle;
+    const listen=still||sinceWhistle<0?0:Math.sin(Math.min(1,sinceWhistle/1.2)*Math.PI*.5)*Math.exp(-sinceWhistle/4.5);
+    ears[0].rotation.y=-listen*.65;
+    head.rotation.y=.5-listen*.24;
     tailTip.position.y=-.02+Math.max(0,Math.sin(t*.23))**12*.05;
   };
   station.userData.cat=cat;station.userData.lanterns=lanterns;station.userData.pinwheel=pinwheel;

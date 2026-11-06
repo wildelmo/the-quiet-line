@@ -1,37 +1,42 @@
+import { cloudShadowGLSL } from './weather.js';
+
 export const skySampling = `
 const float PI = 3.14159265359;
 uniform float skyYaw;
 uniform vec3 sunDir; uniform vec3 moonDir;
 uniform float night; uniform float golden; uniform float starLight; uniform float skyTime;
-#ifdef SHARP_SKY
-uniform vec2 skyTexel;
-#endif
+uniform sampler2D cloudTower;
+uniform sampler2D cloudVeil;
 float hash3(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453);}
-vec3 paintedSky(vec3 d) {
-  float u = atan(d.z, d.x) / (2.0 * PI) + 0.5;
-  float v = 0.43 + asin(clamp(d.y, -1.0, 1.0)) / PI * 1.14;
-  vec2 uv = vec2(u, clamp(v, 0.005, 0.995));
-  // atan wraps longitude from 1 to 0. Implicit derivatives mistake that join
-  // for a huge texture footprint and select a pale mip, producing a dashed
-  // seam. Use the shortest periodic difference to keep filtering continuous.
+// Each painting covers a small angular window, rather than stretching one
+// low-resolution photograph around the entire sphere. Alpha preserves the
+// brushwork and leaves the blue genuinely open between cloud banks.
+vec4 cloudPaint(sampler2D paint, vec3 d, vec4 placement) {
+  float longitude = atan(d.z, d.x) - placement.x;
+  longitude = atan(sin(longitude), cos(longitude));
+  vec2 uv = vec2(longitude / placement.z, (asin(clamp(d.y,-1.0,1.0))-placement.y) / placement.w) + .5;
   vec2 dx = dFdx(uv), dy = dFdy(uv);
-  dx.x -= floor(dx.x + 0.5);
-  dy.x -= floor(dy.x + 0.5);
-  vec3 col = textureGrad(skyMap, uv, dx, dy).rgb;
-#ifdef SHARP_SKY
-  // Restore painted edge contrast lost when a panorama texel covers several
-  // screen pixels. Limit to the local color range to avoid bright/dark halos.
-  // Minified views retain normal mip filtering; water uses the original sample.
-  vec3 left = textureGrad(skyMap, uv - vec2(skyTexel.x, 0.0), dx, dy).rgb;
-  vec3 right = textureGrad(skyMap, uv + vec2(skyTexel.x, 0.0), dx, dy).rgb;
-  vec3 above = textureGrad(skyMap, uv + vec2(0.0, skyTexel.y), dx, dy).rgb;
-  vec3 below = textureGrad(skyMap, uv - vec2(0.0, skyTexel.y), dx, dy).rgb;
-  vec3 low = min(col, min(min(left, right), min(above, below)));
-  vec3 high = max(col, max(max(left, right), max(above, below)));
-  float footprint = max(length(dx / skyTexel), length(dy / skyTexel));
-  float detail = 0.65 * (1.0 - smoothstep(0.8, 1.5, footprint));
-  col = clamp(col + (col - (left + right + above + below) * 0.25) * detail, low, high);
-#endif
+  vec4 ink = textureGrad(paint, clamp(uv,0.001,0.999), dx, dy);
+  vec2 edge = smoothstep(vec2(0.0),vec2(.045),uv) * (1.0-smoothstep(vec2(.955),vec2(1.0),uv));
+  ink.a *= edge.x * edge.y * smoothstep(-.015,.025,d.y);
+  return ink;
+}
+vec3 paintedSky(vec3 d) {
+  float height = max(d.y,0.0);
+  vec3 col = mix(vec3(.27,.61,.77),vec3(.003,.205,.69),smoothstep(0.0,.23,height));
+  col = mix(col,vec3(.003,.115,.48),smoothstep(.20,1.0,height));
+  // Barely perceptible broad wash variation, fixed in the sky rather than
+  // screen-space grain that would swim with the visitor's head in VR.
+  float wash = sin(d.x*17.0+d.y*8.0)*sin(d.z*13.0-d.y*11.0);
+  col *= 1.0 + wash*.009;
+  vec4 a = cloudPaint(cloudTower,d,vec4(-.86,.16,1.02,.66));
+  vec4 b = cloudPaint(cloudVeil,d,vec4(-2.47,.12,.88,.56));
+  vec4 c = cloudPaint(cloudTower,d,vec4(1.24,.12,.76,.46));
+  vec4 e = cloudPaint(cloudVeil,d,vec4(2.75,.09,.65,.40));
+  col = mix(col,a.rgb,a.a);
+  col = mix(col,b.rgb,b.a*.94);
+  col = mix(col,c.rgb,c.a*.88);
+  col = mix(col,e.rgb,e.a*.82);
   return col;
 }
 // A handful of stars per direction cell, twinkling softly. Only the open blue
@@ -90,12 +95,13 @@ vec3 skyColor(vec3 d) {
 }
 `;
 export const skyVertex = `varying vec3 vDirection; void main(){vDirection=position; vec4 p=projectionMatrix*mat4(mat3(viewMatrix))*vec4(position,1.0); gl_Position=p.xyww;}`;
-export const skyFragment = `uniform sampler2D skyMap; varying vec3 vDirection; ${skySampling} void main(){gl_FragColor=vec4(skyColor(vDirection),1.0);\n#include <tonemapping_fragment>\n#include <colorspace_fragment>\n}`;
+export const skyFragment = `varying vec3 vDirection; ${skySampling} void main(){gl_FragColor=vec4(skyColor(vDirection),1.0);\n#include <tonemapping_fragment>\n#include <colorspace_fragment>\n}`;
 export const waterVertex = `varying vec3 vWorld; void main(){vec4 world=modelMatrix*vec4(position,1.0);vWorld=world.xyz;gl_Position=projectionMatrix*viewMatrix*world;}`;
 export const waterFragment = `
-uniform sampler2D skyMap; uniform float time; uniform float calm;
+uniform float time; uniform float calm;
 varying vec3 vWorld;
 ${skySampling}
+${cloudShadowGLSL}
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p); f=f*f*(3.0-2.0*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
 void main(){
@@ -121,6 +127,7 @@ void main(){
  float glint=pow(max(dot(reflect(-lightDir,normal),eye),0.0),120.0);
  color+=mix(vec3(1.,.91,.65),vec3(.75,.8,1.),night)*glint*mix(.28,.45,golden);
  color=mix(color,skyColor(normalize(vec3(-eye.x,0.005,-eye.z))),smoothstep(1800.,5800.,dist));
+ color*=mix(vec3(1.0),vec3(.76,.84,.94),cloudShade(vWorld));
  float alpha=mix(.65,1.,smoothstep(4.,60.,dist));
  gl_FragColor=vec4(color,alpha);
  #include <tonemapping_fragment>

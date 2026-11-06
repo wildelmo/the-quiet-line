@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-23T04:08:01.904Z",
+  "generatedAt": "2026-11-06T04:19:06Z",
   "title": "Design System: The Quiet Line",
   "extensions": {
     "colorMeta": {
@@ -8,14 +8,14 @@
         "role": "primary",
         "displayName": "Summer Sky",
         "tonalRamp": [
-          "oklch(15.00% 0.1204 230.76)",
-          "oklch(26.43% 0.1204 230.76)",
-          "oklch(37.86% 0.1204 230.76)",
-          "oklch(49.29% 0.1204 230.76)",
-          "oklch(60.71% 0.1204 230.76)",
-          "oklch(72.14% 0.1204 230.76)",
-          "oklch(83.57% 0.1204 230.76)",
-          "oklch(95.00% 0.1204 230.76)"
+          "oklch(15.00% 0.1172 235.12)",
+          "oklch(26.43% 0.1172 235.12)",
+          "oklch(37.86% 0.1172 235.12)",
+          "oklch(49.29% 0.1172 235.12)",
+          "oklch(60.71% 0.1172 235.12)",
+          "oklch(72.14% 0.1172 235.12)",
+          "oklch(83.57% 0.1172 235.12)",
+          "oklch(95.00% 0.1172 235.12)"
         ]
       },
       "sea": {
@@ -310,7 +310,7 @@
       {
         "name": "reduced-motion",
         "value": "animation: none !important; transition: none !important",
-        "purpose": "CSS motion is removed and quiet water initializes on; birds and bell still animate."
+        "purpose": "CSS motion is removed and quiet water initializes on; the daylight clock and cloud drift hold, new weather is disabled, the passenger rests without arrival/departure, and island crowns and laundry hold still. The dragon holds its local pose while its region can ease along the journey. Existing birds, bell, train and plane can continue."
       }
     ],
     "breakpoints": [
@@ -353,8 +353,8 @@
       "name": "Exploration toolbar",
       "kind": "nav",
       "refersTo": "toolbar",
-      "description": "A compact enamel group with explicit hover and pressed states.",
-      "html": "<div class=\"ds-tools\" role=\"group\" aria-label=\"Exploration controls\"><button aria-pressed=\"false\">Begin drifting</button><button>Next viewpoint</button><button aria-pressed=\"true\">Sound on</button><button>Return</button></div>",
+      "description": "A compact enamel group for boarding/departing, choosing a window seat, sound and return; journey labels follow the ride state.",
+      "html": "<div class=\"ds-tools\" role=\"group\" aria-label=\"Exploration controls\"><button aria-pressed=\"false\">Board train</button><button disabled>Choose window seat</button><button aria-pressed=\"true\">Sound on</button><button>Return to station</button></div>",
       "css": ".ds-tools{display:flex;width:max-content;max-width:100%;border-radius:6px;background:#123f50ed;box-shadow:0 6px 24px #08354a22;padding:5px}.ds-tools button{font:13px \"Segoe UI\",sans-serif;background:none;border:0;color:var(--paper,#fff9e8);padding:12px 18px;min-height:44px;border-radius:3px;cursor:pointer}.ds-tools button:hover,.ds-tools button[aria-pressed=true]{background:#2d6677}.ds-tools button:focus-visible{outline:3px solid var(--focus,#edbc65);outline-offset:5px}@media(max-width:650px){.ds-tools button{font-size:12px;padding:10px 11px}}"
     },
     {
@@ -375,11 +375,11 @@
     }
   ],
   "narrative": {
-    "northStar": "A tiny station in a vast painted ocean",
-    "overview": "The supplied ocean storyboard is the visual authority. Brilliant summer blue, towering ivory clouds, reflected sky, and submerged rails make the world feel expansive. The little station supplies human scale without enclosing the view. The interface is sparse and welcoming, with illustrated-story lettering and small practical controls.\n\nThe environment fills the viewport. Nearby structures are real geometry; the painted sky is the distant backdrop. The welcome overlay recedes when exploration begins, and immersive sessions use a physical ticket-like menu inside the world. Movement begins only through an explicit action; the horizon remains stable during travel.",
+    "northStar": "A tiny station in a vast painted ocean, where one slow day passes",
+    "overview": "The supplied ocean storyboard is the visual authority, refined by the user's explicit direction: fewer clouds, with bright, deep blue sky dominant. Deliberately spaced ivory cloud banks with feathery edges and pale-blue/mint washes, reflected sky, and submerged rails make the world feel expansive. The little station supplies human scale without enclosing the view. The interface is sparse and welcoming, with illustrated-story lettering and small practical controls.\n\nThe feeling to protect is the quiet of a hand-painted animated film: stillness that is never empty. The wind is visible in streamers, a pinwheel, petals and a bell. Small lives respond to one another: a cat notices the distant train, a sea-glass passenger watches the dragon, and the dragon skims a painted veil before rising into a broad vertical loop. A cottage island stays beside the railway as the carriage passes; the shoreline station remains fixed. Far rain and a passing cloud shadow suggest weather beyond the station. Light is the main event. The painted noon slowly becomes a golden sunset, a blue dusk with lanterns, a starlit night, and a pale morning, and the sea reflects all of it.\n\nThe environment fills the viewport. Nearby structures are real geometry; the painted sky is the distant backdrop. The welcome overlay recedes when exploration begins, and immersive sessions use a physical ticket-like menu inside the world. Movement begins only through an explicit action; the horizon remains stable during travel.",
     "keyCharacteristics": [
-      "A huge bright-blue space with a clear, distant horizon.",
-      "Painted clouds reflected in translucent, gently animated water.",
+      "A huge bright-blue space with a clear, distant horizon and generous cloud-free sky.",
+      "Sparse, softly feathered painted cloud banks reflected in translucent, gently animated water.",
       "Warm paper, weathered timber, and subdued enamel at human scale.",
       "Literary display type paired with quiet, legible controls.",
       "Sparse screen overlays and native in-world controls for immersion."
@@ -387,7 +387,7 @@
     "rules": [
       {
         "name": "The Open Blue Rule",
-        "body": "Preserve the broad blue sky and water as the dominant visual field; interface surfaces stay compact.",
+        "body": "Keep bright, deep blue sky and water dominant. Use fewer, deliberately placed clouds with broad clear intervals; interface surfaces stay compact.",
         "section": "colors"
       },
       {
@@ -397,17 +397,19 @@
       }
     ],
     "dos": [
-      "**Do** preserve the large bright-blue field, reflected clouds, stable horizon, and human-scale station.",
+      "**Do** preserve the dominant bright-blue field, sparse painted clouds, stable horizon, and human-scale station.",
       "**Do** keep welcome typography literary and operating controls plain and legible.",
       "**Do** retain clear keyboard focus and native form semantics.",
       "**Do** keep movement opt-in and provide reachable controls inside immersive sessions.",
-      "**Do** ship the sky, font, and provenance with the application."
+      "**Do** ship the sky, font, and provenance with the application.",
+      "**Do** keep nearby living details small and slow: a cat that briefly notices the train, a quiet passenger, petals and wind-touched laundry."
     ],
     "donts": [
       "**Don't** cover the world with large opaque content panels or decorative card grids.",
       "**Don't** substitute DOM-only controls for the in-world VR ticket.",
       "**Don't** treat reduced motion as a promise that every animated world object stops.",
-      "**Don't** claim headset validation from desktop screenshots or implementation settings."
+      "**Don't** claim headset validation from desktop screenshots or implementation settings.",
+      "**Don't** let the day race: sunsets take minutes, and nothing in the sky should startle."
     ]
   }
 }

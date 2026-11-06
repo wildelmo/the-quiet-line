@@ -57,9 +57,9 @@ export function createLife(scene, station, { reducedMotion = false, random = Mat
   const seaState = [];
   for (let i = 0; i < SEALIGHT_COUNT; i++) seaState.push({ x: (random() * 2 - 1) * 40, z: (random() * 2 - 1) * 40, phase: random() * 6.28, rate: .25 + random() * .5 });
 
-  function update(time, viewer, dt, light) {
+  function update(time, viewer, dt, light, sharedBreeze) {
     const t = reducedMotion ? 0 : time;
-    const breeze = wind(t);
+    const breeze = sharedBreeze || wind(t);
     const motion = reducedMotion ? 0 : dt;
     for (let i = 0; i < PETAL_COUNT; i++) {
       const p = petalState[i];

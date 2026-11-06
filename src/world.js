@@ -5,6 +5,12 @@ import { createStation } from './station.js';
 import { createDragon } from './dragon.js';
 import { createLife, wind } from './life.js';
 import { createSkyLife } from './sky-life.js';
+import { createCloudDancer } from './cloud-dancer.js';
+import { createWeather } from './weather.js';
+import { createPassenger } from './passenger.js';
+import { createIsland } from './island.js';
+import { createTrain } from './train.js';
+import { createStationShore, STATION_POSITION } from './shore.js';
 import { daylight, advanceHour, START_HOUR } from './daylight.js';
 
 function random(seed){let a=seed;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
@@ -15,17 +21,20 @@ function woodTexture(){
   const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=texture.wrapT=THREE.RepeatWrapping;return texture;
 }
 export async function createWorld(scene, renderer, {reducedMotion=false,onEvent=()=>{},startHour=START_HOUR}={}){
-  const texture=await new THREE.TextureLoader().loadAsync(`${import.meta.env.BASE_URL}assets/summer-sky.png`);
-  texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=THREE.RepeatWrapping;texture.minFilter=THREE.LinearMipmapLinearFilter;texture.anisotropy=Math.min(4,renderer.capabilities.getMaxAnisotropy());
-  const detailedSky=await new THREE.TextureLoader().loadAsync(`${import.meta.env.BASE_URL}assets/summer-sky-detailed.png`);
-  detailedSky.colorSpace=THREE.SRGBColorSpace;detailedSky.wrapS=THREE.RepeatWrapping;detailedSky.minFilter=THREE.LinearMipmapLinearFilter;detailedSky.anisotropy=texture.anisotropy;
+  const loader=new THREE.TextureLoader();
+  const [cloudTower,cloudVeil]=await Promise.all(['cloud-tower.png','cloud-veil.png'].map(name=>loader.loadAsync(`${import.meta.env.BASE_URL}assets/${name}`)));
+  for(const texture of [cloudTower,cloudVeil]){
+    texture.colorSpace=THREE.SRGBColorSpace;texture.minFilter=THREE.LinearMipmapLinearFilter;
+    texture.anisotropy=Math.min(4,renderer.capabilities.getMaxAnisotropy());
+  }
   // One recipe of light for the whole world, shared by both sky-sampling shaders.
   const light=daylight(startHour);
-  const dayUniforms=()=>({skyYaw:{value:0},sunDir:{value:light.sunDirection},moonDir:{value:light.moonDirection},night:{value:0},golden:{value:0},starLight:{value:0},skyTime:{value:0}});
-  const skyMaterial=new THREE.ShaderMaterial({defines:{SHARP_SKY:1},uniforms:{skyMap:{value:detailedSky},skyTexel:{value:new THREE.Vector2(1/detailedSky.image.width,1/detailedSky.image.height)},...dayUniforms()},vertexShader:skyVertex,fragmentShader:skyFragment,side:THREE.BackSide,depthWrite:false,depthTest:false});
+  const dayUniforms=()=>({cloudTower:{value:cloudTower},cloudVeil:{value:cloudVeil},skyYaw:{value:0},sunDir:{value:light.sunDirection},moonDir:{value:light.moonDirection},night:{value:0},golden:{value:0},starLight:{value:0},skyTime:{value:0}});
+  const skyMaterial=new THREE.ShaderMaterial({uniforms:dayUniforms(),vertexShader:skyVertex,fragmentShader:skyFragment,side:THREE.BackSide,depthWrite:false,depthTest:false});
   const sky=new THREE.Mesh(new THREE.SphereGeometry(1,48,24),skyMaterial);
   sky.frustumCulled=false;sky.renderOrder=-10;scene.add(sky);
-  const waterMaterial=new THREE.ShaderMaterial({uniforms:{skyMap:{value:texture},time:{value:0},calm:{value:1},...dayUniforms()},vertexShader:waterVertex,fragmentShader:waterFragment,transparent:true,depthWrite:false,side:THREE.FrontSide});
+  const weather=createWeather(scene,{reducedMotion,cloudTexture:cloudVeil});
+  const waterMaterial=new THREE.ShaderMaterial({uniforms:{time:{value:0},calm:{value:1},...dayUniforms(),...weather.uniforms},vertexShader:waterVertex,fragmentShader:waterFragment,transparent:true,depthWrite:false,side:THREE.FrontSide});
   const water=new THREE.Mesh(new THREE.PlaneGeometry(15000,15000),waterMaterial);water.rotation.x=-Math.PI/2;water.renderOrder=3;scene.add(water);
   const hemisphere=new THREE.HemisphereLight(0xe1f6ff,0x7e8f70,2.5);scene.add(hemisphere);
   const sun=new THREE.DirectionalLight(0xfff0ca,2.4);sun.position.set(-200,450,-250);scene.add(sun);
@@ -41,6 +50,9 @@ export async function createWorld(scene, renderer, {reducedMotion=false,onEvent=
   function box(x,y,z,w,h,d,mat,rz=0){const geo=new THREE.BoxGeometry(w,h,d);geo.rotateZ(rz);geo.translate(x,y,z);if(!batches.has(mat))batches.set(mat,[]);batches.get(mat).push(geo);}
   function pole(x,y,z,r,h,mat){const geo=new THREE.CylinderGeometry(r,r,h,8);geo.translate(x,y,z);if(!batches.has(mat))batches.set(mat,[]);batches.get(mat).push(geo);}
   const station=createStation(scene);
+  station.position.fromArray(STATION_POSITION);
+  const shore=createStationShore(scene);
+  const train=await createTrain(scene,renderer,{reducedMotion});
   for(const x of [-.72,.72]){
     box(x,-.015,-570,.07,.12,1160,metal);
     box(x,-.08,-570,.14,.035,1160,darkWood);
@@ -80,18 +92,19 @@ export async function createWorld(scene, renderer, {reducedMotion=false,onEvent=
   const birds=[];const wingGeo=new THREE.BufferGeometry();wingGeo.setAttribute('position',new THREE.Float32BufferAttribute([0,0,0,.6,.1,-.1,.16,0,.12],3));wingGeo.computeVertexNormals();
   const birdMat=new THREE.MeshBasicMaterial({color:0xf9f6db,side:THREE.DoubleSide});
   for(let i=0;i<12;i++){const group=new THREE.Group();const left=new THREE.Mesh(wingGeo,birdMat);const right=new THREE.Mesh(wingGeo,birdMat);right.scale.x=-1;group.add(left,right);scene.add(group);birds.push({group,left,right,phase:r()*6.28,radius:28+r()*90,height:8+r()*16});}
-  const cart=new THREE.Group();
-  const deck=new THREE.Mesh(new THREE.BoxGeometry(2.5,.13,2.4),wood);deck.position.y=-.08;cart.add(deck);
-  for(const x of [-1.14,1.14]){
-    for(const z of [-1.05,1.05]){const p=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.65,8),brass);p.position.set(x,.26,z);cart.add(p);}
-    const rail=new THREE.Mesh(new THREE.BoxGeometry(.045,.045,2.15),brass);rail.position.set(x,.57,0);cart.add(rail);
-  }
-  // A small lantern on the deck's post keeps the traveller company after dark.
-  const deckLantern=new THREE.Mesh(new THREE.SphereGeometry(.07,10,8),new THREE.MeshStandardMaterial({color:'#f6e4bd',emissive:'#ffb860',emissiveIntensity:0,roughness:1}));deckLantern.position.set(1.14,.72,-1.05);cart.add(deckLantern);
-  cart.visible=false;scene.add(cart);
   const dragon=createDragon(scene,{reducedMotion});
+  const littleIsland=createIsland(scene,{reducedMotion});
+  const cloudDancer=createCloudDancer(scene,dragon,cloudVeil,light);
   const life=createLife(scene,station,{reducedMotion,random:random(417)});
-  const skyLife=createSkyLife(scene,{reducedMotion,random:random(523),onEvent});
+  const passenger=createPassenger(station,dragon,{reducedMotion});
+  let worldTime=0;
+  const skyLife=createSkyLife(scene,{reducedMotion,random:random(523),onEvent:(kind,recipe)=>{
+    if(kind==='train')station.userData.hearTrain(worldTime);
+    onEvent(kind,recipe);
+  }});
+  weather.shadeStation(station);
+  weather.shadeStation(shore);
+  weather.shadeStation(littleIsland.root);
   const sunColor=new THREE.Color(),birdDusk=new THREE.Color();
   let hour=startHour,flowing=true,skyYaw=0;
   function applyLight(){
@@ -105,26 +118,34 @@ export async function createWorld(scene, renderer, {reducedMotion=false,onEvent=
     }
     signalLampMat.color.set('#ffdfa1').multiplyScalar(.75+light.lantern*1.6);
     houseWindow.material.emissiveIntensity=light.lantern*1.8;
-    deckLantern.material.emissiveIntensity=light.lantern*2;
     birdMat.color.copy(birdDusk.set(0xf9f6db).lerp(sunColor.set(0x2a2d3c),light.night));
   }
   applyLight();
-  return {sky,water,waterMaterial,cart,station,light,
+  return {sky,water,waterMaterial,train,station,shore,light,
+    setAboard(value){life.petals.visible=!value;},
+    get atmosphere(){return {weather:{...weather.state},passenger:passenger.state.phase,paintedBanks:4,localVeils:1};},
     get hour(){return hour;},
     setHour(value){hour=((value%24)+24)%24;applyLight();},
     get flowing(){return flowing;},
     setFlowing(value){flowing=value;},
     update(t,position,dt){
+      worldTime=t;
       if(flowing&&!reducedMotion)hour=advanceHour(hour,dt);
       if(!reducedMotion)skyYaw+=dt*.00055;
       applyLight();
       const breeze=wind(reducedMotion?0:t);
+      const passingWeather=weather.update(t,position,light);
+      breeze.gust+=passingWeather.gust*.4;breeze.x+=passingWeather.gust*.5;
       dragon.update(t,position,dt);
+      littleIsland.update(t,light,breeze);
+      train.update(t,dt,light);
+      cloudDancer.update();
+      passenger.update(t,dt,light);
       water.position.x=position.x;water.position.z=position.z;waterMaterial.uniforms.time.value=t;skyMaterial.uniforms.skyTime.value=t;waterMaterial.uniforms.skyTime.value=t;
       bell.rotation.z=Math.sin(t*.8)*.08*(.6+breeze.gust);paper.rotation.y=Math.sin(t*.5)*.25;
       birds.forEach((b,i)=>{const a=t*.012+b.phase;b.group.position.set(Math.cos(a)*b.radius, b.height+Math.sin(a*3)*1.2,-70+Math.sin(a)*b.radius);b.group.rotation.y=-a;b.left.rotation.z=Math.sin(t*2.2+i)*.18;b.right.rotation.z=-b.left.rotation.z;});
       station.userData.animate(t,dt,light,breeze,reducedMotion);
-      life.update(t,position,dt,light);
+      life.update(t,position,dt,light,breeze);
       skyLife.update(t,position,dt,light);
     },
   };

@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 
-// Things that cross the sky now and then: a few near painted clouds drifting on
-// the wind, a far-off train gliding over the sea, and a small plane going
-// somewhere slowly. Visitors appear on a calm schedule, never all at once.
+// A far-off train glides over the sea; a small plane is going somewhere slowly.
+// Painted clouds live in shaders.js and cloud-dancer.js. These visitors follow
+// a calm schedule, with staggered first arrivals.
 
 export const TRAIN_CROSSING = { halfWidth: 760, seconds: 118, ahead: 380, height: 0, first: 75, every: [230, 330] };
 export const PLANE_CROSSING = { halfWidth: 1100, seconds: 140, ahead: 400, first: 170, every: [280, 420] };
@@ -18,44 +18,8 @@ export function nextCrossing(time, every, random = Math.random) {
   return time + every[0] + random() * (every[1] - every[0]);
 }
 
-function cloudTexture(seed) {
-  let s = seed;const rand = () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
-  const canvas = document.createElement('canvas');canvas.width = 256;canvas.height = 192;
-  const ctx = canvas.getContext('2d');
-  // Gouache cumulus: a flat lavender underside, a dome of cream lobes, sunlit tops.
-  const base = 138;
-  const puff = (x, y, r, shade) => {
-    const g = ctx.createRadialGradient(x, y, r * .15, x, y, r);
-    g.addColorStop(0, shade);g.addColorStop(.8, shade);g.addColorStop(1, shade + '00');
-    ctx.fillStyle = g;ctx.beginPath();ctx.arc(x, y, r, 0, Math.PI * 2);ctx.fill();
-  };
-  for (let x = 44; x <= 212; x += 14) puff(x, base - 6 + rand() * 4, 18 + rand() * 6, '#c4cfe6');
-  const lobes = [];
-  for (let i = 0; i < 14; i++) {
-    const x = 50 + rand() * 156, dome = Math.sin(Math.PI * (x - 30) / 196);
-    lobes.push({ x, y: base - 12 - dome * (42 + rand() * 30), r: 20 + rand() * 16 + dome * 8 });
-  }
-  lobes.sort((a, b) => b.y - a.y);
-  for (const lobe of lobes) puff(lobe.x, lobe.y, lobe.r, lobe.y > base - 40 ? '#e6e5ee' : '#fdf8ec');
-  for (const lobe of lobes.slice(-5)) puff(lobe.x - lobe.r * .15, lobe.y - lobe.r * .3, lobe.r * .7, '#ffffff');
-  const texture = new THREE.CanvasTexture(canvas);texture.colorSpace = THREE.SRGBColorSpace;return texture;
-}
-
 export function createSkyLife(scene, { reducedMotion = false, random = Math.random, onEvent = () => {} } = {}) {
   const group = new THREE.Group();group.name = 'Sky life';scene.add(group);
-
-  // Near clouds, placed between the viewer and the painted horizon for depth.
-  const cloudMaterials = [0, 1, 2].map(i => new THREE.SpriteMaterial({ map: cloudTexture(911 + i * 37), transparent: true, depthWrite: false, fog: true, opacity: .85 }));
-  const clouds = [];
-  for (let i = 0; i < 9; i++) {
-    const sprite = new THREE.Sprite(cloudMaterials[i % 3]);
-    const angle = i / 9 * Math.PI * 2 + random() * .5, distance = 520 + random() * 700;
-    const scale = 110 + random() * 150;
-    sprite.scale.set(scale, scale * .75, 1);
-    sprite.renderOrder = -5;
-    clouds.push({ sprite, angle, distance, height: 70 + random() * 120, drift: .35 + random() * .5 });
-    group.add(sprite);
-  }
 
   // A far train with warm windows. Evening makes it glow; by day it is a quiet silhouette.
   const train = new THREE.Group();train.visible = false;group.add(train);
@@ -88,13 +52,6 @@ export function createSkyLife(scene, { reducedMotion = false, random = Math.rand
 
   function update(time, viewer, dt, light) {
     const t = reducedMotion ? 0 : time;
-    for (const cloud of clouds) {
-      const angle = cloud.angle + t * .0018 * cloud.drift;
-      cloud.sprite.position.set(viewer.x + Math.cos(angle) * cloud.distance, cloud.height, viewer.z + Math.sin(angle) * cloud.distance);
-    }
-    const cloudTint = light.cloudTint;
-    for (const material of cloudMaterials) material.color.copy(cloudTint);
-
     // Train crossing, from one side of the sea to the other, well ahead of the viewer.
     if (trainStart === null && time >= trainNext) {
       trainStart = time;trainZ = viewer.z - TRAIN_CROSSING.ahead;trainDirection = random() < .5 ? -1 : 1;
@@ -123,5 +80,5 @@ export function createSkyLife(scene, { reducedMotion = false, random = Math.rand
       propeller.rotation.x += dt * 38;
     }
   }
-  return { group, update, clouds, train, plane, get visitors() { return { train: trainStart !== null, plane: planeStart !== null }; } };
+  return { group, update, train, plane, get visitors() { return { train: trainStart !== null, plane: planeStart !== null }; } };
 }

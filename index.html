@@ -22,8 +22,8 @@
     </section>
     <div id="toolbar" hidden>
       <div class="place"><span class="place-dot"></span><span id="place-name">The little station</span></div>
-      <div class="tools"><button id="journey" aria-pressed="false">Begin drifting</button><button id="viewpoint">Next viewpoint</button><button id="sound" aria-pressed="true" aria-label="Mute sound">Sound on</button><button id="home" aria-label="Return to the little station">Return</button></div>
-      <p class="hint">Drag to look · Space to drift · T turns the hour · H for controls</p>
+      <div class="tools"><button id="journey" aria-pressed="false">Board train</button><button id="viewpoint" disabled>Choose window seat</button><button id="sound" aria-pressed="true" aria-label="Mute sound">Sound on</button><button id="home" aria-label="Return to the little station">Return to station</button></div>
+      <p class="hint">Drag to look · Space to board / depart / pause · V for seats · H for controls</p>
     </div>
     <aside id="settings" hidden aria-labelledby="settings-title">
       <div class="panel-heading"><h2 id="settings-title">Settle in.</h2><button id="close-settings" class="icon-button" aria-label="Close controls"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
@@ -32,7 +32,7 @@
       <label class="setting" for="quality">Detail <select id="quality"><option value="balanced">Balanced · Quest</option><option value="high">High · desktop</option></select></label>
       <label class="setting" for="still-water">Quiet water <input id="still-water" type="checkbox" /></label>
       <label class="setting" for="moment">Time of day <select id="moment"><option value="flowing">Let the day pass</option><option value="morning">Morning</option><option value="noon">High summer noon</option><option value="golden">Golden hour</option><option value="dusk">Blue dusk</option><option value="night">Starlight</option></select></label>
-      <div class="instructions"><h3>In your headset</h3><p>Point a controller at the brass ticket below you, then press the trigger. Squeeze either grip to bring the ticket in front of you. Turn the hour lets you hold a sunset or the stars, or let the day pass on its own. Choose Exit experience at the bottom of the ticket to leave VR and close the page.</p><p>Right stick: snap turn. Left stick forward: point at the water and release to move there. Travel always starts with you.</p><h3>On this screen</h3><p>Drag to look. Arrow keys to turn. Space to start or stop drifting. V changes viewpoint. T turns the hour. R returns home. M mutes. Escape closes these controls.</p><p>Exit experience stops everything and closes this page. If your browser keeps the tab open, it will become a blank page.</p></div>
+      <div class="instructions"><h3>Your journey</h3><p>Board the waiting train, choose a window seat, then depart. Switch between the left and right windows whenever you like; changing seats pauses the journey. Return to station brings you back to the platform.</p><h3>In your headset</h3><p>Point a controller at the brass ticket and press the trigger. Squeeze either grip to bring the ticket in front of you. Right stick: snap turn. Look and lean naturally; choosing a seat keeps your real head height.</p><p>Turn the hour holds a sunset or the stars, or lets the day pass. Exit experience at the bottom of the ticket leaves VR and closes the page.</p><h3>On this screen</h3><p>Drag to look. Arrow keys to turn. Space boards, departs or pauses. V changes window seat. T turns the hour. R returns to the station. M mutes. H opens controls. Escape closes them.</p><p>Exit experience stops everything and closes this page. If your browser keeps the tab open, it will become a blank page.</p></div>
       <button id="return-intro" class="text-button">Back to the welcome screen</button>
     </aside>
     <p id="notice" role="status" aria-live="polite"></p>

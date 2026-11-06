@@ -1,0 +1,62 @@
+{
+  "name": "The Quiet Line original carriage",
+  "generator": "scripts/build-train.py",
+  "blender": "4.5.15 LTS",
+  "coordinates": {
+    "up": "Y",
+    "forward": "-Z",
+    "home": [
+      0,
+      0,
+      -4
+    ]
+  },
+  "dimensions_m": {
+    "body_width": 2.92,
+    "length": 16.1,
+    "floor_height": 0.9,
+    "roof_height": 3.758,
+    "seat_cushion_top": 1.35
+  },
+  "anchors": {
+    "boarding": [
+      -0.55,
+      0.9,
+      5
+    ],
+    "leftSeat": [
+      -0.86,
+      0.9,
+      0
+    ],
+    "rightSeat": [
+      0.86,
+      0.9,
+      0
+    ]
+  },
+  "door": {
+    "center_z": 5,
+    "clear_width": 1.35,
+    "height": 2.08,
+    "slide_distance": 0.74,
+    "nodes": [
+      "DoorLeftForward",
+      "DoorLeftRear"
+    ]
+  },
+  "mesh_count": 7,
+  "triangles": 42580,
+  "materials": 5,
+  "texture_dimensions": [
+    1254,
+    1254
+  ],
+  "estimated_rgba8_texture_with_mipmaps_mib": 8.0,
+  "glb_bytes": 3941940,
+  "notes": [
+    "Original geometry; visual references inform material and proportion, no extracted model parts.",
+    "Real window openings and single-layer low-opacity glazing; no transmission pass.",
+    "Counts are construction statistics, not Quest hardware performance measurements."
+  ]
+}

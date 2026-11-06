@@ -2,6 +2,22 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Scene, Vector3 } from 'three';
 import { createDragon, dragonSpine } from '../src/dragon.js';
+import { dragonFrame, DRAGON_FLIGHT, flightDistance } from '../src/dragon-flight.js';
+
+test('the faster route completes a vertical loop without frame flips, including its closing seam',()=>{
+  const p=new Vector3(),right=new Vector3(),up=new Vector3(),forward=new Vector3(),previous=new Vector3();
+  let inverted=false,high=false;
+  for(let time=0;time<DRAGON_FLIGHT.length/DRAGON_FLIGHT.speed*2+.5;time+=1/72){
+    dragonFrame(time,0,p,right,up,forward);
+    if(time)assert(previous.dot(up)>.995,'Transported frames must turn continuously through vertical and the repeat seam.');
+    assert(Math.abs(right.dot(up))<1e-6&&Math.abs(up.dot(forward))<1e-6);
+    assert(Math.abs(up.length()-1)<1e-6&&Math.abs(forward.length()-1)<1e-6);
+    const speed=(flightDistance(time+1/72)-flightDistance(time))*72;
+    assert(speed>6.7&&speed<7.7,'Cruise should be lively but not accelerate abruptly.');
+    inverted ||= up.y<-.8;high ||= p.y>90;previous.copy(up);
+  }
+  assert(inverted&&high,'The route must include the full vertical loop.');
+});
 
 test('dragon flight stays above the sea, distant from the viewer, and continuous',()=>{
   const p=new Vector3(),q=new Vector3();

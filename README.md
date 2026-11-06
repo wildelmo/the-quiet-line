@@ -1,10 +1,14 @@
 # The Quiet Line
 
-A tiny station in an immense painted summer sea, where one slow day passes: afternoon, a golden sunset, blue dusk, lanterns and stars, then morning again. A local, static WebXR experience for Meta Quest, with an interactive desktop and mobile preview.
+A tiny station on a grassy shore in an immense painted summer sea. Board a waiting carriage, choose a window seat and travel across the water as one slow day passes: afternoon, golden sunset, blue dusk, lanterns and stars, then morning again. A static WebXR experience for Meta Quest, with an interactive desktop and mobile preview.
 
-**[Enter The Quiet Line](https://wildelmo.github.io/the-quiet-line/)** · [Build and deployment](https://github.com/wildelmo/the-quiet-line/actions/workflows/pages.yml)
+**[Published site](https://wildelmo.github.io/the-quiet-line/)** · [Build and deployment](https://github.com/wildelmo/the-quiet-line/actions/workflows/pages.yml)
 
-![The Quiet Line: golden hour over an immense painted sea](output/quiet-line-preview.png)
+The first rideable carriage is implemented and verified locally. Its fresh visual finish review returned **ship** for the carriage/window-seat milestone. The screenshots below show this milestone. Successful pushes to `main` test, build and deploy the updated experience through GitHub Pages.
+
+![The current local build: a fixed station and waiting carriage above the sea](output/quiet-line-preview.png)
+
+![Inside the carriage, looking through the framed windows](output/train-window-seat.png)
 
 ## Run
 
@@ -15,7 +19,18 @@ npm install
 npm run dev
 ```
 
-Open the printed local address. Select **Explore on this screen**. Drag to look; arrow keys also turn the camera. Space starts or stops the slow journey, V changes viewpoint, T turns the hour (let the day pass, morning, noon, golden hour, dusk, starlight), R returns to the station, M mutes, and H opens settings. Buttons and settings also work on touch screens.
+Open the printed local address, currently `http://127.0.0.1:5173`, and select **Explore on this screen**. Drag to look; arrow keys also turn the camera. The controls work by mouse, keyboard or touch:
+
+| Action | Control |
+| --- | --- |
+| Board, then depart; pause or continue while aboard | Journey button or Space |
+| Choose the left window seat, then alternate sides | Seat button or V |
+| Return to the station and restore the train to its berth | Return to station or R |
+| Let the day pass, or hold morning, noon, golden hour, dusk or starlight | Settings or T |
+| Mute sound | Sound button or M |
+| Open settings; close them | H; Escape |
+
+Boarding, changing seats and returning use a brief fade. Choosing a seat pauses travel; **Continue journey** resumes it. The train eases toward 3 m/s, slows near the end of its 1.1 km route, and stops at **Journey complete**. Pause stops it immediately. The station and landscape stay fixed. Returning restores the original berth and platform viewpoint. There is no free-water teleport or observation deck.
 
 ```sh
 npm test
@@ -23,55 +38,57 @@ npm run build
 npm run preview
 ```
 
-`dist/` is the complete deployable site. Relative asset URLs support the GitHub Pages project subdirectory. Public source repository: [wildelmo/the-quiet-line](https://github.com/wildelmo/the-quiet-line). There is no backend, analytics, or account requirement.
+`dist/` is the complete deployable site. Relative asset URLs support the GitHub Pages project subdirectory. Public source repository: [wildelmo/the-quiet-line](https://github.com/wildelmo/the-quiet-line). There is no backend, analytics or account requirement.
 
 ## Automatic deployment
 
-The `pages.yml` GitHub Actions workflow runs all tests and builds the site on pushes and pull requests to `main`. Successful pushes to `main` deploy `dist/` to GitHub Pages over HTTPS. Pull requests only test and build; they cannot deploy. You can also run the workflow manually from the Actions tab. Official GitHub actions are pinned to release commits, and only the deploy job receives Pages write permission.
+The `pages.yml` GitHub Actions workflow runs tests and builds on pushes and pull requests to `main`. Successful pushes to `main` deploy `dist/` to GitHub Pages over HTTPS. Pull requests only test and build. The workflow can also run manually from Actions. Official GitHub actions are pinned to release commits, and only the deploy job receives Pages write permission. The current carriage work has not been published in this implementation pass.
 
-## Quest launch
+## Quest launch and controls
 
-Open **https://wildelmo.github.io/the-quiet-line/** directly in Meta Quest Browser and select **Step inside in VR**. Allow the browser's immersive session prompt. All runtime assets and sounds are local; after the site is loaded it makes no third-party asset requests.
+For a deployed version, open **https://wildelmo.github.io/the-quiet-line/** in Meta Quest Browser and select **Step inside in VR**. Allow the browser's immersive session prompt. All runtime assets and sounds are local; the loaded experience makes no third-party asset requests.
 
-For local headset development before hosting, use Meta's USB/ADB port forwarding (`adb reverse tcp:5173 tcp:5173`) and visit `http://localhost:5173` in the headset. This requires an already configured developer headset and USB debugging authorization. A plain LAN URL such as `http://192.168.x.x:5173` supports the flat preview but is not a secure context for immersive WebXR. A trusted HTTPS development host is another option. Do not bypass certificate warnings.
+For local headset development, use Meta's USB/ADB port forwarding (`adb reverse tcp:5173 tcp:5173`) and visit `http://localhost:5173` in the headset. This requires a configured developer headset and USB debugging authorization. A plain LAN URL supports the flat preview but is not a secure context for immersive WebXR; a trusted HTTPS development host is another option.
 
 Official references: [Meta WebXR overview](https://developers.meta.com/vr/documentation/web/webxr-overview/), [WebXR secure contexts](https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API/Permissions_and_security), [Three.js WebXR manager](https://threejs.org/docs/pages/WebXRManager).
 
-## In the headset
+- Start at the fixed raised station. Boarding and seat placement preserve real tracked head height; look, lean and move naturally within your physical space. The ride adds no camera bobbing, roll or automatic orbit.
+- Point either controller at the brass ticket and pull the trigger to board, depart, pause or continue, choose a window seat, turn the hour, mute or return. These use the same ride actions as the screen controls. Squeeze either grip to recall the ticket in front of you.
+- Right thumbstick left/right turns by 30 degrees, once per deflection. No left-stick travel or water-target teleport is wired.
+- **Exit experience** at the bottom of the ticket ends the immersive session, stops rendering, closes the audio context and attempts to close the tab. The flat page, loading screen and graphics-error screen also have an exit. If the browser refuses to close a user-opened tab, the app navigates to `about:blank`; a stalled or rejected XR shutdown cannot block leaving. See [MDN's window.close documentation](https://developer.mozilla.org/en-US/docs/Web/API/Window/close).
 
-- Start stationary at the little station, at real-world head height. Room-scale head tracking is preserved. No automatic bobbing, roll, or camera orbit.
-- Point either controller at the brass ticket panel and pull the trigger to drift, pause, change viewpoint, turn the hour, mute, or return. The ticket travels with you. Squeeze either grip to recall it into your current view.
-- **Exit experience** at the bottom of the VR ticket ends the immersive session, stops rendering, closes the audio context, and attempts to close the browser tab. The same control is available at the top of the flat-screen page, while loading, and if graphics fail. If the browser disallows closing a user-opened tab, the app replaces itself with `about:blank`, fully unloading the experience; only an empty browser tab remains. A stalled or rejected XR shutdown cannot block leaving. Browser restrictions are described in [MDN's window.close documentation](https://developer.mozilla.org/en-US/docs/Web/API/Window/close).
-- Right thumbstick left/right: 30-degree snap turn, once per stick deflection.
-- Hold the left thumbstick forward, point down at nearby water, and release to teleport to the ring. Teleports are limited to 35 meters and the railway corridor, with a brief blackout. A little observation deck appears beneath you.
-- **Begin drifting** carries the entire station with you: platform, shelter, bench, plants, signs, and wind bell. These stay beside you while the tracks and sea pass underneath. Room-scale walking and snap turns remain independent of the platform. Starting drift from a remote observation deck brings the station to your current location; Return restores it to its original home. Travel eases up to 1.35 m/s and stops immediately when paused. It ends at 1.1 km rather than wrapping or snapping the world.
-- Sound is generated on-device: layered water and wind, sparse bell tones, a music box that plays a few pentatonic notes now and then, distant bird calls by day, crickets after dark, a low warm pad in the evening, the far whistle of the passing train, the faint hum of the little plane, and subtle travel pulses. The controls provide mute and volume. Audio begins only with user interaction.
+The desktop preview uses authored standing and seated eye heights. A real XR session retains the visitor's tracked height instead. Headset input, perceived scale and comfort still require physical-device validation.
 
 ## What is built
 
-The reference is `Dreamy Ocean Sky Storyboard.png`. A generated painted panorama surrounds real 3D tracks, sleeper timbers, platform, shelter, bench, wind bell, distant house, islands, birds, a sky dragon, and the travel deck. The water shader reflects the same sky and adds low-amplitude ripples, glints, and shallow-water caustics. Clouds are a distant painted sky, not nearby volumetric geometry. The application is designed for open space and a stable horizon.
+The visual authority is `Dreamy Ocean Sky Storyboard.png`, refined by the user's direction for fewer clouds and dominant bright, deep blue. Four sparse painted banks sit in a procedural blue sky. Two locally shipped 1536 × 1024 transparent paintings supply their feathered ivory brushwork and pale-blue/mint washes. The older panoramas and nine procedural cloud sprites are retired. Water samples the same sky and adds low-amplitude ripples, glints and shallow-water caustics. Real submerged rails, the fixed station and shoreline, islands and the carriage give the world scale.
 
-### The passing day
+### One rideable carriage
 
-`src/daylight.js` keeps one clock-hour for the world and turns it into a recipe of light: fog, hemisphere and sun colours, lantern glow, star brightness, and sun and moon directions. The world starts at the visitor's own local clock time, so an evening visit begins with the lanterns already lit. Daylight hours then pass at about a minute each and night hours faster, so an afternoon arrival sees the sunset within about four minutes, stars a couple of minutes later, and morning again before twenty minutes are up. Both sky-sampling shaders grade the painted panorama from the same uniforms: golden hour warms the painted brushwork rather than replacing it, night turns the open blue indigo with slate clouds, procedural stars, and a moon, and the water reflects all of it. The painted clouds also drift very slowly around the viewer. The settings panel, the T key, and the VR ticket's **Turn the hour** action hold any moment still or let the day flow. Reduced motion holds the clock and the cloud drift still.
+The original Blender model has a cream-and-maroon exterior, rounded roof, real window openings, dark substantial frames, red bench upholstery, hanging straps, floorboards, sliding boarding doors and warm interior lamps. `assets/train/carriage.blend` is the editable source; `scripts/build-train.py` rebuilds it and `public/assets/train/carriage.glb`. `src/train.js` loads the GLB; `src/travel.js` owns the ride states and placements. See [the train asset guide](assets/train/README.md) for the rebuild command, coordinates and provenance.
 
-### Living details
+The GLB is 3,941,940 bytes, with 42,580 triangles, seven mesh primitives and five materials. Its one embedded 1254 × 1254 painted atlas costs about 8 MiB when decoded as RGBA8 with mipmaps. These are construction figures: transparent double-sided glass can add a render pass, and seven primitives do not promise seven actual draw calls or any headset frame rate.
 
-- At the station: a round ginger cat asleep on the bench, breathing, with an occasional ear twitch and tail flick; three paper lanterns under the eaves that light at dusk, with one warm point light; a four-coloured pinwheel by the marker post that spins with the gusts; three cloth streamers from the gable that show the wind; and three butterflies at the flower pots.
-- Around the visitor: pale petals tumbling on the breeze, wrapping around whichever place you are in; fireflies about the platform and soft blue sea-lights above the water after dark.
-- In the sky: nine near painted-cumulus sprites drifting between the viewer and the painted horizon for depth; a far-off four-car train that glides across the sea ahead of you every few minutes, its windows lit in the evening; and a small yellow-winged floatplane that hums over a little later. Their arrivals are announced quietly on screen and in sound.
-- Along the line: signal lamps, the deck lantern, and the distant house window all wake at dusk.
+### The passing day and small lives
 
-A pearl-and-jade, wingless East Asian dragon makes slow loops above the sea, with branching antlers, gold eyes, whiskers, four clawed feet, and a flowing mane. Its continuous body undulates along the flight path; the mane is instanced and the other details are merged by material. All geometry and motion are procedural, with no downloaded model or texture. Reduced motion holds its local pose still, while its flight region continues to ease along the route as you travel. The dragon follows the journey's region rather than your gaze. Hidden flat-screen pages pause world updates and rendering. Its current geometry totals 20 mesh objects and 43,304 triangles including instances; actual Quest performance remains unmeasured.
+`src/daylight.js` keeps one clock-hour for sky, water, fog, lighting, lanterns, stars, sun and moon. The world starts at the visitor's local time. Daylight hours last about a minute each and night hours pass faster; the settings, T key and ticket can hold any moment still. Reduced motion holds the daylight clock and cloud drift.
 
-The living details add roughly fifteen draw calls on screen (instanced petals, fireflies and sea-lights, nine cloud sprites, the train, the plane, the cat and the streamers) and around 25,000 triangles. The per-frame CPU work is small: a few hundred instance matrices, three nine-segment streamers, and the daylight recipe. Quest frame rate remains unmeasured.
+At the station, a ginger cat sleeps on the bench and briefly notices the far train whistle. A sea-glass passenger in a folded leaf cap arrives beside the suitcase, watches the dragon and leaves quietly. Lanterns, a pinwheel, streamers and butterflies bring the platform to life. Petals follow the visitor outdoors and are hidden inside the carriage. Fireflies and soft sea-lights appear after dark.
 
-Geometry is instanced or merged by material. There are no shadow maps, bloom passes, reflection render targets, live texture downloads, or continuous audio downloads. Balanced settings cap desktop pixel ratio at 1.5; XR uses a framebuffer scale of 1 and requested foveation of 1. `window.quietLine.diagnostics` is available in browser developer tools for draw calls, triangles, texture count, position and session state.
+A distant four-car train and little floatplane pass periodically. Far rain and a slow cloud shadow share a breeze with the station and cottage island. A pearl-and-jade procedural dragon skims a painted veil, climbs through a vertical loop and banks into a dive. The user criticized the dragon's smooth procedural appearance; this carriage milestone does not replace it, and an earlier visual-review verdict does not establish user acceptance.
 
-## Verification and remaining headset checks
+A fixed grassy island beside the route carries a cream cottage, terracotta roof, trees, bench and laundry. The moving carriage passes it while the station stays at home. Its windows warm at dusk. Audio is synthesized on-device: water, wind, bells, sparse music-box notes, birds, crickets, an evening pad, the far train whistle, plane hum and travel pulses. Sound begins only after interaction; mute and volume remain available.
 
-Movement, daylight, visitor-schedule, breeze and music-box tests and the production build pass. A synthetic WebXR session exercises Three.js's actual stereo camera update, checking that both eyes travel with the deck even when the tracked viewer is several meters from the play-space origin. Additional checks cover boarding after rotation, physical walking, snap turns, pausing, and repositioning. Browser checks cover shader rendering at noon, golden hour, dusk and night, entering the flat experience, start/pause, viewpoints, mute, quiet water, settings, the passing train and plane, desktop and 390-pixel mobile layouts. No actual Quest headset was connected during development. Stereo rendering, controller mapping, perceived scale, audio balance, comfort, and sustained headset frame rate require a hardware check.
+Reduced motion also suppresses weather events, holds the passenger at rest, freezes the dragon's local pose and the island's moving details, and makes door placement immediate. Some existing birds, bell, distant train and plane animation continues; it is not a total world-motion pause. Hidden flat-screen pages pause rendering and world updates. Document and XR visibility loss pause the journey.
 
-On the first Quest run: remain still, look all the way around and up, recall and use the ticket, test each controller, try a short teleport, then start and pause travel. Measure frame time using browser/Quest developer tools; the target is stable native headset refresh, not an unmeasured claim of performance. Use balanced detail first.
+Geometry is instanced or merged where appropriate. There are no shadow maps, bloom passes or reflection render targets. Balanced desktop settings cap pixel ratio at 1.5; XR uses framebuffer scale 1 and requested foveation 1. `window.quietLine.diagnostics` exposes sampled render counts, position, train state, route distance, station anchor, session and atmosphere state. These samples are not sustained performance measurements.
 
-Asset provenance and the exact image prompt are in `ASSETS.md`.
+## Verification and remaining checks
+
+All 47 automated tests and the production build pass. Tests cover ride placement and state, route progress, head-tracking math, asset structure, and existing world behavior. Independent Chrome desktop and 390px mobile touch checks passed boarding, both seats, departure, pause/continue, return, rapid placement clicks, keyboard controls, sound and time settings, with no reported runtime, shader or network errors. Asset checks confirm actual window/floor geometry and exported counts. Current evidence is in `.impeccable/review/train-verify-result.json` and `train-*.png`; that review directory is local and ignored by Git.
+
+The fresh review in `.impeccable/review/train-finish-review.md` returned **ship**, with no material fixes across 13 required actual-browser captures. It covers the first carriage/window-seat milestone: visible geometry, materials, framing, daylight/night and mobile readability. The sloped cab was additionally inspected in Blender, which is secondary evidence. This verdict does not renew approval of the dragon. The detector reports six advisories in `.impeccable/review/train-detect.json`: existing palette/type documentation drift plus a local shoreline material color. The established UI palette, typography and token schema were preserved.
+
+No physical Quest headset was tested. Stereo appearance, controller mappings, room-scale scale/comfort, audio balance and sustained headset frame time remain unverified. On the first headset run, inspect the carriage from both seats, recall and use the ticket, test each controller, board, depart, pause, switch seats and return. Measure frame time with device developer tools using balanced detail first. Captures and synthetic XR tests do not establish continuous-motion comfort.
+
+Asset provenance is in [ASSETS.md](ASSETS.md). The five-raster provenance scan found no missing records; exact generated-image prompts are adjacent to their PNGs and embedded in metadata. Historical work and review limits are recorded in [WORKFLOW.md](WORKFLOW.md).

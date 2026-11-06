@@ -2,3 +2,5 @@ node_modules/
 dist/
 *.local
 .impeccable/review/
+.tools/
+*.blend1

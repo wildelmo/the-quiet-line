@@ -1,0 +1,167 @@
+{
+  "asset": "Quiet Line carriage painted material atlas",
+  "image": "../../public/assets/train/carriage-material-atlas.png",
+  "width": 1254,
+  "height": 1254,
+  "format": "PNG",
+  "channels": "RGB",
+  "bitDepth": 8,
+  "opaque": true,
+  "colorSpace": "sRGB",
+  "purpose": "Base-color texture applied to the original carriage mesh; no baked lighting, normal, roughness or metallic information.",
+  "origin": "top-left image origin; normalized x rightwards, y downwards",
+  "seam": {
+    "x": 0.5,
+    "y": 0.5,
+    "pixelX": 627,
+    "pixelY": 627
+  },
+  "safeInset": 0.035,
+  "sampling": {
+    "wrap": "Clamp to edge",
+    "note": "Keep every UV inside its listed safe region. The whole atlas is not tileable. Do not repeat the entire texture. Orient UV islands deliberately so wood grain follows the physical member length. For a new Blender UV island use the explicitly inverted V region below.",
+    "mipmaps": "Safe regions inset each quadrant by about 44 pixels; avoid sampling near the atlas center seams."
+  },
+  "regions": {
+    "maroon_enamel": {
+      "quadrant": "top-left",
+      "imageUV": {
+        "min": [
+          0.035,
+          0.035
+        ],
+        "max": [
+          0.465,
+          0.465
+        ]
+      },
+      "blenderUV": {
+        "min": [
+          0.035,
+          0.535
+        ],
+        "max": [
+          0.465,
+          0.965
+        ]
+      },
+      "suggestedUses": [
+        "lower exterior body",
+        "roof",
+        "maroon painted trim"
+      ],
+      "suggestedRoughness": 0.78,
+      "metallic": 0
+    },
+    "cream_enamel": {
+      "quadrant": "top-right",
+      "imageUV": {
+        "min": [
+          0.535,
+          0.035
+        ],
+        "max": [
+          0.965,
+          0.465
+        ]
+      },
+      "blenderUV": {
+        "min": [
+          0.535,
+          0.535
+        ],
+        "max": [
+          0.965,
+          0.965
+        ]
+      },
+      "suggestedUses": [
+        "upper exterior band",
+        "painted interior ceiling",
+        "door panels"
+      ],
+      "suggestedRoughness": 0.8,
+      "metallic": 0
+    },
+    "walnut_timber": {
+      "quadrant": "bottom-left",
+      "grainDirection": "vertical in image",
+      "imageUV": {
+        "min": [
+          0.035,
+          0.535
+        ],
+        "max": [
+          0.465,
+          0.965
+        ]
+      },
+      "blenderUV": {
+        "min": [
+          0.035,
+          0.035
+        ],
+        "max": [
+          0.465,
+          0.465
+        ]
+      },
+      "suggestedUses": [
+        "interior window frames",
+        "floor boards",
+        "bench plinth"
+      ],
+      "suggestedRoughness": 0.88,
+      "metallic": 0,
+      "note": "Generated timber is warm brown. A muted dark base-color factor can deepen frames or floor while preserving the painted grain."
+    },
+    "red_moquette": {
+      "quadrant": "bottom-right",
+      "imageUV": {
+        "min": [
+          0.535,
+          0.535
+        ],
+        "max": [
+          0.965,
+          0.965
+        ]
+      },
+      "blenderUV": {
+        "min": [
+          0.535,
+          0.035
+        ],
+        "max": [
+          0.965,
+          0.465
+        ]
+      },
+      "suggestedUses": [
+        "bench seat cushions",
+        "bench backrests"
+      ],
+      "suggestedRoughness": 0.98,
+      "metallic": 0
+    }
+  },
+  "provenance": {
+    "generatedWith": "Built-in image_gen tool (no CLI/API fallback)",
+    "generatedDate": "2026-11-05",
+    "generatedOriginal": "$CODEX_HOME/generated_images/01a1af27-75ff-7110-b6f0-cc36c3cfd3f6/exec-5a708fb9-f4f1-4ce0-93ca-4988e6fffe75.png",
+    "originalPreserved": true,
+    "sourceImagesRole": "The exterior and interior references were visually inspected for palette and material direction only. No source image pixels were copied.",
+    "referenceImages": [
+      ".impeccable/review/train-reference-1274022.jpg",
+      ".impeccable/review/train-reference-501188.webp"
+    ],
+    "exactPrompt": "../../public/assets/train/carriage-material-atlas.exact.prompt.txt",
+    "promptMetadata": "PNG tEXt key impeccable:prompt",
+    "modifications": "Copied native generated PNG to project; embedded exact generation prompt as metadata. Pixel data, native dimensions, and opacity preserved.",
+    "note": "The prompt requested 1024 square; the built-in tool returned 1254 square. The original size is retained."
+  },
+  "validation": {
+    "visual": "Inspected all four material fields: correct quadrant order, straight middle seams, no labels or borders, flat diffuse painted appearance, vertical walnut grain and low-contrast upholstery weave.",
+    "file": "PNG signature and IHDR inspected: 1254 x 1254, 8-bit RGB (color type 2), no tRNS chunk, therefore fully opaque. Prompt tEXt entry confirmed."
+  }
+}
