@@ -6,7 +6,7 @@ import { Soundscape } from './audio.js';
 import { HOME, snapDirection } from './motion.js';
 import { readHeadPose, snapAroundHead, placeTicket, levelCorrection } from './xr-pose.js';
 import { createExitAction } from './exit.js';
-import { createTrainRide, placeTraveller, classifyTeleport, TELEPORT_RANGE, CARRIAGE_INTERIOR } from './travel.js';
+import { createTrainRide, placeTraveller, classifyTeleport, roofHeightAt, TELEPORT_RANGE, CARRIAGE_INTERIOR } from './travel.js';
 import { MOMENTS, startHourFromDate } from './daylight.js';
 
 const $=id=>document.getElementById(id);
@@ -20,7 +20,7 @@ const direction=new THREE.Vector3(),head=new THREE.Vector3();
 // Stick teleport: a downward ray from the left controller lands on the shore,
 // platform, carriage floor or the sea itself. The ride decides what it means.
 const raycaster=new THREE.Raycaster(),aimRotation=new THREE.Matrix4(),aimPoint=new THREE.Vector3(),aimCandidate=new THREE.Vector3();
-const waterPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),carriagePlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
+const waterPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),carriagePlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),roofPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
 let teleportTarget=null,teleporting=false,reticle,floorCorrection=0,trackedHeight=0;
 const trackingHead=new THREE.Matrix4().makeTranslation(0,1.65,0);
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -44,10 +44,11 @@ function updateLabels(){
   $('journey').textContent=ride.journeyLabel;$('journey').setAttribute('aria-pressed',String(ride.moving));
   $('journey').disabled=ride.transitioning||ride.state==='arrived';
   $('viewpoint').textContent=ride.seatLabel;$('viewpoint').disabled=ride.transitioning||ride.state==='platform';
+  $('roof').textContent=ride.roofLabel;$('roof').disabled=ride.transitioning||ride.state==='platform'||ride.onRoof;
   $('home').disabled=ride.transitioning||ride.state==='platform';
   $('sound').textContent=audio.muted?'Sound off':'Sound on';$('sound').setAttribute('aria-pressed',String(!audio.muted));$('sound').setAttribute('aria-label',audio.muted?'Enable sound':'Mute sound');
-  world.setAboard(ride.state!=='platform');
-  menu?.update({journey:ride.journeyLabel,seat:ride.seatLabel,status:rideStatus(),sound:!audio.muted,moment:MOMENTS[moment].label,momentIndex:moment,busy:ride.transitioning,aboard:ride.state!=='platform',arrived:ride.state==='arrived'});
+  world.setAboard(!ride.outdoors);
+  menu?.update({journey:ride.journeyLabel,seat:ride.seatLabel,roof:ride.roofLabel,onRoof:ride.onRoof,status:rideStatus(),sound:!audio.muted,moment:MOMENTS[moment].label,momentIndex:moment,busy:ride.transitioning,aboard:ride.state!=='platform',arrived:ride.state==='arrived'});
   placeLabel();
 }
 async function startAudio(){if(exiting)return;try{await audio.start();}catch{if(!exiting)notice('Sound is unavailable. The world is still yours to explore.');}}
@@ -65,7 +66,7 @@ function toggleSound(){audio.toggle();if(!audio.muted)startAudio();updateLabels(
 let moment=0;
 function rideStatus(){
   if(ride.state==='platform')return 'At the little station';
-  const place=ride.seat?`${ride.seat==='left'?'Left':'Right'} window seat`:'Aboard the train';
+  const place=ride.seat==='roof'?'On the carriage roof':ride.seat?`${ride.seat==='left'?'Left':'Right'} window seat`:'Aboard the train';
   const state=ride.moving?'travelling':ride.state==='arrived'?'end of the line':ride.distance>0?'paused':'at the platform';
   return `${place} · ${state}`;
 }
@@ -79,6 +80,7 @@ function nextMoment(){if(!started)explore();setMoment(moment+1);notice(MOMENTS[m
 function visitor(kind,light){
   if(kind==='train'){audio.trainWhistle();if(started)notice(light.lantern>.5?'Far off, a lit train glides across the sea.':'Far off, a train crosses the water, in no hurry either.');}
   if(kind==='plane'){audio.planeHum();if(started)notice('A little plane hums over, going somewhere slowly.');}
+  if(kind==='splash')audio.splash(light.pan,light.level);
 }
 let fadeMaterial;
 function aimTeleport(controller){
@@ -92,6 +94,8 @@ function aimTeleport(controller){
   if(hit)consider(hit.point,hit.distance);
   carriagePlane.constant=-(world.train.root.position.y+CARRIAGE_INTERIOR.floor);
   if(raycaster.ray.intersectPlane(carriagePlane,aimCandidate)&&classifyTeleport(aimCandidate,world.train.root,ride.distance).inside)consider(aimCandidate,raycaster.ray.origin.distanceTo(aimCandidate));
+  roofPlane.constant=-(world.train.root.position.y+roofHeightAt(0));
+  if(raycaster.ray.intersectPlane(roofPlane,aimCandidate)&&classifyTeleport(aimCandidate,world.train.root,ride.distance).roof)consider(aimCandidate,raycaster.ray.origin.distanceTo(aimCandidate));
   if(raycaster.ray.intersectPlane(waterPlane,aimCandidate))consider(aimCandidate,raycaster.ray.origin.distanceTo(aimCandidate));
   if(!best)return null;
   const target=classifyTeleport(best.point,world.train.root,ride.distance);
@@ -109,7 +113,8 @@ function teleportTo(point){
     setTimeout(()=>{
       if(exiting)return;
       fadeMaterial.opacity=0;teleporting=false;
-      if(target?.inside&&wasPlatform)notice('Welcome aboard. Open Menu to depart or choose a window seat.');
+      if(target?.roof)notice('Up on the roof, with the whole sky.');
+      else if(target?.inside&&wasPlatform)notice('Welcome aboard. Open Menu to depart or choose a window seat.');
       else if(target&&!target.inside&&!wasPlatform)notice('Back on the shore. The train is waiting.');
     },90);
   },120);
@@ -124,7 +129,7 @@ function transitionTo(action){
     if(!renderer.xr.isPresenting){
       rig.rotation.set(0,0,0);
       camera.position.set(0,action==='seat'?1.2:1.65,0);
-      yaw=action==='home'?-.65:action==='seat'?(ride.seat==='left'?1:-1):0;pitch=action==='seat'?-.10:-.035;
+      yaw=action==='home'?-.65:action==='seat'?(ride.seat==='left'?1:-1):action==='roof'?.35:0;pitch=action==='seat'?-.10:action==='roof'?-.12:-.035;
       camera.rotation.set(pitch,yaw,0,'YXZ');camera.updateMatrix();trackingHead.copy(camera.matrix);
     }
     ride.commitPlacement(trackingHead);
@@ -134,11 +139,13 @@ function transitionTo(action){
       $('fade').style.opacity='0';fadeMaterial.opacity=0;ride.finishTransition();updateLabels();
       if(action==='board')notice('Welcome aboard. Open Menu to choose a window seat.');
       else if(action==='seat')notice(`${ride.seat==='left'?'Left':'Right'} window seat. ${ride.state==='arrived'?'Stay awhile, or return to the station.':ride.distance>0?'Continue whenever you like.':'Depart whenever you like.'}`);
+      else if(action==='roof')notice('Up on the roof, with the whole sky. Mind the breeze.');
       else notice('Back at the little station. The train is waiting.');
     },100);
   },160);
 }
 function nextViewpoint(){if(!ride||ride.state==='platform'||ride.transitioning)return;if(!started)explore();transitionTo('seat');audio.chime(660,.2,.08);}
+function climbToRoof(){if(!ride||ride.state==='platform'||ride.transitioning||ride.onRoof)return;if(!started)explore();transitionTo('roof');audio.chime(792,-.2,.07);}
 function returnHome(){if(!ride)return;if(!started)explore();transitionTo('home');}
 function settings(open,{restoreFocus=true}={}){
   if(exiting)return;
@@ -198,7 +205,7 @@ async function init(){
   world=await createWorld(scene,renderer,{reducedMotion,onEvent:visitor,startHour:startHourFromDate()});
   if(exiting)return;
   world.waterMaterial.uniforms.calm.value=reducedMotion?0:1;$('still-water').checked=reducedMotion;
-  menu=createVRMenu({journey:toggleJourney,viewpoint:nextViewpoint,sound:toggleSound,home:returnHome,moment:nextMoment,setMoment,close:()=>menu.close(),exit:exitExperience});scene.add(menu.group);
+  menu=createVRMenu({journey:toggleJourney,viewpoint:nextViewpoint,roof:climbToRoof,sound:toggleSound,home:returnHome,moment:nextMoment,setMoment,close:()=>menu.close(),exit:exitExperience});scene.add(menu.group);
   ride=createTrainRide({rig,train:world.train,ticket:menu.group});updateLabels();
   fadeMaterial=new THREE.MeshBasicMaterial({color:0x122c3d,transparent:true,opacity:0,side:THREE.BackSide,depthTest:false,depthWrite:false});
   const fadeSphere=new THREE.Mesh(new THREE.SphereGeometry(.15,16,12),fadeMaterial);fadeSphere.frustumCulled=false;fadeSphere.renderOrder=1000;scene.add(fadeSphere);
@@ -295,8 +302,8 @@ async function init(){
     if(renderer.xr.isPresenting)readHeadPose(rig,trackingHead,head,direction);
     else {camera.getWorldPosition(head);camera.getWorldDirection(direction);}
     fadeSphere.position.copy(head);
-    world.update(elapsed,head,dt,{position:head,direction,aboard:ride.state!=='platform',enabled:started&&!ride.transitioning&&$('settings').hidden&&!menu.group.visible});
-    audio.update(elapsed,ride.speed,world.light,ride.distance,ride.state!=='platform');
+    world.update(elapsed,head,dt,{position:head,direction,aboard:ride.state!=='platform',moving:ride.moving,enabled:started&&!ride.transitioning&&$('settings').hidden&&!menu.group.visible});
+    audio.update(elapsed,ride.speed,world.light,ride.distance,!ride.outdoors,ride.onRoof);
     if((elapsed|0)%4===0&&lastLabelSecond!==(elapsed|0)){lastLabelSecond=elapsed|0;if(started&&!renderer.xr.isPresenting)placeLabel();}
     renderer.render(scene,camera);
   });
@@ -311,7 +318,7 @@ $('exit-experience').addEventListener('click',exitExperience);
 $('menu-exit').addEventListener('click',exitExperience);
 $('fatal-exit').addEventListener('click',exitExperience);
 $('loading-exit').addEventListener('click',exitExperience);
-$('journey').addEventListener('click',toggleJourney);$('viewpoint').addEventListener('click',nextViewpoint);$('sound').addEventListener('click',toggleSound);$('home').addEventListener('click',returnHome);
+$('journey').addEventListener('click',toggleJourney);$('viewpoint').addEventListener('click',nextViewpoint);$('roof').addEventListener('click',climbToRoof);$('sound').addEventListener('click',toggleSound);$('home').addEventListener('click',returnHome);
 $('help-toggle').addEventListener('click',()=>settings($('settings').hidden));$('close-settings').addEventListener('click',()=>settings(false));
 $('volume').addEventListener('input',e=>{audio.setVolume(Number(e.target.value)/100);});
 $('volume').value=String(Math.round(audio.volume*100));
@@ -331,7 +338,7 @@ window.addEventListener('keydown',e=>{
   if(!world)return;keys.add(e.code);
   if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
   if(e.repeat)return;
-  if(e.code==='Space')toggleJourney();if(e.code==='KeyV')nextViewpoint();if(e.code==='KeyR')returnHome();if(e.code==='KeyM')toggleSound();if(e.code==='KeyT')nextMoment();if(e.code==='KeyH'||e.code==='Escape'){e.preventDefault();if(renderer.xr.isPresenting)toggleVRMenu();else if(started||e.code==='KeyH')settings($('settings').hidden);}
+  if(e.code==='Space')toggleJourney();if(e.code==='KeyV')nextViewpoint();if(e.code==='KeyU')climbToRoof();if(e.code==='KeyR')returnHome();if(e.code==='KeyM')toggleSound();if(e.code==='KeyT')nextMoment();if(e.code==='KeyH'||e.code==='Escape'){e.preventDefault();if(renderer.xr.isPresenting)toggleVRMenu();else if(started||e.code==='KeyH')settings($('settings').hidden);}
 });
 window.addEventListener('keyup',e=>keys.delete(e.code));window.addEventListener('blur',()=>{keys.clear();dragging=false;});
 document.addEventListener('visibilitychange',()=>{if(exiting)return;if(document.hidden){keys.clear();ride?.pause();updateLabels();audio.suspend();}else if(started)startAudio();});

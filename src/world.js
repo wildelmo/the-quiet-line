@@ -11,6 +11,8 @@ import { createPassenger } from './passenger.js';
 import { createIsland } from './island.js';
 import { createTrain } from './train.js';
 import { createStationShore, STATION_POSITION } from './shore.js';
+import { createPaperPlanes } from './paper-planes.js';
+import { createDolphins } from './dolphins.js';
 import { daylight, advanceHour, START_HOUR } from './daylight.js';
 
 function random(seed){let a=seed;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
@@ -96,6 +98,8 @@ export async function createWorld(scene, renderer, {reducedMotion=false,onEvent=
   const littleIsland=createIsland(scene,{reducedMotion});
   const cloudDancer=createCloudDancer(scene,dragon,cloudVeil,light);
   const life=createLife(scene,station,{reducedMotion,random:random(417)});
+  const paperPlanes=createPaperPlanes(scene,{reducedMotion,random:random(733)});
+  const dolphins=createDolphins(scene,{reducedMotion,random:random(619),onSplash:(pan,level)=>onEvent('splash',{pan,level})});
   const passenger=createPassenger(station,dragon,{reducedMotion});
   let worldTime=0;
   const skyLife=createSkyLife(scene,{reducedMotion,random:random(523),onEvent:(kind,recipe)=>{
@@ -122,8 +126,8 @@ export async function createWorld(scene, renderer, {reducedMotion=false,onEvent=
   }
   applyLight();
   return {sky,water,waterMaterial,train,station,shore,light,
-    setAboard(value){life.petals.visible=!value;},
-    get atmosphere(){return {weather:{...weather.state},passenger:passenger.state.phase,reader:train.reader,travellers:train.travellers,companions:train.companions,paintedBanks:4,localVeils:1};},
+    setAboard(value){life.petals.visible=!value;paperPlanes.planes.visible=!value;},
+    get atmosphere(){return {weather:{...weather.state},passenger:passenger.state.phase,reader:train.reader,travellers:train.travellers,companions:train.companions,dolphins:dolphins.visiting,paintedBanks:4,localVeils:1};},
     get hour(){return hour;},
     setHour(value){hour=((value%24)+24)%24;applyLight();},
     get flowing(){return flowing;},
@@ -146,6 +150,8 @@ export async function createWorld(scene, renderer, {reducedMotion=false,onEvent=
       birds.forEach((b,i)=>{const a=t*.012+b.phase;b.group.position.set(Math.cos(a)*b.radius, b.height+Math.sin(a*3)*1.2,-70+Math.sin(a)*b.radius);b.group.rotation.y=-a;b.left.rotation.z=Math.sin(t*2.2+i)*.18;b.right.rotation.z=-b.left.rotation.z;});
       station.userData.animate(t,dt,light,breeze,reducedMotion);
       life.update(t,position,dt,light,breeze);
+      paperPlanes.update(t,position,dt,breeze,life.petals.visible);
+      dolphins.update(t,dt,train.root,!!viewer?.moving,position.x);
       skyLife.update(t,position,dt,light);
     },
   };

@@ -47,6 +47,7 @@ Open the printed local address, currently `http://127.0.0.1:5173`, and select **
 | --- | --- |
 | Board, then depart; pause or continue while aboard | Journey button or Space |
 | Choose the left window seat, then alternate sides | Menu → Choose window seat, or V |
+| Climb up and stand on the carriage roof | Menu → Stand on the roof, or U |
 | Return to the station and restore the train to its berth | Menu → Return to station, or R |
 | Let the day pass, or choose a named time | Menu → Time of day; T cycles times |
 | Mute sound | Menu → Sound, or M |
@@ -121,6 +122,16 @@ Four original Blender sculptures share the carriage: a broad sleeper in an ochre
 `src/spirit-material.js` gives figures and belongings uniform 70% opacity using a depth-only silhouette pass before the visible color pass. It blends the nearest surface once, avoiding opaque overlaps between limbs and cloth; this is surface translucency, not volumetric refraction. The 23 authored meshes can require 46 render submissions during a page turn, or 44 at rest, before culling. The extra pass shares geometry, and the atlas uses about 8 MiB decoded as RGBA8 with mipmaps. These construction figures do not establish headset performance. See [the spirit asset guide](assets/spirits/README.md) for rebuild, coordinates, animation and provenance.
 
 The previews above are actual browser captures. [The generated reader concept study](output/reader-concept.png) guided the original character's silhouette and materials; it is separate from runtime evidence. The four new sculptures use that established material language without new image generation.
+
+### The roof
+
+Once aboard, **Stand on the roof** places the visitor on the crown of the barrel roof at full standing height, 3.7m above the rails, where it is nearly flat. The roof travels with the train like the seats; a window seat brings you back inside. A stick teleport can also land on the roof crown, and from the roof a step down onto the carriage floor goes back inside. On the roof the world sounds like outdoors again, with the wind rising with speed, and the petals and paper planes keep you company.
+
+### Paper planes and the pod
+
+Six folded paper planes glide about the visitor outdoors, on the same breeze as the petals: long shallow swoops, lazy banks, the occasional stall and dip. They are one instanced mesh and stay hidden inside the carriage.
+
+A pod of three dolphins keeps the train company on the open-sea side while it is moving, arriving about half a minute after departure and then every few minutes: they swim alongside under the surface, leap clear in turn with a soft splash ring and a quiet water burst, and peel away after most of a minute. At the station a pod passes far out now and then. Bodies are procedural, two pigments merged per dolphin; reduced motion hides them.
 
 ### The passing day and small lives
 
