@@ -69,6 +69,7 @@ export async function createTrain(scene, renderer, { reducedMotion = false } = {
       boarding: new THREE.Vector3(-.55, TRAIN_FLOOR, 5),
       leftSeat: new THREE.Vector3(-.86, TRAIN_FLOOR, 0),
       rightSeat: new THREE.Vector3(.86, TRAIN_FLOOR, 0),
+      roof: new THREE.Vector3(0, 3.70, 1.2),
     },
     setDoorOpen(open) {
       doorTarget = open ? 1 : 0;

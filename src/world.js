@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { skyVertex, skyFragment, waterVertex, waterFragment } from './shaders.js';
+import { skyVertex, skyFragment, waterVertex, waterFragment, wakeAmountStep } from './shaders.js';
 import { createStation } from './station.js';
 import { createDragon } from './dragon.js';
 import { createLife, wind } from './life.js';
@@ -11,6 +11,9 @@ import { createPassenger } from './passenger.js';
 import { createIsland } from './island.js';
 import { createTrain } from './train.js';
 import { createStationShore, STATION_POSITION } from './shore.js';
+import { createPaperPlanes } from './paper-planes.js';
+import { createDolphins } from './dolphins.js';
+import { createSkyWhale } from './sky-whale.js';
 import { daylight, advanceHour, START_HOUR } from './daylight.js';
 
 function random(seed){let a=seed;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
@@ -34,7 +37,7 @@ export async function createWorld(scene, renderer, {reducedMotion=false,onEvent=
   const sky=new THREE.Mesh(new THREE.SphereGeometry(1,48,24),skyMaterial);
   sky.frustumCulled=false;sky.renderOrder=-10;scene.add(sky);
   const weather=createWeather(scene,{reducedMotion,cloudTexture:cloudVeil});
-  const waterMaterial=new THREE.ShaderMaterial({uniforms:{time:{value:0},calm:{value:1},...dayUniforms(),...weather.uniforms},vertexShader:waterVertex,fragmentShader:waterFragment,transparent:true,depthWrite:false,side:THREE.FrontSide});
+  const waterMaterial=new THREE.ShaderMaterial({uniforms:{time:{value:0},calm:{value:1},wakeFront:{value:new THREE.Vector2(0,-1e6)},wakeAmount:{value:0},...dayUniforms(),...weather.uniforms},vertexShader:waterVertex,fragmentShader:waterFragment,transparent:true,depthWrite:false,side:THREE.FrontSide});
   const water=new THREE.Mesh(new THREE.PlaneGeometry(15000,15000),waterMaterial);water.rotation.x=-Math.PI/2;water.renderOrder=3;scene.add(water);
   const hemisphere=new THREE.HemisphereLight(0xe1f6ff,0x7e8f70,2.5);scene.add(hemisphere);
   const sun=new THREE.DirectionalLight(0xfff0ca,2.4);sun.position.set(-200,450,-250);scene.add(sun);
@@ -96,6 +99,9 @@ export async function createWorld(scene, renderer, {reducedMotion=false,onEvent=
   const littleIsland=createIsland(scene,{reducedMotion});
   const cloudDancer=createCloudDancer(scene,dragon,cloudVeil,light);
   const life=createLife(scene,station,{reducedMotion,random:random(417)});
+  const paperPlanes=createPaperPlanes(scene,{reducedMotion,random:random(733)});
+  const dolphins=createDolphins(scene,{reducedMotion,random:random(619),onSplash:(pan,level)=>onEvent('splash',{pan,level})});
+  const skyWhale=createSkyWhale(scene,{reducedMotion,onEvent});
   const passenger=createPassenger(station,dragon,{reducedMotion});
   let worldTime=0;
   const skyLife=createSkyLife(scene,{reducedMotion,random:random(523),onEvent:(kind,recipe)=>{
@@ -122,8 +128,8 @@ export async function createWorld(scene, renderer, {reducedMotion=false,onEvent=
   }
   applyLight();
   return {sky,water,waterMaterial,train,station,shore,light,
-    setAboard(value){life.petals.visible=!value;},
-    get atmosphere(){return {weather:{...weather.state},passenger:passenger.state.phase,reader:train.reader,travellers:train.travellers,companions:train.companions,paintedBanks:4,localVeils:1};},
+    setAboard(value){life.petals.visible=!value;paperPlanes.planes.visible=!value;},
+    get atmosphere(){return {weather:{...weather.state},passenger:passenger.state.phase,reader:train.reader,travellers:train.travellers,companions:train.companions,dolphins:dolphins.visiting,whale:skyWhale.crossing,paintedBanks:4,localVeils:1};},
     get hour(){return hour;},
     setHour(value){hour=((value%24)+24)%24;applyLight();},
     get flowing(){return flowing;},
@@ -146,7 +152,12 @@ export async function createWorld(scene, renderer, {reducedMotion=false,onEvent=
       birds.forEach((b,i)=>{const a=t*.012+b.phase;b.group.position.set(Math.cos(a)*b.radius, b.height+Math.sin(a*3)*1.2,-70+Math.sin(a)*b.radius);b.group.rotation.y=-a;b.left.rotation.z=Math.sin(t*2.2+i)*.18;b.right.rotation.z=-b.left.rotation.z;});
       station.userData.animate(t,dt,light,breeze,reducedMotion);
       life.update(t,position,dt,light,breeze);
+      paperPlanes.update(t,position,dt,breeze,life.petals.visible);
+      dolphins.update(t,dt,train.root,!!viewer?.moving,position.x);
+      const wake=waterMaterial.uniforms;wake.wakeFront.value.set(train.root.position.x,train.root.position.z-8.05);
+      wake.wakeAmount.value=wakeAmountStep(wake.wakeAmount.value,viewer?.speed??0,dt);
       skyLife.update(t,position,dt,light);
+      skyWhale.update(t,position,dt,light);
     },
   };
 }

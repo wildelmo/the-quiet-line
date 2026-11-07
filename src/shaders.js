@@ -97,8 +97,16 @@ vec3 skyColor(vec3 d) {
 export const skyVertex = `varying vec3 vDirection; void main(){vDirection=position; vec4 p=projectionMatrix*mat4(mat3(viewMatrix))*vec4(position,1.0); gl_Position=p.xyww;}`;
 export const skyFragment = `varying vec3 vDirection; ${skySampling} void main(){gl_FragColor=vec4(skyColor(vDirection),1.0);\n#include <tonemapping_fragment>\n#include <colorspace_fragment>\n}`;
 export const waterVertex = `varying vec3 vWorld; void main(){vec4 world=modelMatrix*vec4(position,1.0);vWorld=world.xyz;gl_Position=projectionMatrix*viewMatrix*world;}`;
+// The wake eases in with speed and lingers a few seconds after the train
+// stops, so foam never pops on or off. Pure, shared with tests.
+export function wakeAmountStep(current, speed, dt) {
+  const target = Math.min(1, Math.max(0, speed) / 3);
+  const rate = target > current ? 1.6 : .35;
+  return current + (target - current) * (1 - Math.exp(-Math.min(Math.max(dt, 0), .1) * rate));
+}
 export const waterFragment = `
 uniform float time; uniform float calm;
+uniform vec2 wakeFront; uniform float wakeAmount;
 varying vec3 vWorld;
 ${skySampling}
 ${cloudShadowGLSL}
@@ -109,6 +117,21 @@ float noise(vec2 p){vec2 i=floor(p),f=fract(p); f=f*f*(3.0-2.0*f);return mix(mix
 // worst toward the horizon in a headset. Each wave settles into the flat
 // surface it averages to as its wavelength approaches the pixel footprint.
 float settled(float wavelength,float footprint){return 1.0-smoothstep(wavelength*.06,wavelength*.3,footprint);}
+// The carriage pushes through the shallows: two foam arms open from the bow
+// at the Kelvin angle, a churned strip trails along the hull, and transverse
+// ripples follow behind. Measured from the bow, which travels toward -z.
+float wake(vec2 p,float t,float detail,out float ripple){
+ ripple=0.0;
+ float d=p.y-wakeFront.y, u=abs(p.x-wakeFront.x);
+ if(d<-.5||d>150.0||u>60.0)return 0.0;
+ float arm=1.5+d*.36, width=.55+d*.045;
+ float churn=noise(vec2(u*1.4,d*.45-t*2.4))*.6+noise(vec2(u*3.0+7.0,d*1.1-t*3.1))*.4;
+ float armFoam=exp(-pow((u-arm)/width,2.0))*(.6+.8*churn);
+ float hull=(1.0-smoothstep(1.2,2.4,u))*exp(-d/26.0)*(.6+.7*churn);
+ float fade=exp(-d/55.0);
+ ripple=sin(d*2.0-t*3.2)*exp(-d/30.0)*(1.0-smoothstep(arm,arm+2.5,u))*step(0.0,d);
+ return clamp(armFoam+hull,0.0,1.0)*fade*detail;
+}
 void main(){
  vec2 p=vWorld.xz; float t=time*calm;
  float dist=length(cameraPosition.xz-p);
@@ -118,6 +141,8 @@ void main(){
  float n=mix(.5,noise(p*.48+vec2(t*.06,-t*.09)),grain);
  float wx=sin(p.x*.45+p.y*.25+t*.45)*.035*broad+sin(p.x*1.3-p.y*.7+t*.65)*.019*small*fine;
  float wz=cos(p.y*.55+p.x*.18+t*.36)*.045*broad+sin(p.y*2.3+t*.9)*.018*small*grain;
+ float wakeRipple; float foam=wake(p,time,fine,wakeRipple)*wakeAmount;
+ wz+=wakeRipple*.09*wakeAmount*fine;
  vec3 normal=normalize(vec3(wx,1.0,wz));
  vec3 eye=normalize(cameraPosition-vWorld);
  vec3 reflection=reflect(-eye,normal);
@@ -137,6 +162,7 @@ void main(){
  color+=mix(vec3(1.,.91,.65),vec3(.75,.8,1.),night)*glint*mix(.28,.45,golden)*mix(.22,1.0,fine);
  color=mix(color,skyColor(normalize(vec3(-eye.x,0.005,-eye.z))),smoothstep(1800.,5800.,dist));
  color*=mix(vec3(1.0),vec3(.76,.84,.94),cloudShade(vWorld));
+ color=mix(color,mix(vec3(.9,.97,1.0),vec3(.4,.46,.6),night),min(1.0,foam*1.1));
  float alpha=mix(.65,1.,smoothstep(4.,60.,dist));
  gl_FragColor=vec4(color,alpha);
  #include <tonemapping_fragment>

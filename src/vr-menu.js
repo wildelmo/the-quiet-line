@@ -54,14 +54,15 @@ export function createVRMenu(actions){
   panel('Close',.192,.222,.12,.056,()=>{close();actions.close?.();},null,34);
   const status=panel(mainStatus,0,.168,.504,.026,null,null,27);
   const journey=panel('Board train',0,.096,.504,.08,actions.journey,'main',44);
-  const seat=panel('Choose window seat',0,.002,.504,.08,actions.viewpoint,'main',40);
+  const seat=panel('Choose window seat',-.075,.002,.354,.08,actions.viewpoint,'main',36);
+  const roof=panel('Roof',.19,.002,.12,.08,actions.roof,'main',36);
   panel('Time of day',-.13,-.092,.244,.08,()=>showPage('time'),'main',36);
   const sound=panel('Sound on',.13,-.092,.244,.08,actions.sound,'main',36);
   const home=panel('Return to station',-.13,-.186,.244,.08,actions.home,'main',34);
   panel('Exit experience',.13,-.186,.244,.08,actions.exit,'main',34);
   const momentButtons=MOMENTS.map((moment,index)=>panel(moment.label,index%2===0?-.13:.13,.096-Math.floor(index/2)*.094,.244,.08,()=>selectMoment(index),'time',34));
   panel('Back to journey',0,-.186,.504,.08,()=>showPage('main'),'time',38);
-  change(seat,{disabled:true});change(home,{disabled:true});change(momentButtons[0],{selected:true});
+  change(seat,{disabled:true});change(roof,{disabled:true});change(home,{disabled:true});change(momentButtons[0],{selected:true});
 
   return {group,buttons,
     get page(){return page;},
@@ -76,9 +77,10 @@ export function createVRMenu(actions){
       const candidate=hit?.object,next=group.visible&&candidate?.visible&&!candidate.userData.disabled?candidate:null;
       if(highlighted===next)return;clearHover();highlighted=next;if(next)next.userData.draw();
     },
-    update({journey:journeyLabel,seat:seatLabel,status:statusText,sound:enabled,moment='Let the day pass',momentIndex,busy=false,aboard=false,arrived=false}){
+    update({journey:journeyLabel,seat:seatLabel,roof:roofLabel='Stand on the roof',onRoof=false,status:statusText,sound:enabled,moment='Let the day pass',momentIndex,busy=false,aboard=false,arrived=false}){
       mainStatus=statusText||'At the little station';
       change(journey,{label:journeyLabel,disabled:busy||arrived});change(seat,{label:seatLabel,disabled:busy||!aboard});
+      change(roof,{label:onRoof?'On roof':'Roof',disabled:busy||!aboard||onRoof,selected:onRoof});void roofLabel;
       change(sound,{label:enabled?'Sound on':'Sound off'});change(home,{disabled:busy||!aboard});
       const index=Number.isInteger(momentIndex)&&momentIndex>=0&&momentIndex<MOMENTS.length?momentIndex:MOMENTS.findIndex(item=>item.label===moment||item.name===moment);
       if(index>=0)selectedMoment=index;

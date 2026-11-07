@@ -84,6 +84,30 @@ export class Soundscape {
     g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.012,t+.1);g.gain.linearRampToValueAtTime(0,t+.65);
     o.connect(g).connect(p).connect(this.master);o.start();o.stop(t+.7);o.onended=()=>{o.disconnect();g.disconnect();p.disconnect();};
   }
+  // The sky whale's call: a long low sweep with a soft second voice, far away.
+  whaleSong(){
+    if(!this.context||!this.running)return;const c=this.context,t=c.currentTime;
+    const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=420;const p=c.createStereoPanner();p.pan.value=Math.random()*.8-.4;lp.connect(p).connect(this.space);
+    let finished=0;const voices=[[1,.05],[2.01,.014],[3.02,.005]];
+    for(const [ratio,level] of voices){
+      const o=c.createOscillator(),g=c.createGain(),vib=c.createOscillator(),vibGain=c.createGain();
+      o.type='sine';o.frequency.setValueAtTime(62*ratio,t);o.frequency.exponentialRampToValueAtTime(118*ratio,t+2.6);o.frequency.exponentialRampToValueAtTime(74*ratio,t+6.5);
+      vib.frequency.value=3.1;vibGain.gain.value=1.6*ratio;vib.connect(vibGain).connect(o.frequency);
+      g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(level,t+1.4);g.gain.setValueAtTime(level,t+4.2);g.gain.linearRampToValueAtTime(0,t+7.2);
+      o.connect(g).connect(lp);o.start(t);vib.start(t);o.stop(t+7.3);vib.stop(t+7.3);
+      o.onended=()=>{o.disconnect();g.disconnect();vibGain.disconnect();if(++finished===voices.length){lp.disconnect();p.disconnect();}};
+    }
+  }
+  // A dolphin breaking the surface: a short soft burst of filtered water noise.
+  splash(pan=0,level=.3){
+    if(!this.context||!this.running)return;const c=this.context,t=c.currentTime;
+    const src=c.createBufferSource();src.buffer=this.surf.buffer;src.playbackRate.value=1.6+Math.random()*.4;
+    const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=1500+Math.random()*900;bp.Q.value=.7;
+    const g=c.createGain(),p=c.createStereoPanner();p.pan.value=pan;
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.05*level,t+.03);g.gain.exponentialRampToValueAtTime(.0001,t+.55);
+    src.connect(bp).connect(g).connect(p).connect(this.master);src.start(t,Math.random()*4);src.stop(t+.6);
+    src.onended=()=>{src.disconnect();bp.disconnect();g.disconnect();p.disconnect();};
+  }
   // A cricket: a fast trill of tiny high pulses, somewhere off to one side.
   cricket(level){
     if(!this.context||!this.running)return;const c=this.context,t=c.currentTime;
@@ -114,14 +138,14 @@ export class Soundscape {
     o.connect(lp).connect(g).connect(p).connect(this.master);o.start(t);wobble.start(t);o.stop(t+seconds);wobble.stop(t+seconds);
     o.onended=()=>{o.disconnect();lp.disconnect();g.disconnect();p.disconnect();wobbleGain.disconnect();};
   }
-  update(time,speed,light={night:0,lantern:0},distance=0,aboard=false){
+  update(time,speed,light={night:0,lantern:0},distance=0,aboard=false,onRoof=false){
     if(!this.context||!this.running||this.context.state!=='running')return;
     const now=this.context.currentTime;
     this.rolling.update(speed,distance);
     // The carriage shelters the listener from the constant water/wind wash.
     // Keep the outside world present without covering the wheel contacts.
     this.surfGain.gain.setTargetAtTime((.25+Math.sin(time*.25)*.07)*(aboard?.35:1),now,.65);
-    this.windGain.gain.setTargetAtTime(.13*(aboard?.3:1),now,.65);
+    this.windGain.gain.setTargetAtTime(.13*(aboard?.3:1)*(onRoof?1.0+Math.min(speed,3)*.35:1),now,.65);
     this.pad.gain.setTargetAtTime(light.lantern*.9,now,2);
     if(time>this.nextNote){this.chime([330,440,495,660,742.5][Math.floor(Math.random()*5)],Math.sin(time*.12)*.7,.045);this.nextNote=time+16+Math.random()*18;}
     if(time>this.nextPhrase){this.phrase();this.nextPhrase=time+38+Math.random()*34;}
