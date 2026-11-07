@@ -135,7 +135,7 @@ While the train moves, the water shader draws its wake from the bow: two foam ar
 
 Six folded paper planes glide about the visitor outdoors, on the same breeze as the petals: long shallow swoops, lazy banks, the occasional stall and dip. They are one instanced mesh and stay hidden inside the carriage.
 
-A pod of three dolphins keeps the train company on the open-sea side while it is moving, arriving about half a minute after departure and then every few minutes: they swim alongside under the surface, leap clear in turn with a soft splash ring and a quiet water burst, and peel away after most of a minute. At the station a pod passes far out now and then. Bodies are procedural, two pigments merged per dolphin; reduced motion hides them.
+A pod of three dolphins keeps the train company on the open-sea side while it is moving, arriving about half a minute after departure and then every few minutes: they swim alongside under the surface, leap clear in turn with a soft splash ring and a quiet water burst, and peel away after most of a minute. At the station a pod passes far out now and then. The dolphin is Quaternius's rigged low-poly fish-pack model (CC0, 440 triangles, 60KB) with its own swim cycle, recoloured to this sea; see `ASSETS.md`. Reduced motion hides them.
 
 ### The sky whale
 
