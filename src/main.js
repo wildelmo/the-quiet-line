@@ -81,6 +81,8 @@ function visitor(kind,light){
   if(kind==='train'){audio.trainWhistle();if(started)notice(light.lantern>.5?'Far off, a lit train glides across the sea.':'Far off, a train crosses the water, in no hurry either.');}
   if(kind==='plane'){audio.planeHum();if(started)notice('A little plane hums over, going somewhere slowly.');}
   if(kind==='splash')audio.splash(light.pan,light.level);
+  if(kind==='whale'&&started)notice('Something enormous and slow is passing through the clouds.');
+  if(kind==='whale-call')audio.whaleSong();
 }
 let fadeMaterial;
 function aimTeleport(controller){

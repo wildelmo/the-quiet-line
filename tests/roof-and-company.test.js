@@ -80,3 +80,16 @@ test('paper planes glide gently: bounded speed, lazy banks, never a nosedive', (
     assert.ok(Math.abs(f.vy) < 1.3 && Math.abs(f.roll) < .7 && f.pitch > -1.0 && f.pitch < .3);
   }
 });
+
+test('the sky whale crosses once around golden hour, then rests for a long while', async () => {
+  const { whaleSchedule, CROSSING } = await import('../src/sky-whale.js');
+  let state = { start: null, last: -CROSSING.cooldown };
+  state = whaleSchedule(100, 0, state); assert.equal(state.start, null, 'not at noon');
+  state = whaleSchedule(200, .9, state); assert.equal(state.start, 200, 'sets out in golden light');
+  state = whaleSchedule(300, .9, state); assert.equal(state.start, 200, 'keeps crossing');
+  state = whaleSchedule(200 + CROSSING.seconds, .9, state); assert.equal(state.start, null); assert.equal(state.last, 200 + CROSSING.seconds);
+  state = whaleSchedule(200 + CROSSING.seconds + 10, .9, state); assert.equal(state.start, null, 'golden light alone does not bring it straight back');
+  state = whaleSchedule(200 + CROSSING.seconds + CROSSING.cooldown, .9, state); assert.ok(state.start !== null, 'after a long rest it may return');
+  state = whaleSchedule(state.start + CROSSING.seconds, .9, state);
+  state = whaleSchedule(state.last + CROSSING.cooldown + 1, 0, state); assert.equal(state.start, null, 'never in the dark or at noon');
+});

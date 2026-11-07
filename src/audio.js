@@ -84,6 +84,20 @@ export class Soundscape {
     g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.012,t+.1);g.gain.linearRampToValueAtTime(0,t+.65);
     o.connect(g).connect(p).connect(this.master);o.start();o.stop(t+.7);o.onended=()=>{o.disconnect();g.disconnect();p.disconnect();};
   }
+  // The sky whale's call: a long low sweep with a soft second voice, far away.
+  whaleSong(){
+    if(!this.context||!this.running)return;const c=this.context,t=c.currentTime;
+    const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=420;const p=c.createStereoPanner();p.pan.value=Math.random()*.8-.4;lp.connect(p).connect(this.space);
+    let finished=0;const voices=[[1,.05],[2.01,.014],[3.02,.005]];
+    for(const [ratio,level] of voices){
+      const o=c.createOscillator(),g=c.createGain(),vib=c.createOscillator(),vibGain=c.createGain();
+      o.type='sine';o.frequency.setValueAtTime(62*ratio,t);o.frequency.exponentialRampToValueAtTime(118*ratio,t+2.6);o.frequency.exponentialRampToValueAtTime(74*ratio,t+6.5);
+      vib.frequency.value=3.1;vibGain.gain.value=1.6*ratio;vib.connect(vibGain).connect(o.frequency);
+      g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(level,t+1.4);g.gain.setValueAtTime(level,t+4.2);g.gain.linearRampToValueAtTime(0,t+7.2);
+      o.connect(g).connect(lp);o.start(t);vib.start(t);o.stop(t+7.3);vib.stop(t+7.3);
+      o.onended=()=>{o.disconnect();g.disconnect();vibGain.disconnect();if(++finished===voices.length){lp.disconnect();p.disconnect();}};
+    }
+  }
   // A dolphin breaking the surface: a short soft burst of filtered water noise.
   splash(pan=0,level=.3){
     if(!this.context||!this.running)return;const c=this.context,t=c.currentTime;

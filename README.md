@@ -137,6 +137,10 @@ Six folded paper planes glide about the visitor outdoors, on the same breeze as 
 
 A pod of three dolphins keeps the train company on the open-sea side while it is moving, arriving about half a minute after departure and then every few minutes: they swim alongside under the surface, leap clear in turn with a soft splash ring and a quiet water burst, and peel away after most of a minute. At the station a pod passes far out now and then. Bodies are procedural, two pigments merged per dolphin; reduced motion hides them.
 
+### The sky whale
+
+Once in a day, when golden light arrives, a pale whale passes high through the cloud banks, fins spread like wings, about 400m out and 190m up, taking nearly three minutes to cross. It calls two or three times: a long low sweep with a soft second voice, sent through the same delay space as the bells. It rests at least fifteen minutes between crossings, never comes closer, and never sets out in the dark. One merged procedural mesh in two pigments.
+
 ### The passing day and small lives
 
 `src/daylight.js` keeps one clock-hour for sky, water, fog, lighting, lanterns, stars, sun and moon. The world starts at the visitor's local time. Daylight hours last about a minute each and night hours pass faster; the menu, T key and VR time choices can hold any moment still. Reduced motion holds the daylight clock and cloud drift.
