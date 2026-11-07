@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { skyVertex, skyFragment, waterVertex, waterFragment } from './shaders.js';
+import { skyVertex, skyFragment, waterVertex, waterFragment, wakeAmountStep } from './shaders.js';
 import { createStation } from './station.js';
 import { createDragon } from './dragon.js';
 import { createLife, wind } from './life.js';
@@ -36,7 +36,7 @@ export async function createWorld(scene, renderer, {reducedMotion=false,onEvent=
   const sky=new THREE.Mesh(new THREE.SphereGeometry(1,48,24),skyMaterial);
   sky.frustumCulled=false;sky.renderOrder=-10;scene.add(sky);
   const weather=createWeather(scene,{reducedMotion,cloudTexture:cloudVeil});
-  const waterMaterial=new THREE.ShaderMaterial({uniforms:{time:{value:0},calm:{value:1},...dayUniforms(),...weather.uniforms},vertexShader:waterVertex,fragmentShader:waterFragment,transparent:true,depthWrite:false,side:THREE.FrontSide});
+  const waterMaterial=new THREE.ShaderMaterial({uniforms:{time:{value:0},calm:{value:1},wakeFront:{value:new THREE.Vector2(0,-1e6)},wakeAmount:{value:0},...dayUniforms(),...weather.uniforms},vertexShader:waterVertex,fragmentShader:waterFragment,transparent:true,depthWrite:false,side:THREE.FrontSide});
   const water=new THREE.Mesh(new THREE.PlaneGeometry(15000,15000),waterMaterial);water.rotation.x=-Math.PI/2;water.renderOrder=3;scene.add(water);
   const hemisphere=new THREE.HemisphereLight(0xe1f6ff,0x7e8f70,2.5);scene.add(hemisphere);
   const sun=new THREE.DirectionalLight(0xfff0ca,2.4);sun.position.set(-200,450,-250);scene.add(sun);
@@ -152,6 +152,8 @@ export async function createWorld(scene, renderer, {reducedMotion=false,onEvent=
       life.update(t,position,dt,light,breeze);
       paperPlanes.update(t,position,dt,breeze,life.petals.visible);
       dolphins.update(t,dt,train.root,!!viewer?.moving,position.x);
+      const wake=waterMaterial.uniforms;wake.wakeFront.value.set(train.root.position.x,train.root.position.z-8.05);
+      wake.wakeAmount.value=wakeAmountStep(wake.wakeAmount.value,viewer?.speed??0,dt);
       skyLife.update(t,position,dt,light);
     },
   };

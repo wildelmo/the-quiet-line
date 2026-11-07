@@ -59,3 +59,15 @@ test('the passenger remains finite and follows the station during travel',()=>{
   still.update(0,1/72,{lantern:0});const pose=still.root.position.clone();
   still.update(1000,1/72,{lantern:0});assert.deepEqual(still.root.position,pose);
 });
+
+test('the wake rises with speed and lingers after the train stops', async () => {
+  const { wakeAmountStep } = await import('../src/shaders.js');
+  let amount = 0;
+  for (let i = 0; i < 72 * 3; i++) amount = wakeAmountStep(amount, 3, 1 / 72);
+  assert.ok(amount > .95, `full wake at full speed: ${amount}`);
+  for (let i = 0; i < 72 * 2; i++) amount = wakeAmountStep(amount, 0, 1 / 72);
+  assert.ok(amount > .3 && amount < .7, `still fading two seconds after stopping: ${amount}`);
+  for (let i = 0; i < 72 * 12; i++) amount = wakeAmountStep(amount, 0, 1 / 72);
+  assert.ok(amount < .03, 'gone after a while');
+  assert.equal(wakeAmountStep(0, 0, 1 / 72), 0);
+});

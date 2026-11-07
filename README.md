@@ -127,6 +127,10 @@ The previews above are actual browser captures. [The generated reader concept st
 
 Once aboard, **Stand on the roof** places the visitor on the crown of the barrel roof at full standing height, 3.7m above the rails, where it is nearly flat. The roof travels with the train like the seats; a window seat brings you back inside. A stick teleport can also land on the roof crown, and from the roof a step down onto the carriage floor goes back inside. On the roof the world sounds like outdoors again, with the wind rising with speed, and the petals and paper planes keep you company.
 
+### The wake
+
+While the train moves, the water shader draws its wake from the bow: two foam arms opening at the Kelvin angle, a churned strip trailing along the hull, and transverse ripples behind that catch the light. It rises with speed and lingers a few seconds after a stop. The foam uses the same level-of-detail fade as the ripples, so it stays calm toward the horizon.
+
 ### Paper planes and the pod
 
 Six folded paper planes glide about the visitor outdoors, on the same breeze as the petals: long shallow swoops, lazy banks, the occasional stall and dip. They are one instanced mesh and stay hidden inside the carriage.

@@ -302,7 +302,7 @@ async function init(){
     if(renderer.xr.isPresenting)readHeadPose(rig,trackingHead,head,direction);
     else {camera.getWorldPosition(head);camera.getWorldDirection(direction);}
     fadeSphere.position.copy(head);
-    world.update(elapsed,head,dt,{position:head,direction,aboard:ride.state!=='platform',moving:ride.moving,enabled:started&&!ride.transitioning&&$('settings').hidden&&!menu.group.visible});
+    world.update(elapsed,head,dt,{position:head,direction,aboard:ride.state!=='platform',moving:ride.moving,speed:ride.speed,enabled:started&&!ride.transitioning&&$('settings').hidden&&!menu.group.visible});
     audio.update(elapsed,ride.speed,world.light,ride.distance,!ride.outdoors,ride.onRoof);
     if((elapsed|0)%4===0&&lastLabelSecond!==(elapsed|0)){lastLabelSecond=elapsed|0;if(started&&!renderer.xr.isPresenting)placeLabel();}
     renderer.render(scene,camera);
