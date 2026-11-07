@@ -8,10 +8,10 @@ export const PLANE_COUNT = 6, PLANE_RANGE = 22;
 
 export function paperPlaneGeometry() {
   // Folded from a sheet: two wings from a central crease, with small keel flaps.
-  const nose = [0, 0, .13], tail = [0, 0, -.1], keel = [0, -.035, -.02];
+  const nose = [0, 0, .2], tail = [0, 0, -.15], keel = [0, -.05, -.03];
   const tri = (a, b, c) => [...a, ...b, ...c];
   const positions = new Float32Array([
-    ...tri(nose, [-.085, .01, -.1], tail), ...tri(nose, tail, [.085, .01, -.1]),
+    ...tri(nose, [-.13, .015, -.15], tail), ...tri(nose, tail, [.13, .015, -.15]),
     ...tri(nose, tail, keel), ...tri(nose, keel, tail),
   ]);
   const geometry = new THREE.BufferGeometry();
