@@ -139,7 +139,7 @@ A pod of three dolphins keeps the train company on the open-sea side while it is
 
 ### The sky whale
 
-Once in a day, when golden light arrives, a pale whale passes high through the cloud banks, fins spread like wings, about 400m out and 190m up, taking nearly three minutes to cross. It calls two or three times: a long low sweep with a soft second voice, sent through the same delay space as the bells. It rests at least fifteen minutes between crossings, never comes closer, and never sets out in the dark. One merged procedural mesh in two pigments.
+Once in a day, when golden light arrives, a pale whale passes high through the cloud banks, fins spread like wings, about 300m out and 150m up, some 90m long, taking nearly three minutes to cross. It calls two or three times: a long low sweep with a soft second voice, sent through the same delay space as the bells. It rests at least fifteen minutes between crossings, never comes closer, and never sets out in the dark. One merged procedural mesh in two pigments.
 
 ### The passing day and small lives
 

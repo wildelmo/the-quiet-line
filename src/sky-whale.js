@@ -4,7 +4,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 // Once in a day, around golden hour, something enormous and slow passes high
 // through the cloud banks: a pale whale, fins spread like wings, calling once
 // or twice across the water. It is far, it is rare, and it never comes closer.
-export const CROSSING = { seconds: 170, cooldown: 900, altitude: 190, distance: 420, span: 1300 };
+export const CROSSING = { seconds: 170, cooldown: 900, altitude: 150, distance: 300, span: 1300, scale: 2.3 };
 
 // Pure schedule. The whale sets out when golden light arrives and at least a
 // cooldown has passed since its last crossing; it never starts in the dark.
@@ -52,7 +52,7 @@ export function whaleGeometry() {
 export function createSkyWhale(scene, { reducedMotion = false, onEvent = () => {} } = {}) {
   const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, emissive: '#dfe6ee', emissiveIntensity: .12, fog: true });
   const whale = new THREE.Mesh(whaleGeometry(), material);
-  whale.name = 'The sky whale'; whale.visible = false; whale.frustumCulled = false; scene.add(whale);
+  whale.name = 'The sky whale'; whale.visible = false; whale.frustumCulled = false; whale.scale.setScalar(CROSSING.scale); scene.add(whale);
   let state = { start: null, last: -CROSSING.cooldown }, direction = 1, zBase = 0, called = 0;
   function update(time, viewer, dt, light) {
     const next = whaleSchedule(time, light.golden, state);
@@ -63,7 +63,7 @@ export function createSkyWhale(scene, { reducedMotion = false, onEvent = () => {
     const age = time - state.start, u = age / CROSSING.seconds, t = reducedMotion ? 0 : time;
     const x = direction * (u * 2 - 1) * CROSSING.span;
     const bow = Math.sin(u * Math.PI);
-    whale.position.set(x, CROSSING.altitude + bow * 40 + Math.sin(t * .11) * 6, zBase - CROSSING.distance - bow * 220);
+    whale.position.set(x, CROSSING.altitude + bow * 40 + Math.sin(t * .11) * 6, zBase - CROSSING.distance - bow * 140);
     whale.rotation.set(Math.sin(t * .09) * .06 - .04, direction > 0 ? Math.PI / 2 : -Math.PI / 2, Math.sin(t * .07) * .08, 'YXZ');
     whale.rotation.y += direction * (u - .5) * .5;
     if (age > 18 * (called + 1) && called < 3) { called++; onEvent('whale-call', light); }
