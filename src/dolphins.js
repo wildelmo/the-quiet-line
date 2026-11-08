@@ -51,6 +51,12 @@ export function paintDolphin(root) {
   });
 }
 
+// The rotation the pod applies for a leap; shared with tests so the nose
+// direction can be checked against the arc without a renderer.
+export function leapRotation(pitch, alongside, roll = 0) {
+  return new THREE.Euler(-pitch, alongside ? Math.PI : Math.PI * .5 + .15, roll, 'YXZ');
+}
+
 export function createDolphins(scene, { reducedMotion = false, random = Math.random, onSplash = () => {}, loader = new GLTFLoader() } = {}) {
   const pod = new THREE.Group(); pod.name = 'The pod'; pod.visible = false; scene.add(pod);
   const dolphins = [], splashes = [];
@@ -88,7 +94,9 @@ export function createDolphins(scene, { reducedMotion = false, random = Math.ran
       const x = train.position.x + side + Math.sin(age * .5 + i) * .8 + i * 1.6, dz = z + i * 2.4 + Math.sin(age * .4 + i * 2) * 1.2;
       d.holder.position.set(x, l.y, dz);
       // Nose forward: alongside, that is the train's way (-z); passing, across the view.
-      d.holder.rotation.set(l.pitch, alongside ? Math.PI : Math.PI * .5 + .15, Math.sin(age * .9 + i) * .06, 'YXZ');
+      // The nose lies along local +z, and a positive X rotation tips +z downward,
+      // so a rising arc (positive pitch) needs a negative X rotation to lift it.
+      d.holder.rotation.copy(leapRotation(l.pitch, alongside, Math.sin(age * .9 + i) * .06));
       if (d.mixer) { d.mixer.timeScale = l.airborne ? .55 : 1.3; d.mixer.update(dt); }
       if (l.airborne !== d.wasAirborne) {
         const splash = splashes[i]; splash.age = 0; splash.ring.position.set(d.holder.position.x, .03, d.holder.position.z);
